@@ -61,6 +61,10 @@ class AppServiceProvider extends ServiceProvider
                     'daily_record' => 'Daily Record',
                     'monthly_record' => 'Monthly Record',
                     'semestral_record' => 'Semestral Record',
+                    'about_kiroku' => 'About Kiroku ALS',
+                    'profile.edit' => 'Profile',
+                    'user-password.edit' => 'Password',
+                    'appearance.edit' => 'Appearance',
 
                     // Logger
                     'logger_dashboard' => 'Dashboard'

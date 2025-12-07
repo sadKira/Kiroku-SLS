@@ -9,7 +9,11 @@
     <flux:sidebar sticky collapsible class="border-e border-zinc-200 bg-zinc-50 dark:border-zinc-700 dark:bg-zinc-900">
 
         <flux:sidebar.header>
-            <flux:sidebar.brand href="#" logo="https://fluxui.dev/img/demo/logo.png" logo:dark="https://fluxui.dev/img/demo/dark-mode-logo.png" name="Kiroku ALS" />
+            <flux:sidebar.brand :href="route('admin_dashboard')" name="Kiroku ALS">
+                <x-slot>
+                    <img src="{{ asset('mkdlib-logo.svg') }}" alt="MKD Library Logo" class="w-auto h-5">
+                </x-slot>
+            </flux:sidebar.brand>
             <flux:sidebar.collapse class="in-data-flux-sidebar-on-desktop:not-in-data-flux-sidebar-collapsed-desktop:-mr-2" />
         </flux:sidebar.header>
 
