@@ -1,82 +1,66 @@
 <!DOCTYPE html>
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}" class="dark">
-    <head>
-        @include('partials.head')
-    </head>
-    <body class="min-h-screen bg-white dark:bg-zinc-800">
-        <flux:sidebar sticky stashable class="border-e border-zinc-200 bg-zinc-50 dark:border-zinc-700 dark:bg-zinc-900">
-            <flux:sidebar.toggle class="lg:hidden" icon="x-mark" />
 
-            <a href="{{ route('admin_dashboard') }}" class="me-5 flex items-center space-x-2 rtl:space-x-reverse" wire:navigate>
-                <x-app-logo />
-            </a>
+<head>
+    @include('partials.head')
+</head>
 
-            <flux:navlist variant="outline">
-                <flux:navlist.group :heading="__('Platform')" class="grid">
-                    <flux:navlist.item icon="home" :href="route('admin_dashboard')" :current="request()->routeIs('admin_dashboard')" wire:navigate>{{ __('Dashboard') }}</flux:navlist.item>
-                </flux:navlist.group>
-            </flux:navlist>
+<body class="min-h-screen bg-white dark:bg-zinc-800">
+    <flux:sidebar sticky collapsible class="border-e border-zinc-200 bg-zinc-50 dark:border-zinc-700 dark:bg-zinc-900">
 
-            <flux:spacer />
+        <flux:sidebar.header>
+            <flux:sidebar.brand href="#" logo="https://fluxui.dev/img/demo/logo.png" logo:dark="https://fluxui.dev/img/demo/dark-mode-logo.png" name="Kiroku ALS" />
+            <flux:sidebar.collapse class="in-data-flux-sidebar-on-desktop:not-in-data-flux-sidebar-collapsed-desktop:-mr-2" />
+        </flux:sidebar.header>
 
-            <flux:navlist variant="outline">
-                <flux:navlist.item icon="folder-git-2" :href="url('/system-logs')" target="_blank">
-                {{ __('Repository') }}
-                </flux:navlist.item>
+        <flux:sidebar.nav>
 
-                <flux:navlist.item icon="book-open-text" href="https://laravel.com/docs/starter-kits#livewire" target="_blank">
-                {{ __('Documentation') }}
-                </flux:navlist.item>
-            </flux:navlist>
+            <flux:sidebar.item icon="home" :href="route('admin_dashboard')" :current="request()->routeIs('admin_dashboard')" wire:navigate>
+                Dashboard
+            </flux:sidebar.item>
 
-            <!-- Desktop User Menu -->
-            <flux:dropdown class="hidden lg:block" position="bottom" align="start">
-                <flux:profile
-                    :name="auth()->user()->name"
-                    :initials="auth()->user()->initials()"
-                    icon:trailing="chevrons-up-down"
-                />
+            <flux:sidebar.item icon="users" :href="route('student_list')" :current="request()->routeIs('student_list')"  wire:navigate>
+                Student List
+            </flux:sidebar.item>
 
-                <flux:menu class="w-[220px]">
-                    <flux:menu.radio.group>
-                        <div class="p-0 text-sm font-normal">
-                            <div class="flex items-center gap-2 px-1 py-1.5 text-start text-sm">
-                                <span class="relative flex h-8 w-8 shrink-0 overflow-hidden rounded-lg">
-                                    <span
-                                        class="flex h-full w-full items-center justify-center rounded-lg bg-neutral-200 text-black dark:bg-neutral-700 dark:text-white"
-                                    >
-                                        {{ auth()->user()->initials() }}
-                                    </span>
-                                </span>
+            <flux:sidebar.group expandable icon="document-chart-bar" heading="Records" class="grid">
+                <flux:sidebar.item :href="route('hourly_record')" :current="request()->routeIs('hourly_record')"  wire:navigate>Hourly Record</flux:sidebar.item>
+                <flux:sidebar.item :href="route('daily_record')" :current="request()->routeIs('daily_record')"  wire:navigate>Daily Record</flux:sidebar.item>
+                <flux:sidebar.item :href="route('monthly_record')" :current="request()->routeIs('monthly_record')"  wire:navigate>Monthly Record</flux:sidebar.item>
+                <flux:sidebar.item :href="route('semestral_record')" :current="request()->routeIs('semestral_record')"  wire:navigate>Semestral Record</flux:sidebar.item>
+            </flux:sidebar.group>
 
-                                <div class="grid flex-1 text-start text-sm leading-tight">
-                                    <span class="truncate font-semibold">{{ auth()->user()->name }}</span>
-                                    <span class="truncate text-xs">{{ auth()->user()->email }}</span>
-                                </div>
-                            </div>
-                        </div>
-                    </flux:menu.radio.group>
 
-                    <flux:menu.separator />
+        </flux:sidebar.nav>
 
-                    <flux:menu.radio.group>
-                        <flux:menu.item :href="route('profile.edit')" icon="cog" wire:navigate>{{ __('Settings') }}</flux:menu.item>
-                    </flux:menu.radio.group>
+        <flux:sidebar.spacer />
 
-                    <flux:menu.separator />
+        <flux:sidebar.nav>
 
-                    <form method="POST" action="{{ route('logout') }}" class="w-full">
-                        @csrf
-                        <flux:menu.item as="button" type="submit" icon="arrow-right-start-on-rectangle" class="w-full">
-                            {{ __('Log Out') }}
-                        </flux:menu.item>
-                    </form>
-                </flux:menu>
-            </flux:dropdown>
-        </flux:sidebar>
+            @can('SA')
+                <flux:sidebar.item :href="url('/system-logs')" icon="folder-git-2" target="_blank">
+                    System Logs
+                </flux:sidebar.item>
+            @endcan
 
-        {{ $slot }}
+            <flux:sidebar.item :href="route('about_kiroku')" :current="request()->routeIs('about_kiroku')" icon="information-circle" wire:navigate>
+                About Kiroku
+            </flux:sidebar.item>
 
-        @fluxScripts
-    </body>
+            <flux:sidebar.item :href="route('profile.edit')" :current="request()->routeIs(['profile.edit', 'user-password.edit', 'appearance.edit'])" icon="cog" wire:navigate>
+                Settings
+            </flux:sidebar.item>
+
+
+        </flux:sidebar.nav>
+
+    </flux:sidebar>
+
+    {{ $slot }}
+
+    @fluxScripts
+
+    
+</body>
+
 </html>
