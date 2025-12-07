@@ -10,6 +10,12 @@ use App\Livewire\Auth\Login;
 use App\Livewire\Actions\Logout;
 
 use App\Livewire\Management\AdminDashboard;
+use App\Livewire\Management\StudentList;
+use App\Livewire\Management\DailyRecord;
+use App\Livewire\Management\HourlyRecord;
+use App\Livewire\Management\MonthlyRecord;
+use App\Livewire\Management\SemestralRecord;
+use App\Livewire\Management\AboutKiroku;
 
 use App\Livewire\Logger\LoggerDashboard;
 
@@ -21,7 +27,12 @@ Route::post('logout', Logout::class)->middleware('auth')->name('logout');
 Route::middleware(['auth', 'admin'])->group(function () {
 
     Route::get('/admin-dashboard', AdminDashboard::class)->name('admin_dashboard');
-
+    Route::get('/student-list', StudentList::class)->name('student_list');
+    Route::get('/hourly-record', HourlyRecord::class)->name('hourly_record');
+    Route::get('/daily-record', DailyRecord::class)->name('daily_record');
+    Route::get('/monthly-record', MonthlyRecord::class)->name('monthly_record');
+    Route::get('/semestral-record', SemestralRecord::class)->name('semestral_record');
+    Route::get('/about-kiroku', AboutKiroku::class)->name('about_kiroku');
 
     Route::redirect('settings', 'settings/profile');
 
@@ -36,7 +47,5 @@ Route::middleware(['auth', 'logger'])->group(function () {
 
     Route::get('/dashboard', LoggerDashboard::class)->name('logger_dashboard');
     
-
- 
 
 });
