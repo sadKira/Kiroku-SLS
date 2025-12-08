@@ -9,11 +9,13 @@
     <flux:sidebar sticky collapsible class="border-e border-zinc-200 bg-zinc-50 dark:border-zinc-700 dark:bg-zinc-900">
 
         <flux:sidebar.header>
+
             <flux:sidebar.brand :href="route('admin_dashboard')" name="Kiroku ALS">
                 <x-slot>
                     <img src="{{ asset('mkdlib-logo.svg') }}" alt="MKD Library Logo" class="w-auto h-5">
                 </x-slot>
             </flux:sidebar.brand>
+            
             <flux:sidebar.collapse class="in-data-flux-sidebar-on-desktop:not-in-data-flux-sidebar-collapsed-desktop:-mr-2" />
         </flux:sidebar.header>
 
@@ -34,6 +36,11 @@
                 <flux:sidebar.item :href="route('semestral_record')" :current="request()->routeIs('semestral_record')"  wire:navigate>Semestral Record</flux:sidebar.item>
             </flux:sidebar.group>
 
+            @can('SA')
+                <flux:sidebar.item :href="url('/system-logs')" icon="folder-git-2" target="_blank">
+                    System Logs
+                </flux:sidebar.item>
+            @endcan
 
         </flux:sidebar.nav>
 
@@ -41,20 +48,17 @@
 
         <flux:sidebar.nav>
 
-            @can('SA')
-                <flux:sidebar.item :href="url('/system-logs')" icon="folder-git-2" target="_blank">
-                    System Logs
-                </flux:sidebar.item>
-            @endcan
-
             <flux:sidebar.item :href="route('about_kiroku')" :current="request()->routeIs('about_kiroku')" icon="information-circle" wire:navigate>
                 About Kiroku
             </flux:sidebar.item>
 
-            <flux:sidebar.item :href="route('profile.edit')" :current="request()->routeIs(['profile.edit', 'user-password.edit', 'appearance.edit'])" icon="cog" wire:navigate>
-                Settings
-            </flux:sidebar.item>
-
+            {{-- Log out button --}}
+            <form method="POST" action="{{ route('logout') }}" class="w-full">
+                @csrf
+                <flux:sidebar.item as="button" type="submit" icon="arrow-right-start-on-rectangle">
+                    Log Out
+                </flux:sidebar.item>
+            </form>
 
         </flux:sidebar.nav>
 
