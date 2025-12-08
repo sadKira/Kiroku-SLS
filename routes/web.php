@@ -34,7 +34,7 @@ Route::middleware(['auth', 'admin'])->group(function () {
     Route::get('/semestral-record', SemestralRecord::class)->name('semestral_record');
     Route::get('/about-kiroku', AboutKiroku::class)->name('about_kiroku');
 
-    Route::redirect('settings', 'settings/profile');
+    // Route::redirect('settings', 'settings/profile');
 
     Route::get('settings/profile', Profile::class)->name('profile.edit');
     Route::get('settings/password', Password::class)->name('user-password.edit');
