@@ -1,0 +1,20 @@
+{
+    "project_hash": "e34d39e9-e69a-4015-aa3b-f0ffe9ca3610",
+    "components": {
+        "card": {
+            "installationTime": 1765431025
+        },
+        "heading": {
+            "installationTime": 1765433038
+        },
+        "icon": {
+            "installationTime": 1765433074
+        },
+        "button": {
+            "installationTime": 1765436267
+        },
+        "breadcrumbs": {
+            "installationTime": 1765437138
+        }
+    }
+}

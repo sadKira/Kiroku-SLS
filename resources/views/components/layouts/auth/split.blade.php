@@ -11,26 +11,6 @@
                  style="background-image: url('{{ asset('images/mkdlib-login.jpg') }}')">
 
                 {{-- Gradient --}}
-                {{-- <div class="absolute inset-0"
-                    style="
-                        background: radial-gradient(
-                            circle at 20% 20%,
-                            rgba(0, 0, 0, 0.65) 0%,
-                            rgba(0, 0, 0, 0.70) 20%,
-                            rgba(0, 0, 0, 0.85) 50%,
-                            rgba(0, 0, 0, 0.95) 75%,
-                            rgba(0, 0, 0, 1) 100%
-                        ),
-                        radial-gradient(
-                            circle at 20% 80%,
-                            rgba(0, 0, 0, 0.55) 0%,
-                            rgba(0, 0, 0, 0.75) 40%,
-                            rgba(0, 0, 0, 0.9) 80%,
-                            rgba(0, 0, 0, 1) 100%
-                        );
-                    ">
-                </div> --}}
-
                 <div class="absolute inset-0"
                     style="
                         background: radial-gradient(
@@ -43,7 +23,6 @@
                 </div>
 
                 {{-- 0.4, 0.55, 0.75 --}}
-
 
                 {{-- System Name --}}
                 <a href="{{ route('home') }}" class="relative z-20 flex items-center text-lg font-medium" wire:navigate>

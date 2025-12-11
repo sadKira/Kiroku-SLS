@@ -1,1 +1,1 @@
-<img src="{{ asset('mkdlib-logo.ico') }}" alt="MKD Library Logo">
+<img src="{{ asset('mkdlib-logo.ico') }}" alt="MKD Library Logo" class="w-auto h-25">
