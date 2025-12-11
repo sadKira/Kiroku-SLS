@@ -55,6 +55,7 @@ class AppServiceProvider extends ServiceProvider
                 UserRole::Admin, UserRole::SuperAdmin, UserRole::Logger  => [
 
                     // Management
+                    'home' => 'Kiroku ALS',
                     'admin_dashboard' => 'Admin Dashboard',
                     'student_list' => 'Student List',
                     'hourly_record' => 'Hourly Record',

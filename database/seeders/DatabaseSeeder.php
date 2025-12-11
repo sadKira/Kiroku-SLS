@@ -7,7 +7,6 @@ use App\Models\User;
 use Illuminate\Database\Seeder;
 
 
-
 class DatabaseSeeder extends Seeder
 {
     /**
@@ -18,6 +17,7 @@ class DatabaseSeeder extends Seeder
         $this->call([
             AdminSeeder::class,
             LoggerSeeder::class,
+            StudentSeeder::class,
         ]);
        
     }
