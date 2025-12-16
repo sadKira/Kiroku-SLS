@@ -11,7 +11,7 @@ class Student extends Model
     use HasFactory;
 
     protected $fillable = [
-        'student_id',
+        'id_student',
         'full_name',
         'year_level',
         'course',
@@ -30,6 +30,45 @@ class Student extends Model
     public function attendanceRecords()
     {
         return $this->hasMany(AttendanceRecord::class);
+    }
+
+    // Search
+    public function scopeSearch($query, $value)
+    {
+        if (empty(trim($value))) {
+            return $query;
+        }
+
+        $value = strtolower(trim($value));
+
+        // Mapping of full course names to abbreviations
+        $courseMap = [
+            'bachelor of arts in international studies' => 'abis',
+            'bachelor of science in information systems' => 'bsis',
+            'bachelor of human services' => 'bhs',
+            'bachelor of secondary education' => 'bsed',
+            'bachelor of elementary education' => 'eced',
+            'bachelor of special needs education' => 'sned',
+        ];
+
+        return $query->where(function ($q) use ($value, $courseMap) {
+            $q->where('full_name', 'like', "%{$value}%")
+                ->orWhere('year_level', 'like', "%{$value}%")
+                ->orWhere('id_student', 'like', "%{$value}%");
+
+            // Check both full and simplified course names
+            $q->orWhere(function ($q2) use ($value, $courseMap) {
+                // Search full course name
+                $q2->where('course', 'like', "%{$value}%");
+
+                // Search mapped simplified names
+                foreach ($courseMap as $full => $abbr) {
+                    if (str_contains($abbr, $value)) {
+                        $q2->orWhere('course', 'like', "%{$full}%");
+                    }
+                }
+            });
+        });
     }
 
 }

@@ -39,6 +39,9 @@ class AppServiceProvider extends ServiceProvider
         
         );
 
+        // Prevent lazy loading
+        Model::preventLazyLoading();
+
         /**
          * Dynamic Titles
          */
