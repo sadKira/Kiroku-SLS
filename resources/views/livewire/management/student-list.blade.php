@@ -87,141 +87,244 @@
         <div class="flex items-center justify-between mb-5">
 
             {{-- Filter --}}
-            <flux:dropdown>
-                <flux:button icon="adjustments-horizontal">Filter</flux:button>
+            <div class="flex items-center gap-3">
 
-                <flux:menu>
+                <flux:dropdown>
+                    <flux:button icon="adjustments-horizontal" size="sm">Filter</flux:button>
 
-                    <flux:menu.submenu heading="Year Level">
-                        <flux:menu.radio.group>
-                            <flux:menu.radio checked>Name</flux:menu.radio>
-                            <flux:menu.radio>Date</flux:menu.radio>
-                            <flux:menu.radio>Popularity</flux:menu.radio>
-                        </flux:menu.radio.group>
-                    </flux:menu.submenu>
+                    <flux:menu>
 
-                    <flux:menu.submenu heading="Course">
-                        <flux:menu.checkbox checked>Draft</flux:menu.checkbox>
-                        <flux:menu.checkbox checked>Published</flux:menu.checkbox>
-                        <flux:menu.checkbox>Archived</flux:menu.checkbox>
-                    </flux:menu.submenu>
+                        <flux:menu.submenu heading="Year Level">
+                            <flux:menu.radio.group wire:model.live="selectedYearLevel">
+                                <flux:menu.radio value="1st Year">1st Year</flux:menu.radio>
+                                <flux:menu.radio value="2nd Year">2nd Year</flux:menu.radio>
+                                <flux:menu.radio value="3rd Year">3rd Year</flux:menu.radio>
+                                <flux:menu.radio value="4th Year">4th Year</flux:menu.radio>
+                            </flux:menu.radio.group>
+                        </flux:menu.submenu>
 
-                </flux:menu>
-            </flux:dropdown>
+                        <flux:menu.submenu heading="Course">
+                            <flux:menu.radio.group wire:model.live="selectedCourse">
+                                <flux:menu.radio value="Bachelor of Arts in International Studies">
+                                    Bachelor of Arts in International Studies</flux:menu.radio>
+                                    
+                                <flux:menu.radio value="Bachelor of Science in Information Systems">
+                                    Bachelor of Science in Information Systems</flux:menu.radio>
+
+                                <flux:menu.radio value="Bachelor of Human Services">
+                                    Bachelor of Human Services</flux:menu.radio>
+
+                                <flux:menu.radio value="Bachelor of Secondary Education">
+                                    Bachelor of Secondary Education</flux:menu.radio>
+
+                                <flux:menu.radio value="Bachelor of Elementary Education">
+                                    Bachelor of Elementary Education</flux:menu.radio>
+
+                                <flux:menu.radio value="Bachelor of Special Needs Education">
+                                    Bachelor of Special Needs Education</flux:menu.radio>
+                            </flux:menu.radio.group>
+                        </flux:menu.submenu>
+
+                    </flux:menu>
+                </flux:dropdown>
+
+                <flux:heading size="md"> Selected = {{  count($selected)  }} </flux:heading>
+                
+                {{-- Filter Indicators --}}
+                @if ($selectedYearLevel != 'All')
+                    <flux:badge>
+                        {{ $selectedYearLevel }} <flux:badge.close wire:click="clearYearLevel" />
+                    </flux:badge>
+                @endif
+                @if ($selectedCourse != 'All')
+                    <flux:badge>
+                        {{ $selectedCourse }} <flux:badge.close wire:click="clearCourse" />
+                    </flux:badge>
+                @endif
+
+            </div>
    
             {{-- Search Students --}}
-            <flux:input icon="magnifying-glass" placeholder="Search students" class="max-w-100" />
+            <flux:input icon="magnifying-glass" placeholder="Search students" class="max-w-100" wire:model.live.debounce.300ms="search" autocomplete="off" clearable  />
 
         </div>
 
         <div class="-m-1.5 overflow-x-auto">
             <div class="p-1.5 min-w-full inline-block align-middle">
                 <div class=" overflow-hidden dark:border-neutral-700">
-                    <table class="min-w-full">
-                        <thead>
-                            <tr>
-                                <th scope="col"
-                                    class="px-6 py-3 text-start text-sm font-medium text-gray-500 dark:text-neutral-500">
-                                    Name</th>
-                                <th scope="col"
-                                    class="px-6 py-3 text-start text-sm font-medium text-gray-500 dark:text-neutral-500">
-                                    Student ID</th>
-                                <th scope="col"
-                                    class="px-6 py-3 text-start text-sm font-medium text-gray-500 dark:text-neutral-500">
-                                    Year Level</th>
+                    <flux:checkbox.group>
+                        <table class="min-w-full">
+                            <thead>
+                                <tr>
                                     <th scope="col"
-                                    class="px-6 py-3 text-start text-sm font-medium text-gray-500 dark:text-neutral-500">
-                                    Course</th>
-                                <th scope="col"
-                                    class="px-6 py-3 text-end text-sm font-medium text-gray-500 dark:text-neutral-500">
+                                        class="px-3 py-3 text-start text-sm font-medium text-gray-500 dark:text-neutral-500">
+                                        <flux:checkbox.all />
                                     </th>
-                            </tr>
-                        </thead>
-                        <tbody class="divide-y divide-gray-200 dark:divide-neutral-700">
-                            
-                            <tr class="hover:bg-gray-100 dark:hover:bg-neutral-700">
-                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-800 dark:text-neutral-200">
-                                    John Brown
-                                </td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-800 dark:text-neutral-200">
-                                    1234567
-                                </td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-800 dark:text-neutral-200">
-                                    2nd Year
-                                </td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-800 dark:text-neutral-200">
-                                    Bachelor of Science in Information Systems
-                                </td>
-                                <td class="px-6 py-4 whitespace-nowrap text-end text-sm font-medium">
-                                    <div class="flex items-center justify-end gap-2">
-                                        {{-- <flux:button variant="ghost" size="sm">Edit</flux:button> --}}
-                                        <x-ui.button variant="outline" size="sm">
-                                            Edit
-                                        </x-ui.button>
-                                        <flux:button icon="trash" variant="danger" size="sm"></flux:button>
+                                    <th scope="col"
+                                        class="px-1 py-3 text-start text-sm font-medium text-gray-500 dark:text-neutral-500">
+                                        Name</th>
+                                    <th scope="col"
+                                        class="px-1 py-3 text-start text-sm font-medium text-gray-500 dark:text-neutral-500">
+                                        Student ID</th>
+                                    <th scope="col"
+                                        class="px-1 py-3 text-start text-sm font-medium text-gray-500 dark:text-neutral-500">
+                                        Year Level</th>
+                                        <th scope="col"
+                                        class="px-1 py-3 text-start text-sm font-medium text-gray-500 dark:text-neutral-500">
+                                        Course</th>
+                                    <th scope="col"
+                                        class="px-1 py-3 text-end text-sm font-medium text-gray-500 dark:text-neutral-500">
+                                        </th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-gray-200 dark:divide-neutral-700">
+                                
+                                @if ($students->isEmpty())
+
+                                    {{-- Search Empty State --}}
+                                    @if (!empty($search))
+
+                                        <tr>
+                                            <td colspan="6" class="px-6 py-10 whitespace-nowrap text-sm  text-gray-800 dark:text-neutral-200">
+                                                <div class="flex justify-center items-center gap-2 w-full">
+                                                    <flux:icon.magnifying-glass variant="solid" class="" />
+                                                    <flux:heading size="lg">No Student Found</flux:heading>
+                                                </div>
+                                            </td>
+                                        </tr>
+
+                                    {{-- Full Empty Table State --}}
+                                    @else
+
+                                        <tr>
+                                            <td colspan="6" class="px-6 py-10 whitespace-nowrap text-sm  text-gray-800 dark:text-neutral-200">
+                                                <div class="flex justify-center items-center gap-2 w-full">
+                                                    <flux:icon.magnifying-glass variant="solid" class="" />
+                                                    <flux:heading size="lg">No Student Found</flux:heading>
+                                                </div>
+                                            </td>
+                                        </tr>
                                         
-                                    </div>
-                                </td>
-                            </tr>
+                                    @endif
+                                    
+                                @else
 
-                            <tr class="hover:bg-gray-100 dark:hover:bg-neutral-700">
-                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-800 dark:text-neutral-200">
-                                    John Brown
-                                </td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-800 dark:text-neutral-200">
-                                    1234567
-                                </td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-800 dark:text-neutral-200">
-                                    2nd Year
-                                </td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-800 dark:text-neutral-200">
-                                    Bachelor of Science in Information Systems
-                                </td>
-                                <td class="px-6 py-4 whitespace-nowrap text-end text-sm font-medium">
-                                    <flux:button icon="ellipsis-vertical" variant="ghost" size="sm"></flux:button>
-                                </td>
-                            </tr>
+                                    @foreach($students as $student)
 
-                            <tr class="hover:bg-gray-100 dark:hover:bg-neutral-700">
-                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-800 dark:text-neutral-200">
-                                    John Brown
-                                </td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-800 dark:text-neutral-200">
-                                    1234567
-                                </td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-800 dark:text-neutral-200">
-                                    2nd Year
-                                </td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-800 dark:text-neutral-200">
-                                    Bachelor of Science in Information Systems
-                                </td>
-                                <td class="px-6 py-4 whitespace-nowrap text-end text-sm font-medium">
-                                    <flux:button icon="ellipsis-vertical" variant="ghost" size="sm"></flux:button>
-                                </td>
-                            </tr>
-                           
-                            <tr class="hover:bg-gray-100 dark:hover:bg-neutral-700">
-                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-800 dark:text-neutral-200">
-                                    John Brown
-                                </td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-800 dark:text-neutral-200">
-                                    1234567
-                                </td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-800 dark:text-neutral-200">
-                                    2nd Year
-                                </td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-800 dark:text-neutral-200">
-                                    Bachelor of Science in Information Systems
-                                </td>
-                                <td class="px-6 py-4 whitespace-nowrap text-end text-sm font-medium">
-                                    <flux:button icon="ellipsis-vertical" variant="ghost" size="sm"></flux:button>
-                                </td>
-                            </tr>
-                            
-                        </tbody>
-                    </table>
+                                        <tr wire:key="{{ $student->id }}" class="hover:bg-gray-100 dark:hover:bg-neutral-700">
+                                            <td class="px-2 py-3 whitespace-nowrap text-sm font-medium text-gray-800 dark:text-neutral-200">
+                                                <flux:checkbox value="{{ $student->id }}" wire:model.live="selected" />
+                                            </td>
+                                            <td class="px-1 py-3 whitespace-nowrap text-sm font-medium text-gray-800 dark:text-neutral-200">
+                                                {{ $student->full_name }}
+                                            </td>
+                                            <td class="px-1 py-3 whitespace-nowrap text-sm text-gray-800 dark:text-neutral-200">
+                                                {{ $student->id_student }}
+                                            </td>
+                                            <td class="px-1 py-3 whitespace-nowrap text-sm text-gray-800 dark:text-neutral-200">
+                                                {{ $student->year_level }}
+                                            </td>
+                                            <td class="px-1 py-3 whitespace-nowrap text-sm text-gray-800 dark:text-neutral-200">
+                                                {{ $student->course }}
+                                            </td>
+                                            <td class="px-1 py-3 whitespace-nowrap text-end text-sm font-medium">
+                                                <div class="flex items-center justify-end">
+                                                    
+                                                    <flux:link wire:click="editProfile({{ $student->id }})">Edit</flux:link>
+                                                    <flux:button wire:click="removeProfile({{  $student->id }})" icon="trash" variant="danger" size="sm" class="ml-5"></flux:button>
+                                                    
+                                                </div>
+                                            </td>
+                                        </tr>
+
+                                    @endforeach
+
+                                @endif
+
+                            </tbody>
+                        </table>
+                    </flux:checkbox.group>
+
+                    @if ($students->hasPages())
+                        
+                        <div class="mt-4">
+                            {{ $students->links() }}
+                        </div>
+
+                     @endif
+
                 </div>
             </div>
         </div>
     </div>
+
+    {{-- Edit Student Details Modal --}}
+    <flux:modal name="update-student" :dismissible="false"
+        class="min-w-[22rem]">
+        <div class="space-y-6">
+            <div>
+                <flux:heading size="lg">Edit Student Details</flux:heading>
+            </div>
+
+            {{-- Name --}}
+            <flux:input wire:model.defer="full_name" type="text" label="Student Name" placeholder="Student Name" />
+
+            {{-- Student ID --}}
+            <flux:input wire:model.defer="id_student" type="text" label="Student ID" mask="9999999" placeholder="7-Digit ID" />
+
+            {{-- Year Level --}}
+            <flux:select wire:model.defer="year_level" label="Year level" placeholder="Year Level">
+                <flux:select.option class="text-black dark:text-white" value="1st Year">1st Year</flux:select.option>
+                <flux:select.option class="text-black dark:text-white" value="2nd Year">2nd Year</flux:select.option>
+                <flux:select.option class="text-black dark:text-white" value="3rd Year">3rd Year</flux:select.option>
+                <flux:select.option class="text-black dark:text-white" value="4th Year">4th Year</flux:select.option>
+            </flux:select>
+
+            {{-- Course --}}
+            <flux:select wire:model.defer="course" label="Course" placeholder="Course">
+                <flux:select.option class="text-black dark:text-white" value="Bachelor of Arts in International Studies">Bachelor of Arts in International Studies</flux:select.option>
+                <flux:select.option class="text-black dark:text-white" value="Bachelor of Science in Information Systems">Bachelor of Science in Information Systems</flux:select.option>
+                <flux:select.option class="text-black dark:text-white" value="Bachelor of Human Services">Bachelor of Human Services</flux:select.option>
+                <flux:select.option class="text-black dark:text-white" value="Bachelor of Secondary Education">Bachelor of Secondary Education</flux:select.option>
+                <flux:select.option class="text-black dark:text-white" value="Bachelor of Elementary Education">Bachelor of Elementary Education</flux:select.option>
+                <flux:select.option class="text-black dark:text-white" value="Bachelor of Special Needs Education">Bachelor of Special Needs Education</flux:select.option>
+            </flux:select>
+
+            <div class="flex gap-2">
+                <flux:spacer />
+                <flux:modal.close>
+                    <flux:button variant="ghost">Cancel</flux:button>
+                </flux:modal.close>
+                <flux:button wire:click="updateProfileInformation" variant="primary">
+                    Update
+                </flux:button>
+            </div>
+        </div>
+    </flux:modal>
+
+    {{-- Remove Student Modal --}}
+    <flux:modal name="remove-student" :dismissible="false"
+        class="min-w-[22rem]">
+        <div class="space-y-6">
+            <div>
+                <flux:heading size="lg">Remove Student?</flux:heading>
+                <flux:text class="mt-2">
+                    Remove <span class="font-bold">{{ $full_name ?? '' }}?</span>
+                </flux:text>
+            </div>
+            
+            <div class="flex gap-2">
+                <flux:spacer />
+                <flux:modal.close>
+                    <flux:button variant="ghost">Cancel</flux:button>
+                </flux:modal.close>
+                <flux:button wire:click="deleteProfileInformation" variant="primary">
+                    Update
+                </flux:button>
+            </div>
+        </div>
+    </flux:modal>
+
+    
+
 </div>
