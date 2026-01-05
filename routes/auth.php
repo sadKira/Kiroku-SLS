@@ -1,15 +1,12 @@
 <?php
 
-namespace App\Livewire;
-
 use Illuminate\Support\Facades\Route;
-use Illuminate\Auth\Middleware;
 
 use App\Livewire\Auth\Login;
 use App\Livewire\Actions\Logout;
 
 Route::middleware('guest')->group(function () {
-    Route::get('login', Login::class)->name('login');
+    Route::get('/', Login::class)->name('home');
 });
 
-Route::post('logout', Logout::class)->name('logout');
+Route::post('logout', Logout::class)->middleware('auth')->name('logout');

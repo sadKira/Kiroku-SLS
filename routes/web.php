@@ -19,9 +19,6 @@ use App\Livewire\Management\AboutKiroku;
 
 use App\Livewire\Logger\LoggerDashboard;
 
-Route::get('/', Login::class)->name('home');
-
-Route::post('logout', Logout::class)->middleware('auth')->name('logout');
 
 // Admin Routes
 Route::middleware(['auth', 'admin'])->group(function () {
