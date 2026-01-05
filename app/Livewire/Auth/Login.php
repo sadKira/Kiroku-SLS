@@ -22,6 +22,7 @@ class Login extends Component
     #[Validate('required|string')]
     public string $username = '';
 
+    // #[SensitiveParameter]
     #[Validate('required|string')]
     public string $password = '';
 

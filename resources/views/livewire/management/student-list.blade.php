@@ -15,7 +15,7 @@
     </div>
 
     {{-- Upper Cards --}}
-    <div class="flex items-center justify-between mb-10">
+    <div class="flex items-center justify-between mb-5">
 
         {{-- <x-ui.card size="xl" class="">
 
@@ -31,9 +31,7 @@
 
         <flux:heading size="xl">Student List</flux:heading>
 
-        <flux:modal.trigger name="create-students">
-            <flux:button icon="plus">Add Students</flux:button>
-        </flux:modal.trigger>
+        <flux:button icon="plus" wire:click="addStudent">Add Students</flux:button>
 
     </div>
 
@@ -46,13 +44,13 @@
             </div>
 
             {{-- Name --}}
-            <flux:input type="text" label="Student Name" placeholder="Student Name" />
+            <flux:input wire:model.defer="full_name" type="text" label="Student Name" placeholder="Student Name" />
 
             {{-- Student ID --}}
-            <flux:input type="text" label="Student ID" mask="9999999" placeholder="7-Digit ID" />
+            <flux:input wire:model.defer="id_student" type="text" label="Student ID" mask="9999999" placeholder="7-Digit ID" />
 
             {{-- Year Level --}}
-            <flux:select label="Year level" placeholder="Year Level">
+            <flux:select wire:model.defer="year_level" label="Year level" placeholder="Year Level">
                 <flux:select.option class="text-black dark:text-white" value="1st Year">1st Year</flux:select.option>
                 <flux:select.option class="text-black dark:text-white" value="2nd Year">2nd Year</flux:select.option>
                 <flux:select.option class="text-black dark:text-white" value="3rd Year">3rd Year</flux:select.option>
@@ -60,7 +58,7 @@
             </flux:select>
 
             {{-- Course --}}
-            <flux:select label="Course" placeholder="Course">
+            <flux:select wire:model.defer="course" label="Course" placeholder="Course">
                 <flux:select.option class="text-black dark:text-white" value="Bachelor of Arts in International Studies">Bachelor of Arts in International Studies</flux:select.option>
                 <flux:select.option class="text-black dark:text-white" value="Bachelor of Science in Information Systems">Bachelor of Science in Information Systems</flux:select.option>
                 <flux:select.option class="text-black dark:text-white" value="Bachelor of Human Services">Bachelor of Human Services</flux:select.option>
@@ -71,10 +69,8 @@
 
             <div class="flex gap-2">
                 <flux:spacer />
-                <flux:modal.close>
-                    <flux:button variant="ghost">Cancel</flux:button>
-                </flux:modal.close>
-                <flux:button variant="primary">
+                <flux:button variant="ghost" wire:click="resetCreateForms">Cancel</flux:button>
+                <flux:button wire:click="addStudentInformation" variant="primary">
                     Add
                 </flux:button>
             </div>
@@ -127,8 +123,6 @@
 
                     </flux:menu>
                 </flux:dropdown>
-
-                <flux:heading size="md"> Selected = {{  count($selected)  }} </flux:heading>
                 
                 {{-- Filter Indicators --}}
                 @if ($selectedYearLevel != 'All')
@@ -143,12 +137,28 @@
                 @endif
 
             </div>
-   
-            {{-- Search Students --}}
-            <flux:input icon="magnifying-glass" placeholder="Search students" class="max-w-100" wire:model.live.debounce.300ms="search" autocomplete="off" clearable  />
 
+            {{-- Selection Indicator and Action --}}
+            @if ( count($selected) > 0 )
+
+                <div class="flex items-center gap-2">
+
+                    <flux:button variant="primary" size="sm" icon="x-mark" wire:click="clearSelected">{{ count($selected) }} selected</flux:button>
+
+                    <flux:button size="sm" icon="trash" variant="danger" wire:click="bulkRemoveProfile">Delete</flux:button>
+
+                </div>
+                
+            @else
+
+                {{-- Search Students --}}
+                <flux:input icon="magnifying-glass" placeholder="Search students" class="max-w-100" wire:model.live.debounce.300ms="search" autocomplete="off" clearable />
+
+            @endif
+            
         </div>
 
+        {{-- Table Contents --}}
         <div class="-m-1.5 overflow-x-auto">
             <div class="p-1.5 min-w-full inline-block align-middle">
                 <div class=" overflow-hidden dark:border-neutral-700">
@@ -173,8 +183,8 @@
                                         class="px-1 py-3 text-start text-sm font-medium text-gray-500 dark:text-neutral-500">
                                         Course</th>
                                     <th scope="col"
-                                        class="px-1 py-3 text-end text-sm font-medium text-gray-500 dark:text-neutral-500">
-                                        </th>
+                                            class="px-3 py-3 text-end text-sm font-medium text-gray-500 dark:text-neutral-500">
+                                            </th>
                                 </tr>
                             </thead>
                             <tbody class="divide-y divide-gray-200 dark:divide-neutral-700">
@@ -212,7 +222,7 @@
                                     @foreach($students as $student)
 
                                         <tr wire:key="{{ $student->id }}" class="hover:bg-gray-100 dark:hover:bg-neutral-700">
-                                            <td class="px-2 py-3 whitespace-nowrap text-sm font-medium text-gray-800 dark:text-neutral-200">
+                                            <td class="px-3 py-3 whitespace-nowrap text-sm font-medium text-gray-800 dark:text-neutral-200">
                                                 <flux:checkbox value="{{ $student->id }}" wire:model.live="selected" />
                                             </td>
                                             <td class="px-1 py-3 whitespace-nowrap text-sm font-medium text-gray-800 dark:text-neutral-200">
@@ -227,14 +237,24 @@
                                             <td class="px-1 py-3 whitespace-nowrap text-sm text-gray-800 dark:text-neutral-200">
                                                 {{ $student->course }}
                                             </td>
-                                            <td class="px-1 py-3 whitespace-nowrap text-end text-sm font-medium">
-                                                <div class="flex items-center justify-end">
-                                                    
-                                                    <flux:link wire:click="editProfile({{ $student->id }})">Edit</flux:link>
-                                                    <flux:button wire:click="removeProfile({{  $student->id }})" icon="trash" variant="danger" size="sm" class="ml-5"></flux:button>
-                                                    
-                                                </div>
-                                            </td>
+                                            @if( count($selected) < 1 )
+                                                <td class="px-3 py-3 whitespace-nowrap text-end text-sm font-medium">
+                                                    <div class="flex items-center justify-end">
+                                                        
+                                                        <flux:link wire:click="editProfile({{ $student->id }})">Edit</flux:link>
+                                                        <flux:button wire:click="removeProfile({{  $student->id }})" icon="trash" variant="danger" size="sm" class="ml-5"></flux:button>
+                                                        
+                                                    </div>
+                                                </td>
+                                            @else
+                                                <td class="px-3 py-3 whitespace-nowrap text-end text-sm font-medium">
+                                                    <div class="flex items-center justify-end">
+                                                        
+                                                        <flux:button icon="trash" variant="danger" size="sm" class="ml-5 opacity-0"></flux:button>
+                                                        
+                                                    </div>
+                                                </td>
+                                            @endif
                                         </tr>
 
                                     @endforeach
@@ -307,9 +327,9 @@
         class="min-w-[22rem]">
         <div class="space-y-6">
             <div>
-                <flux:heading size="lg">Remove Student?</flux:heading>
+                <flux:heading size="lg">Delete Student?</flux:heading>
                 <flux:text class="mt-2">
-                    Remove <span class="font-bold">{{ $full_name ?? '' }}?</span>
+                    You are about to delete <span class="font-bold">{{ $full_name ?? '' }}</span>.
                 </flux:text>
             </div>
             
@@ -318,12 +338,36 @@
                 <flux:modal.close>
                     <flux:button variant="ghost">Cancel</flux:button>
                 </flux:modal.close>
-                <flux:button wire:click="deleteProfileInformation" variant="primary">
-                    Update
+                <flux:button wire:click="deleteProfileInformation" variant="danger">
+                    Delete
                 </flux:button>
             </div>
         </div>
     </flux:modal>
+
+    {{-- Bulk Remove Student Modal --}}
+    <flux:modal name="bulkremove-student" :dismissible="false"
+        class="min-w-[22rem]">
+        <div class="space-y-6">
+            <div>
+                <flux:heading size="lg">Delete Selected?</flux:heading>
+                <flux:text class="mt-2">
+                    You are about to delete <span class="font-bold">{{ count($selected) }} students</span>.
+                </flux:text>
+            </div>
+            
+            <div class="flex gap-2">
+                <flux:spacer />
+                <flux:modal.close>
+                    <flux:button variant="ghost">Cancel</flux:button>
+                </flux:modal.close>
+                <flux:button wire:click="bulkDeleteProfileInformation" variant="danger">
+                    Delete
+                </flux:button>
+            </div>
+        </div>
+    </flux:modal>
+
 
     
 

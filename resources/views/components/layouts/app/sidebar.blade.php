@@ -51,24 +51,18 @@
             <flux:sidebar.item :href="route('about_kiroku')" :current="request()->routeIs('about_kiroku')" icon="information-circle" wire:navigate>
                 About Kiroku
             </flux:sidebar.item>
-
-            {{-- Log out button --}}
-            <form method="POST" action="{{ route('logout') }}" class="w-full">
-                @csrf
-                <flux:sidebar.item as="button" type="submit" icon="arrow-right-start-on-rectangle">
-                    Log Out
-                </flux:sidebar.item>
-            </form>
-
+        
         </flux:sidebar.nav>
 
     </flux:sidebar>
 
     {{ $slot }}
 
+    {{-- Sheaf UI Toast Notifications --}}
+    <x-ui.toast position="bottom-right" maxToasts="5" />
+
     @fluxScripts
 
-    
 </body>
 
 </html>
