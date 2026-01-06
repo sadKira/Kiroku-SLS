@@ -5,6 +5,28 @@
     @include('partials.head')
 </head>
 
+<script>
+
+    // Prevent Page Flickering at Render Time (SheafUI)
+    const loadDarkMode = () => {
+        const theme = localstorage.getItem('theme') ?? 'system'
+
+        if(
+            theme === 'dark' ||
+            (theme === 'system' &&
+                window.matchMedia('(prefers-color-scheme: dark)')
+                .matches)
+        ) {
+            document.documentElement.classList.add('dark')
+        }
+    }
+    loadDarkMode();
+    document.addEventListener('livewire:navigated', function () {
+        loadDarkMode();
+    });
+
+</script>
+
 <body class="min-h-screen bg-zinc-50 dark:bg-zinc-800">
     <flux:sidebar sticky collapsible class="border-e border-zinc-200 bg-white dark:border-zinc-700 dark:bg-zinc-900">
 
@@ -57,6 +79,11 @@
     </flux:sidebar>
 
     {{ $slot }}
+
+    {{-- @livewireScriptConfig --}}
+    <script>
+        loadDarkMode()
+    </script>
 
     {{-- Sheaf UI Toast Notifications --}}
     <x-ui.toast position="bottom-right" maxToasts="5" />
