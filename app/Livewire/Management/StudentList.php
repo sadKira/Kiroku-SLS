@@ -15,6 +15,7 @@ use Illuminate\Database\QueryException;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Exception;
 use Illuminate\Support\Facades\Log;
+use Spatie\Browsershot\Browsershot;
 
 #[Layout('components.layouts.app')]
 class StudentList extends Component

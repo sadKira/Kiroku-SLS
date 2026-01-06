@@ -17,21 +17,18 @@
     {{-- Upper Cards --}}
     <div class="flex items-center justify-between mb-5">
 
-        {{-- <x-ui.card size="xl" class="">
-
-            <div class="flex items-center gap-20">
-                <div class="flex items-center gap-2">
-                    <flux:icon.user-group />
-                    <flux:heading size="lg">Total Students</flux:heading>
-                </div>
-                <flux:heading size="xl">60%</flux:heading>
-            </div>
-
-        </x-ui.card> --}}
-
         <flux:heading size="xl">Student List</flux:heading>
 
-        <flux:button icon="plus" wire:click="addStudent">Add Students</flux:button>
+        <div class="flex items-center gap-1">
+            <flux:button icon="plus" wire:click="addStudent" variant="ghost">Add Students</flux:button>
+
+            <form method="POST" action="{{ route('export_barcode') }}">
+                @csrf
+                <flux:button icon="barcode" variant="filled" type="submit">
+                    Download Barcodes
+                </flux:button>
+            </form>
+        </div>
 
     </div>
 
@@ -78,7 +75,7 @@
     </flux:modal>
 
     {{-- Table --}}
-    <div class="flex flex-col bg-white dark:bg-zinc-800 border border-black/10 dark:border-white/10 [:where(&)]:p-4 [:where(&)]:rounded-lg">
+    <div class="flex flex-col bg-white dark:bg-zinc-900 border border-black/10 dark:border-white/10 [:where(&)]:p-4 [:where(&)]:rounded-lg">
 
         <div class="flex items-center justify-between mb-5">
 
@@ -125,13 +122,28 @@
                 </flux:dropdown>
                 
                 {{-- Filter Indicators --}}
+                {{-- Dynamic Filter Colors --}}
+
+                @php
+                    
+                    $yearLevelOutput = match(True) {
+                        $selectedYearLevel == 'Bachelor of Arts in International Studies' => '',
+                        $selectedYearLevel == 'Bachelor of Science in Information Systems' => '',
+                        $selectedYearLevel == 'Bachelor of Human Services' => '',
+                        $selectedYearLevel == 'Bachelor of Secondary Education' => '',
+                        $selectedYearLevel == 'Bachelor of Elementary Education' => '',
+                        $selectedYearLevel == 'Bachelor of Special Needs Education' => '',
+                        default => 'Course',
+                    }
+
+                @endphp
                 @if ($selectedYearLevel != 'All')
-                    <flux:badge>
+                    <flux:badge variant="solid" color="zinc">
                         {{ $selectedYearLevel }} <flux:badge.close wire:click="clearYearLevel" />
                     </flux:badge>
                 @endif
                 @if ($selectedCourse != 'All')
-                    <flux:badge>
+                    <flux:badge variant="solid" color="zinc">
                         {{ $selectedCourse }} <flux:badge.close wire:click="clearCourse" />
                     </flux:badge>
                 @endif
@@ -241,8 +253,8 @@
                                                 <td class="px-3 py-3 whitespace-nowrap text-end text-sm font-medium">
                                                     <div class="flex items-center justify-end">
                                                         
-                                                        <flux:link wire:click="editProfile({{ $student->id }})">Edit</flux:link>
-                                                        <flux:button wire:click="removeProfile({{  $student->id }})" icon="trash" variant="danger" size="sm" class="ml-5"></flux:button>
+                                                        <flux:link wire:click="editProfile({{ $student->id }})" class="cursor-pointer">Edit</flux:link>
+                                                        <flux:button wire:click="removeProfile({{  $student->id }})" icon="trash" variant="danger" size="sm" class="ml-5 cursor-pointer"></flux:button>
                                                         
                                                     </div>
                                                 </td>

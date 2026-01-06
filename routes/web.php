@@ -19,6 +19,7 @@ use App\Livewire\Management\AboutKiroku;
 
 use App\Livewire\Logger\LoggerDashboard;
 
+use App\Http\Controllers\management\ExportBarcode;
 
 // Admin Routes
 Route::middleware(['auth', 'admin'])->group(function () {
@@ -37,6 +38,7 @@ Route::middleware(['auth', 'admin'])->group(function () {
     Route::get('settings/password', Password::class)->name('user-password.edit');
     Route::get('settings/appearance', Appearance::class)->name('appearance.edit');
 
+    Route::post('/export-barcode', [ExportBarcode::class, 'generatePdf'])->name('export_barcode');
 });
 
 // Logger Routes
