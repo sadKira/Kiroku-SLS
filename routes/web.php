@@ -38,7 +38,7 @@ Route::middleware(['auth', 'admin'])->group(function () {
     Route::get('settings/password', Password::class)->name('user-password.edit');
     Route::get('settings/appearance', Appearance::class)->name('appearance.edit');
 
-    Route::post('/export-barcode', [ExportBarcode::class, 'generatePdf'])->name('export_barcode');
+    Route::get('/export-barcode', [ExportBarcode::class, 'generatePdf'])->name('export_barcode');
 });
 
 // Logger Routes

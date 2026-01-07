@@ -24,7 +24,7 @@ class StudentList extends Component
     use WithPagination;
 
     // User Details
-    public $student, $studentId, $full_name, $id_student, $year_level, $course;
+    public $student, $studentId, $last_name, $first_name, $id_student, $year_level, $course;
 
     public $search = '';
 
@@ -35,10 +35,22 @@ class StudentList extends Component
     // Multi Select
     public $selected = [];
 
+    // Paper Size for Export
+    public $paperSize = 'A4';
+
     // Clear Selected
     public function clearSelected()
     {
         $this->selected = [];
+    }
+
+    // Set Paper Size and Export
+    public function exportBarcodes($paperSize)
+    {
+        $this->paperSize = $paperSize;
+        
+        // Redirect to export route with paper size
+        return redirect()->route('export_barcode', ['paper_size' => $paperSize]);
     }
 
     public function updatingSearch()
@@ -80,7 +92,8 @@ class StudentList extends Component
     public function addStudent()
     {
         // Reset form fields
-        $this->full_name = '';
+        $this->last_name = '';
+        $this->first_name = '';
         $this->id_student = '';
         $this->year_level = '';
         $this->course = '';
@@ -96,31 +109,36 @@ class StudentList extends Component
         try {
             // Validate input
             $validated = $this->validate([
-                'full_name' => ['required', 'string', 'min:5','max:255', 'regex:/^[A-Za-z ,.\-]+$/', Rule::unique('students', 'full_name')],
+                'last_name' => ['required', 'string', 'max:255', 'regex:/^[A-Za-z ,.\-]+$/'],
+                'first_name' => ['required', 'string','max:255', 'regex:/^[A-Za-z ,.\-]+$/'],
                 'id_student' => ['required', 'string', 'min:7', Rule::unique('students', 'id_student')],
                 'year_level' => ['required', 'string'],
                 'course' => ['required', 'string'],
             ]);
 
-            // Format full name
-            $validated['full_name'] = Str::title(
-                Str::lower(
-                    preg_replace(
-                        '/,\s*/', ', ', // Normalize Comma Spacing
-                        preg_replace(
-                            ['/,{2,}/', '/\.{2,}/'], // Remove Consecutive Commas and Periods
-                            [',', '.'],
-                            trim($validated['full_name'])
-                        )
-                    )
-                )
-            );
+            // Validation
+            $formatName = static function (string $value): string {
+                return (string) Str::of($value)
+                    ->trim()
+                    ->replaceMatches('/,{2,}/', ',') // Remove Consecutive Commas and Periods
+                    ->replaceMatches('/\.{2,}/', '.')
+                    ->replaceMatches('/,\s*/', ', ') // Normalize Comma Spacing
+                    ->lower()
+                    ->title();
+            };
 
-            // Create student
+            foreach (['last_name', 'first_name'] as $field) {
+                if (isset($validated[$field]) && is_string($validated[$field])) {
+                    $validated[$field] = $formatName($validated[$field]);
+                }
+            }
+
+            // Create Student
             Student::create($validated);
 
             // Reset form fields
-            $this->full_name = '';
+            $this->last_name = '';
+            $this->first_name = '';
             $this->id_student = '';
             $this->year_level = '';
             $this->course = '';
@@ -176,7 +194,8 @@ class StudentList extends Component
 
     public function resetCreateForms(){
         // Reset form fields
-        $this->full_name = '';
+        $this->last_name = '';
+        $this->first_name = '';
         $this->id_student = '';
         $this->year_level = '';
         $this->course = '';
@@ -201,7 +220,8 @@ class StudentList extends Component
             }
 
             $this->studentId = $student->id;
-            $this->full_name = $student->full_name;
+            $this->last_name = $student->last_name;
+            $this->first_name = $student->first_name;
             $this->id_student = $student->id_student;
             $this->year_level = $student->year_level;
             $this->course = $student->course;
@@ -228,7 +248,8 @@ class StudentList extends Component
         try {
             // Validate input
             $validated = $this->validate([
-                'full_name' => ['string', 'min:5','max:255', 'regex:/^[A-Za-z ,.\-]+$/'],
+                'last_name' => ['string', 'max:255', 'regex:/^[A-Za-z ,.\-]+$/'],
+                'first_name' => ['string', 'max:255', 'regex:/^[A-Za-z ,.\-]+$/'],
                 'id_student' => ['string', 'min:7', Rule::unique('students', 'id_student')->ignore($this->studentId)],
                 'year_level' => ['string'],
                 'course' => ['string'],
@@ -237,19 +258,22 @@ class StudentList extends Component
             // Check if student exists
             $student = Student::findOrFail($this->studentId);
 
-            // Format full name
-            $validated['full_name'] = Str::title(
-                Str::lower(
-                    preg_replace(
-                        '/,\s*/', ', ', // Normalize Comma Spacing
-                        preg_replace(
-                            ['/,{2,}/', '/\.{2,}/'], // Remove Consecutive Commas and Periods
-                            [',', '.'],
-                            trim($validated['full_name'])
-                        )
-                    )
-                )
-            );
+            // Validation
+            $formatName = static function (string $value): string {
+                return (string) Str::of($value)
+                    ->trim()
+                    ->replaceMatches('/,{2,}/', ',') // Remove Consecutive Commas and Periods
+                    ->replaceMatches('/\.{2,}/', '.')
+                    ->replaceMatches('/,\s*/', ', ') // Normalize Comma Spacing
+                    ->lower()
+                    ->title();
+            };
+
+            foreach (['last_name', 'first_name'] as $field) {
+                if (isset($validated[$field]) && is_string($validated[$field])) {
+                    $validated[$field] = $formatName($validated[$field]);
+                }
+            }
 
             // Update student
             $student->update($validated);
@@ -319,7 +343,8 @@ class StudentList extends Component
         $student = Student::find($studentId);
         
         $this->studentId = $student->id;
-        $this->full_name = $student->full_name;
+        $this->last_name = $student->last_name;
+        $this->first_name = $student->first_name;
 
         Flux::modal('remove-student')->show();
     }
@@ -503,7 +528,7 @@ class StudentList extends Component
                 $q->where('course', $this->selectedCourse);
             })
             ->search($this->search)
-            ->orderBy('full_name');
+            ->orderBy('last_name');
 
         return view('livewire.management.student-list', [
             'students' => $query->paginate(10)

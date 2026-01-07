@@ -18,7 +18,8 @@ class StudentFactory extends Factory
     {
         return [
             'id_student' => str_pad(mt_rand(0, 9999999), 7, '0', STR_PAD_LEFT),
-            'full_name' => fake()->name(),
+            'last_name' => fake()->lastName(),
+            'first_name' => fake()->firstName(),
             'year_level' => fake()->randomElement([
                 '1st Year',
                 '2nd Year',

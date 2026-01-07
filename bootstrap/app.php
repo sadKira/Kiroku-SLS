@@ -30,6 +30,11 @@ return Application::configure(basePath: dirname(__DIR__))
             
         ]);
 
+        // Redirect guests (unauthenticated users) to the public home page
+        $middleware->redirectGuestsTo(function (Request $request) {
+            return route('home');
+        });
+
         // Redirect authenticated users away from guest routes (like login)
         $middleware->redirectUsersTo(function (Request $request) {
             $user = Auth::user();
