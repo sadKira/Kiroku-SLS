@@ -14,7 +14,7 @@
 
     </div>
 
-    {{-- Upper Cards --}}
+    {{-- Upper --}}
     <div class="flex items-center justify-between mb-5">
 
         <flux:heading size="xl">Student List</flux:heading>
@@ -22,12 +22,20 @@
         <div class="flex items-center gap-1">
             <flux:button icon="plus" wire:click="addStudent" variant="ghost">Add Students</flux:button>
 
-            <form method="POST" action="{{ route('export_barcode') }}">
-                @csrf
-                <flux:button icon="barcode" variant="filled" type="submit">
+            
+            <flux:dropdown>
+                <flux:button icon="arrow-down-tray" variant="filled">
                     Download Barcodes
                 </flux:button>
-            </form>
+
+                <flux:menu>
+                    <flux:menu.group heading="Paper Size">
+                        <flux:menu.item wire:click="exportBarcodes('A4')">A4</flux:menu.item>
+                        <flux:menu.item wire:click="exportBarcodes('Letter')">Letter</flux:menu.item>
+                        <flux:menu.item wire:click="exportBarcodes('Legal')">Legal</flux:menu.item>
+                    </flux:menu.group>
+                </flux:menu>
+            </flux:dropdown>
         </div>
 
     </div>
@@ -41,7 +49,9 @@
             </div>
 
             {{-- Name --}}
-            <flux:input wire:model.defer="full_name" type="text" label="Student Name" placeholder="Student Name" />
+            <flux:input wire:model.defer="last_name" type="text" label="Last Name" placeholder="Last Name" />
+
+            <flux:input wire:model.defer="first_name" type="text" label="First Name" placeholder="First Name" />
 
             {{-- Student ID --}}
             <flux:input wire:model.defer="id_student" type="text" label="Student ID" mask="9999999" placeholder="7-Digit ID" />
@@ -238,7 +248,7 @@
                                                 <flux:checkbox value="{{ $student->id }}" wire:model.live="selected" />
                                             </td>
                                             <td class="px-1 py-3 whitespace-nowrap text-sm font-medium text-gray-800 dark:text-neutral-200">
-                                                {{ $student->full_name }}
+                                                {{ $student->last_name }}, {{ $student->first_name }}
                                             </td>
                                             <td class="px-1 py-3 whitespace-nowrap text-sm text-gray-800 dark:text-neutral-200">
                                                 {{ $student->id_student }}
@@ -299,7 +309,9 @@
             </div>
 
             {{-- Name --}}
-            <flux:input wire:model.defer="full_name" type="text" label="Student Name" placeholder="Student Name" />
+            <flux:input wire:model.defer="last_name" type="text" label="Last Name" placeholder="Last Name" />
+
+            <flux:input wire:model.defer="first_name" type="text" label="First Name" placeholder="First Name" />
 
             {{-- Student ID --}}
             <flux:input wire:model.defer="id_student" type="text" label="Student ID" mask="9999999" placeholder="7-Digit ID" />
@@ -341,7 +353,7 @@
             <div>
                 <flux:heading size="lg">Delete Student?</flux:heading>
                 <flux:text class="mt-2">
-                    You are about to delete <span class="font-bold">{{ $full_name ?? '' }}</span>.
+                    You are about to delete <span class="font-bold">{{ $last_name ?? 'error' }}, {{ $first_name ?? 'error' }}</span>.
                 </flux:text>
             </div>
             

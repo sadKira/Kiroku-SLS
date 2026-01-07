@@ -30,9 +30,9 @@
 
 <body class="bg-white text-slate-900 antialiased p-4">
     <div class="text-center mb-4">
-        <flux:heading size="xl"><span class="font-bold">Kiroku ALS</span></flux:heading>
+        <flux:heading size="xl"><span class="font-bold">Kiroku Attendance Logging System</span></flux:heading>
         <div class="flex items-center gap-1 justify-center">
-            <flux:icon.barcode />
+            <flux:icon.user-group variant="mini" />
             <flux:heading size="lg"><span>Student Barcodes: {{ $students->count() }}</flux:heading>
         </div>
     </div>
@@ -40,7 +40,7 @@
     <div class="flex flex-wrap gap-3 justify-center">
         @foreach ($students as $student)
 
-            <x-ui.card size="sm" class="barcode-card p-3 text-center">
+            <x-ui.card size="sm" class="barcode-card p-3 text-center justify-center">
 
                 <div class="text-center">
                     @php
@@ -55,12 +55,15 @@
                             ->generate((string) $student->id_student);
                     @endphp
 
-                    {!! $barcodeSvg !!}
-
-                    <flux:heading class="truncate">{{ $student->full_name }}</flux:heading>
-                    <span class="block text-[9px] tracking-[0.06em]">{{ $student->id_student }}</span>
+                    <div class="flex justify-center">
+                        {!! $barcodeSvg !!}
+                    </div>
 
                 </div>
+
+                <flux:heading class="truncate mt-1">{{ $student->last_name }}, {{ $student->first_name }}</flux:heading>
+                <span class="block text-[9px] tracking-[0.06em]">{{ $student->id_student }}</span>
+
             </x-ui.card>
 
         @endforeach

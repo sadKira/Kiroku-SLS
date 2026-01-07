@@ -12,7 +12,8 @@ class Student extends Model
 
     protected $fillable = [
         'id_student',
-        'full_name',
+        'last_name',
+        'first_name',
         'year_level',
         'course',
     ];
@@ -52,7 +53,8 @@ class Student extends Model
         ];
 
         return $query->where(function ($q) use ($value, $courseMap) {
-            $q->where('full_name', 'like', "%{$value}%")
+            $q->where('last_name', 'like', "%{$value}%")
+                ->orWhere('first_name', 'like', "%{$value}%")
                 ->orWhere('year_level', 'like', "%{$value}%")
                 ->orWhere('id_student', 'like', "%{$value}%");
 

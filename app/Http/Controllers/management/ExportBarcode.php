@@ -9,8 +9,17 @@ use Spatie\Browsershot\Browsershot;
 
 class ExportBarcode extends Controller
 {
-    public function generatePdf()
+    public function generatePdf(Request $request)
     {
+        // Get paper size from request, default to A4
+        $paperSize = $request->input('paper_size', 'A4');
+        
+        // Validate paper size
+        $validPaperSizes = ['A4', 'Letter', 'Legal'];
+        if (!in_array($paperSize, $validPaperSizes)) {
+            $paperSize = 'A4'; // Fallback to A4 if invalid
+        }
+
         // Get all students ordered by their student ID for a predictable layout
         $students = Student::orderBy('id_student')->get();
 
@@ -21,7 +30,7 @@ class ExportBarcode extends Controller
 
         // Generate the PDF in memory and stream it to the browser
         $pdf = Browsershot::html($html)
-            ->format('A4')          // use a predefined paper size (see Spatie docs)
+            ->format($paperSize)    // use the selected paper size
             ->showBackground()      // ensure backgrounds are rendered
             ->margins(10, 10, 10, 10)
             ->scale(0.9)
@@ -29,7 +38,7 @@ class ExportBarcode extends Controller
 
         return response($pdf, 200, [
             'Content-Type' => 'application/pdf',
-            'Content-Disposition' => 'attachment; filename="student-barcodes.pdf"',
+            'Content-Disposition' => 'attachment; filename="student-barcodes-' . strtolower($paperSize) . '.pdf"',
         ]);
     }
 }
