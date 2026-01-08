@@ -76,8 +76,8 @@
 
             <div class="flex gap-2">
                 <flux:spacer />
-                <flux:button variant="ghost" wire:click="resetCreateForms">Cancel</flux:button>
-                <flux:button wire:click="addStudentInformation" variant="primary">
+                <flux:button variant="ghost" size="sm" wire:click="resetCreateForms">Cancel</flux:button>
+                <flux:button wire:click="addStudentInformation" variant="primary" size="sm">
                     Add
                 </flux:button>
             </div>

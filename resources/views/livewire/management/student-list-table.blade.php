@@ -68,7 +68,9 @@
 
                 <div class="flex items-center gap-2">
 
-                    <flux:button variant="primary" size="sm" icon="x-mark" wire:click="clearSelected">{{ count($selected) }} selected</flux:button>
+                    <flux:tooltip content="Clear Selected" position="bottom">
+                        <flux:button variant="primary" size="sm" icon="x-mark" wire:click="clearSelected">{{ count($selected) }} selected</flux:button>
+                    </flux:tooltip>
 
                     <flux:button size="sm" icon="trash" variant="danger" wire:click="bulkRemoveProfile">Delete</flux:button>
 
@@ -167,7 +169,34 @@
                                                     <div class="flex items-center justify-end">
                                                         
                                                         <flux:link wire:click="editProfile({{ $student->id }})" class="cursor-pointer">Edit</flux:link>
-                                                        <flux:button wire:click="removeProfile({{  $student->id }})" icon="trash" variant="danger" size="sm" class="ml-5 cursor-pointer"></flux:button>
+                                                        {{-- <flux:button wire:click="removeProfile({{  $student->id }})" icon="trash" variant="danger" size="sm" class="ml-5 cursor-pointer"></flux:button> --}}
+                                                        <div 
+                                                            x-data="{ isHovered: false }" 
+                                                            @mouseenter="isHovered = true" 
+                                                            @mouseleave="isHovered = false"
+                                                        >
+                                                            <!-- Outline variant shown by default -->
+                                                            <flux:tooltip content="Delete Student" position="top">
+                                                                <flux:icon.trash 
+                                                                    x-show="!isHovered" 
+                                                                    variant="outline" 
+                                                                    class="text-red-500 cursor-pointer ml-5" 
+                                                                    wire:click="removeProfile({{  $student->id }})"
+                                                                />
+                                                            </flux:tooltip>
+
+                                                            <!-- Solid variant shown only on hover -->
+                                                            <flux:tooltip content="Delete Student" position="top">
+                                                                <flux:icon.trash 
+                                                                    x-show="isHovered" 
+                                                                    variant="solid" 
+                                                                    class="text-red-500 cursor-pointer ml-5" 
+                                                                    x-cloak 
+                                                                    wire:click="removeProfile({{  $student->id }})"
+                                                                />
+                                                            </flux:tooltip>
+
+                                                        </div>
                                                         
                                                     </div>
                                                 </td>
@@ -175,7 +204,7 @@
                                                 <td class="px-3 py-3 whitespace-nowrap text-end text-sm font-medium">
                                                     <div class="flex items-center justify-end">
                                                         
-                                                        <flux:button icon="trash" variant="danger" size="sm" class="ml-5 opacity-0"></flux:button>
+                                                        <flux:link class="opacity-0 pointer-events-none">Edit</flux:link>
                                                         
                                                     </div>
                                                 </td>
@@ -193,7 +222,7 @@
                     @if ($students->hasPages())
                         
                         <div class="mt-4">
-                            {{ $students->links() }}
+                            {{ $students->links('pagination::tailwind') }}
                         </div>
 
                      @endif
@@ -240,9 +269,9 @@
             <div class="flex gap-2">
                 <flux:spacer />
                 <flux:modal.close>
-                    <flux:button variant="ghost">Cancel</flux:button>
+                    <flux:button variant="ghost" size="sm">Cancel</flux:button>
                 </flux:modal.close>
-                <flux:button wire:click="updateProfileInformation" variant="primary">
+                <flux:button wire:click="updateProfileInformation" variant="primary" size="sm">
                     Update
                 </flux:button>
             </div>
@@ -263,9 +292,9 @@
             <div class="flex gap-2">
                 <flux:spacer />
                 <flux:modal.close>
-                    <flux:button variant="ghost">Cancel</flux:button>
+                    <flux:button variant="ghost" size="sm">Cancel</flux:button>
                 </flux:modal.close>
-                <flux:button wire:click="deleteProfileInformation" variant="danger">
+                <flux:button wire:click="deleteProfileInformation" variant="danger" size="sm">
                     Delete
                 </flux:button>
             </div>
@@ -286,9 +315,9 @@
             <div class="flex gap-2">
                 <flux:spacer />
                 <flux:modal.close>
-                    <flux:button variant="ghost">Cancel</flux:button>
+                    <flux:button variant="ghost" size="sm">Cancel</flux:button>
                 </flux:modal.close>
-                <flux:button wire:click="bulkDeleteProfileInformation" variant="danger">
+                <flux:button wire:click="bulkDeleteProfileInformation" variant="danger" size="sm">
                     Delete
                 </flux:button>
             </div>
