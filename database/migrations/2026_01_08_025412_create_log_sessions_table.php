@@ -11,11 +11,10 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('attendance_sessions', function (Blueprint $table) {
+        Schema::create('log_sessions', function (Blueprint $table) {
             $table->id();
             $table->date('date');
             $table->string('school_year');
-
             $table->timestamps();
         });
     }
@@ -25,6 +24,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('attendance_sessions');
+        Schema::dropIfExists('log_sessions');
     }
 };

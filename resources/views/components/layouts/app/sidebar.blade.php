@@ -32,7 +32,7 @@
 
         <flux:sidebar.header>
 
-            <flux:sidebar.brand :href="route('admin_dashboard')" name="Kiroku ALS">
+            <flux:sidebar.brand :href="route('admin_dashboard')" name="Kiroku SLS">
                 <x-slot>
                     <img src="{{ asset('mkdlib-logo.svg') }}" alt="MKD Library Logo" class="w-auto h-5">
                 </x-slot>
@@ -51,18 +51,17 @@
                 Student List
             </flux:sidebar.item>
 
-            <flux:sidebar.group expandable icon="document-chart-bar" heading="Records" class="grid">
-                <flux:sidebar.item :href="route('hourly_record')" :current="request()->routeIs('hourly_record')"  wire:navigate>Hourly Record</flux:sidebar.item>
-                <flux:sidebar.item :href="route('daily_record')" :current="request()->routeIs('daily_record')"  wire:navigate>Daily Record</flux:sidebar.item>
-                <flux:sidebar.item :href="route('monthly_record')" :current="request()->routeIs('monthly_record')"  wire:navigate>Monthly Record</flux:sidebar.item>
-                <flux:sidebar.item :href="route('semestral_record')" :current="request()->routeIs('semestral_record')"  wire:navigate>Semestral Record</flux:sidebar.item>
-            </flux:sidebar.group>
+            <flux:sidebar.item icon="document-text" :href="route('student_logs')" :current="request()->routeIs('student_logs')"  wire:navigate>
+                Student Logs
+            </flux:sidebar.item>
 
             @can('SA')
-                <flux:sidebar.item :href="url('/system-logs')" icon="folder-git-2" target="_blank">
-                    System Logs
-                </flux:sidebar.item>
-            @endcan
+                <flux:sidebar.group expandable icon="shield-check" heading="Super Administrator">
+                    <flux:sidebar.item :href="url('/system-logs')" icon="folder-git-2" target="_blank">
+                        System Logs
+                    </flux:sidebar.item>
+                </flux:sidebar.group>
+                @endcan
 
         </flux:sidebar.nav>
 

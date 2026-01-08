@@ -4,11 +4,19 @@
             "dark-theme"
         ]
     },
-    "helpers": [],
+    "helpers": {
+        "popup": [
+            "select"
+        ]
+    },
     "internalDependencies": {
         "icon": [
             "button",
-            "breadcrumbs"
+            "breadcrumbs",
+            "select"
+        ],
+        "text": [
+            "select"
         ]
     }
 }
