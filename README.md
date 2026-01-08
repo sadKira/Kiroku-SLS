@@ -1,4 +1,4 @@
-## Kiroku ALS (Attendance Logging System)
+## Kiroku SLS (Student Logging System)
 
 On-the-job training project for Mindanao Kokusai Daigaku (MKD) to streamline library entry/exit logging through barcode scanning. Built on the TALL stack for a responsive, real-time experience tailored to MKD librarians and students.
 
@@ -38,4 +38,4 @@ On-the-job training project for Mindanao Kokusai Daigaku (MKD) to streamline lib
 
 ### License & Acknowledgements
 - License: To be defined by project owners.
-- Acknowledgements: Mindanao Kokusai Daigaku library staff, OJT mentors, and contributors to the Kiroku ALS initiative.
+- Acknowledgements: Mindanao Kokusai Daigaku library staff, OJT mentors, and contributors to the Kiroku SLS initiative.

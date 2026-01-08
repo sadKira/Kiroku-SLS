@@ -1,25 +1,15 @@
 <div>
-    <div class="">
+     {{-- App Header --}}
+    <div class="flex items-center justify-between mb-10">
 
-        {{-- App Header --}}
-        <div class="flex items-center justify-between">
+        {{-- Breadcrumbs --}}
+        <x-ui.breadcrumbs>
+            <x-ui.breadcrumbs.item href="{{ route('home') }}">Home</x-ui.breadcrumbs.item>
+            <x-ui.breadcrumbs.item href="{{ route('admin_dashboard') }}">Dashboard</x-ui.breadcrumbs.item>
+        </x-ui.breadcrumbs>
 
-            {{-- Heading --}}
-            <div class="flex items-center justify-between">
-                <flux:heading size="xl">Dashboard</flux:heading>
-            </div>
-
-            {{-- Profile Section --}}
-            <x-management.profile-section />
-
-        </div>
-
-
-
-
-
+        {{-- Profile Section --}}
+        <x-management.profile-section />
 
     </div>
-
-
 </div>

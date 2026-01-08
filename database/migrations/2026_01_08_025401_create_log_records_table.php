@@ -11,10 +11,10 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('attendance_records', function (Blueprint $table) {
+        Schema::create('log_records', function (Blueprint $table) {
             $table->id();
             $table->foreignId('student_id')->nullable()->constrained()->nullOnDelete();
-            $table->foreignId('attendance_session_id')->nullable()->constrained()->nullOnDelete();
+            $table->foreignId('log_session_id')->nullable()->constrained()->nullOnDelete();
             $table->timestamp('time_in')->nullable();
             $table->timestamp('time_out')->nullable();
 
@@ -27,6 +27,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('attendance_records');
+        Schema::dropIfExists('log_records');
     }
 };

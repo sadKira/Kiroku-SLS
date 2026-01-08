@@ -5,14 +5,14 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class AttendanceRecord extends Model
+class LogRecord extends Model
 {
-    /** @use HasFactory<\Database\Factories\AttendanceRecordFactory> */
+    /** @use HasFactory<\Database\Factories\LogRecordFactory> */
     use HasFactory;
 
     protected $fillable = [
         'student_id',
-        'attendance_session_id',
+        'log_session_id',
         'time_in',
         'time_out',
     ];
@@ -20,9 +20,9 @@ class AttendanceRecord extends Model
     // Table Relationships
 
     // Many is to One
-    public function attendanceSessions()
+    public function logSessions()
     {
-        return $this->belongsTo(AttendanceSession::class);
+        return $this->belongsTo(LogSession::class);
     }
 
     // Many is to One
@@ -30,6 +30,4 @@ class AttendanceRecord extends Model
     {
         return $this->belongsTo(Student::class);
     }
-
-   
 }

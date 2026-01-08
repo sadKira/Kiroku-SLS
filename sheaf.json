@@ -18,6 +18,15 @@
         },
         "toast": {
             "installationTime": 1767595281
+        },
+        "select": {
+            "installationTime": 1767856183
+        },
+        "popup": {
+            "installationTime": 1767856183
+        },
+        "text": {
+            "installationTime": 1767856195
         }
     }
 }
