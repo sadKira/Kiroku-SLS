@@ -33,9 +33,9 @@
 
             </div>
 
-            {{-- Search Students --}}
+            {{-- Add Logs --}}
             <flux:skeleton.group animate="shimmer">
-                <flux:skeleton.line class="w-50 h-8" />
+                <flux:skeleton.line class="w-30 h-8" />
             </flux:skeleton.group>
 
         </div>

@@ -3,8 +3,9 @@
 namespace App\Livewire\Management;
 
 use Livewire\Component;
-use App\Models\LogSession;
+use Livewire\Attributes\Layout;
 
+#[Layout('components.layouts.app')]
 class StudentLogs extends Component
 {
     public function render()
