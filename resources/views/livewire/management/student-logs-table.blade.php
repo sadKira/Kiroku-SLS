@@ -84,13 +84,13 @@
                         <thead>
                             <tr>
                                 <th scope="col"
-                                    class="px-3 py-1 text-start text-sm font-medium text-gray-500 dark:text-neutral-500">
+                                    class="px-4 py-1 text-start text-sm font-medium text-gray-500 dark:text-neutral-500">
                                     Log</th>
                                 <th scope="col"
-                                    class="px-3 py-1 text-start text-sm font-medium text-gray-500 dark:text-neutral-500">
+                                    class="px-4 py-1 text-start text-sm font-medium text-gray-500 dark:text-neutral-500">
                                     Academic Year</th>
                                 <th scope="col"
-                                    class="px-3 py-1 text-end text-sm font-medium text-gray-500 dark:text-neutral-500">
+                                    class="px-4 py-1 text-end text-sm font-medium text-gray-500 dark:text-neutral-500">
                                 </th>
                             </tr>
                         </thead>
@@ -113,15 +113,15 @@
                                 <tr class="bg-white dark:bg-zinc-900 hover:bg-gray-100 dark:hover:bg-neutral-700">
 
                                     <td
-                                        class="px-3 py-4 whitespace-nowrap text-sm font-medium text-gray-800 dark:text-neutral-200 border-t border-b border-black/10 dark:border-white/10 border-l rounded-l-lg">
+                                        class="px-4 py-4 whitespace-nowrap text-sm font-medium text-gray-800 dark:text-neutral-200 border-t border-b border-black/10 dark:border-white/10 border-l rounded-l-lg">
                                         {{ \Carbon\Carbon::parse($logSession->date)->format('l, F j, Y') }}
                                     </td>
                                     <td
-                                        class="px-3 py-4 whitespace-nowrap text-sm text-gray-800 dark:text-neutral-200 border-t border-b border-black/10 dark:border-white/10">
+                                        class="px-4 py-4 whitespace-nowrap text-sm text-gray-800 dark:text-neutral-200 border-t border-b border-black/10 dark:border-white/10">
                                         {{ $logSession->school_year }}
                                     </td>
                                     <td
-                                        class="px-3 py-4 whitespace-nowrap text-end text-sm font-medium border-t border-b border-black/10 dark:border-white/10 border-r rounded-r-lg">
+                                        class="px-4 py-4 whitespace-nowrap text-end text-sm font-medium border-t border-b border-black/10 dark:border-white/10 border-r rounded-r-lg">
                                         <div class="flex items-center justify-end">
                                             <div class="flex items-center gap-1">
                                                 
@@ -139,6 +139,33 @@
                                                     <flux:button wire:click="" icon="arrow-down-tray" variant="ghost"
                                                         size="sm" class="cursor-pointer" />
                                                 </flux:tooltip>
+
+                                                <div 
+                                                    x-data="{ isHovered: false }" 
+                                                    @mouseenter="isHovered = true" 
+                                                    @mouseleave="isHovered = false"
+                                                    >
+                                                    <!-- Outline variant shown by default -->
+                                                    <flux:tooltip content="Delete Log" position="top">
+                                                        <flux:icon.trash 
+                                                            x-show="!isHovered" 
+                                                            variant="outline" 
+                                                            class="text-red-500 cursor-pointer ml-3" 
+                                                        />
+                                                    </flux:tooltip>
+
+                                                    <!-- Solid variant shown only on hover -->
+                                                    <flux:tooltip content="Delete Student" position="top">
+                                                        <flux:icon.trash 
+                                                            x-show="isHovered" 
+                                                            variant="solid" 
+                                                            class="text-red-500 cursor-pointer ml-3" 
+                                                            x-cloak 
+                                                            wire:click="removeLogSession({{ $logSession->id }})"
+                                                        />
+                                                    </flux:tooltip>
+
+                                                </div>
                                             </div>
 
                                         </div>
@@ -233,6 +260,33 @@
         </div>
     </flux:modal>
 
+        {{-- Delete Log Session Modal --}}
+    <flux:modal name="remove-log-session" :dismissible="false"
+        class="min-w-[22rem]">
+        <div class="space-y-6">
+            <div>
+                <flux:heading size="lg">Delete Log Session?</flux:heading>
+                <flux:text class="mt-2">
+                    You are about to delete the log session for 
+                </flux:text>
+                <flux:text class="">
+                    <span class="font-bold">{{ $logSessionDate ?? 'error' }}</span> ({{ $logSessionSchoolYear ?? 'error' }}).
+                </flux:text>
+            </div>
+            
+            <div class="flex gap-2">
+                <flux:spacer />
+                <flux:modal.close>
+                    <flux:button variant="ghost" size="sm">Cancel</flux:button>
+                </flux:modal.close>
+                <flux:button wire:click="deleteLogSessionInformation" variant="danger" size="sm">
+                    Delete
+                </flux:button>
+            </div>
+        </div>
+    </flux:modal>
+
+    {{-- View Logs Modal --}}
     <flux:modal name="view-logs" flyout variant="floating" position="right" class="md:w-xl w-4xl">
         <div class="space-y-6">
             
@@ -248,7 +302,7 @@
                         </p>
                     </div>
 
-                    @if (collect($selectedLogRecords)->isNotEmpty())
+                    @if ($this->selectedLogRecords->isNotEmpty())
                         <div class="mt-2 space-y-2
                             overflow-y-auto
                             {{-- max-h-100 --}}
@@ -260,7 +314,7 @@
                             dark:[&::-webkit-scrollbar-track]:bg-neutral-700
                             dark:[&::-webkit-scrollbar-thumb]:bg-neutral-500
                         ">
-                            @foreach ($selectedLogRecords as $record)
+                            @foreach ($this->selectedLogRecords as $record)
                                 <div
                                     class="mr-2 flex items-center justify-between gap-4 rounded-lg border border-black/10 dark:border-white/10 px-3 py-2 text-sm bg-white/60 dark:bg-zinc-900/70">
                                     <div class="space-y-0.5">

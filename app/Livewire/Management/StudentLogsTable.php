@@ -16,16 +16,18 @@ use Illuminate\Database\QueryException;
 use Exception;
 use Illuminate\Support\Facades\Log;
 use Carbon\Carbon;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 
 #[Lazy]
 class StudentLogsTable extends Component
 {
     use WithPagination;
 
-    public $date, $start_year, $end_year, $school_year;
+    public $date, $start_year, $end_year, $school_year, $logSessionId, $logSessionDate, $logSessionSchoolYear;
+
 
     public ?LogSession $selectedLogSession = null;
-    public $selectedLogRecords = [];
+    public $selectedLogSessionId = null;
 
     // Filter properties
     public $filterMonth = '';
@@ -184,6 +186,7 @@ class StudentLogsTable extends Component
         }
     }
 
+
     public function resetCreateForms()
     {
         // Reset form fields
@@ -235,16 +238,147 @@ class StudentLogsTable extends Component
             ->toArray();
     }
 
+    // Computed property for selected log records with eager loading
+    public function getSelectedLogRecordsProperty()
+    {
+        if (!$this->selectedLogSessionId) {
+            return collect();
+        }
+
+        return LogRecord::with('student')
+            ->where('log_session_id', $this->selectedLogSessionId)
+            ->orderBy('time_in')
+            ->get();
+    }
+
     // View Logs 
     public function viewLogs($logSessionId)
     {
         $this->selectedLogSession = LogSession::findOrFail($logSessionId);
-        $this->selectedLogRecords = LogRecord::with('student')
-            ->where('log_session_id', $logSessionId)
-            ->orderBy('time_in')
-            ->get();
+        $this->selectedLogSessionId = $logSessionId;
 
         Flux::modal('view-logs')->show();
+    }
+
+    // Remove Log Session
+    public function removeLogSession($logSessionId)
+    {
+        try {
+            $logSession = LogSession::find($logSessionId);
+
+            if (!$logSession) {
+                $this->dispatch('notify',
+                    type: 'error',
+                    content: 'Log session not found. Please refresh the page and try again.',
+                    duration: 5000
+                );
+                return;
+            }
+
+            $this->logSessionId = $logSession->id;
+            $this->logSessionDate = Carbon::parse($logSession->date)->format('l, F j, Y');
+            $this->logSessionSchoolYear = $logSession->school_year;
+
+            Flux::modal('remove-log-session')->show();
+
+        } catch (Exception $e) {
+            Log::error('Error loading log session for delete', [
+                'log_session_id' => $logSessionId,
+                'error' => $e->getMessage()
+            ]);
+
+            $this->dispatch('notify',
+                type: 'error',
+                content: 'Unable to load log session details. Please try again.',
+                duration: 5000
+            );
+        }
+    }
+
+    // Delete Log Session
+    public function deleteLogSessionInformation()
+    {
+        try {
+            // Check if log session exists
+            $logSession = LogSession::findOrFail($this->logSessionId);
+
+            // Delete log session (this will cascade delete log records if foreign key constraints are set up)
+            $logSession->delete();
+
+            // Reset properties
+            $this->logSessionId = null;
+            $this->logSessionDate = null;
+            $this->logSessionSchoolYear = null;
+
+            // Close Modal
+            Flux::modals()->close();
+
+            // Success Toast
+            $this->dispatch('notify',
+                type: 'success',
+                content: 'Log session deleted successfully.',
+                duration: 5000
+            );
+
+        } catch (ModelNotFoundException $e) {
+            // Handle model not found
+            Flux::modals()->close();
+            
+            // Reset properties
+            $this->logSessionId = null;
+            $this->logSessionDate = null;
+            $this->logSessionSchoolYear = null;
+
+            $this->dispatch('notify',
+                type: 'error',
+                content: 'Log session not found. It may have already been deleted.',
+                duration: 5000
+            );
+        } catch (QueryException $e) {
+            // Handle database errors
+            Flux::modals()->close();
+            
+            // Reset properties
+            $this->logSessionId = null;
+            $this->logSessionDate = null;
+            $this->logSessionSchoolYear = null;
+            
+            // Check for foreign key constraint violations
+            if ($e->getCode() == 23000) {
+                $this->dispatch('notify',
+                    type: 'error',
+                    content: 'Unable to delete log session. The session may have associated log records that need to be removed first.',
+                    duration: 5000
+                );
+            } else {
+                $this->dispatch('notify',
+                    type: 'error',
+                    content: 'Database error occurred. Please try again later.',
+                    duration: 5000
+                );
+            }
+        } catch (Exception $e) {
+            // Handle any other unexpected errors
+            Flux::modals()->close();
+            
+            // Reset properties
+            $this->logSessionId = null;
+            $this->logSessionDate = null;
+            $this->logSessionSchoolYear = null;
+            
+            // Log the error for debugging
+            Log::error('Error deleting log session', [
+                'log_session_id' => $this->logSessionId,
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
+
+            $this->dispatch('notify',
+                type: 'error',
+                content: 'An unexpected error occurred. Please try again or contact support if the problem persists.',
+                duration: 5000
+            );
+        }
     }
 
     public function placeholder()

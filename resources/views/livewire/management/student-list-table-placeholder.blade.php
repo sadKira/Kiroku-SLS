@@ -6,9 +6,8 @@
             {{-- Filter Placeholder --}}
             <div class="flex items-center gap-3">
                 <div class="flex items-center gap-2 text-nowrap">
-                    <flux:heading>Filter:</flux:heading>
                     <flux:skeleton.group animate="shimmer">
-                        <flux:skeleton.line class="w-10 h-8" />
+                        <flux:skeleton.line class="w-20 h-8" />
                     </flux:skeleton.group>
                 </div>
             </div>

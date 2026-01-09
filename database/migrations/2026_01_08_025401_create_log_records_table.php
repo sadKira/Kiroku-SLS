@@ -13,8 +13,8 @@ return new class extends Migration
     {
         Schema::create('log_records', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('student_id')->nullable()->constrained()->nullOnDelete();
-            $table->foreignId('log_session_id')->nullable()->constrained()->nullOnDelete();
+            $table->foreignId('student_id')->nullable()->constrained()->cascadeOnDelete();
+            $table->foreignId('log_session_id')->nullable()->constrained()->cascadeOnDelete();
             $table->timestamp('time_in')->nullable();
             $table->timestamp('time_out')->nullable();
 
