@@ -18,9 +18,6 @@
 
         <flux:heading size="lg" class="font-bold">Student Logs</flux:heading>
 
-        {{-- Add Log --}}
-        <flux:button icon="plus" wire:click="" variant="primary" size="sm">Add Log</flux:button>
-
     </div>
 
     {{-- Table --}}
