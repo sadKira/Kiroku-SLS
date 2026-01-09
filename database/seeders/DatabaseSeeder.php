@@ -3,6 +3,7 @@
 namespace Database\Seeders;
 
 use App\Models\User;
+use Database\Factories\LogSessionFactory;
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
@@ -18,6 +19,9 @@ class DatabaseSeeder extends Seeder
             AdminSeeder::class,
             LoggerSeeder::class,
             StudentSeeder::class,
+
+            LogSessionSeeder::class,
+            LogRecordSeeder::class,
         ]);
        
     }

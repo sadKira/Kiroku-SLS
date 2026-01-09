@@ -26,8 +26,8 @@ class LogRecord extends Model
     }
 
     // Many is to One
-    public function students()
+    public function student()
     {
-        return $this->belongsTo(Student::class);
+        return $this->belongsTo(Student::class, 'student_id');
     }
 }

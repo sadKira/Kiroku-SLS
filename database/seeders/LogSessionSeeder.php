@@ -4,6 +4,7 @@ namespace Database\Seeders;
 
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
+use App\Models\LogSession;
 
 class LogSessionSeeder extends Seeder
 {
@@ -12,6 +13,6 @@ class LogSessionSeeder extends Seeder
      */
     public function run(): void
     {
-        //
+        LogSession::factory(1)->create();
     }
 }

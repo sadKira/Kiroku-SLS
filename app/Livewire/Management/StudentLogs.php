@@ -9,7 +9,6 @@ class StudentLogs extends Component
 {
     public function render()
     {
-        // $logs = LogSession::all()
         return view('livewire.management.student-logs');
     }
 }
