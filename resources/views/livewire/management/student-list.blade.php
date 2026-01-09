@@ -5,7 +5,7 @@
 
         {{-- Breadcrumbs --}}
         <x-ui.breadcrumbs>
-            <x-ui.breadcrumbs.item href="{{ route('home') }}">Home</x-ui.breadcrumbs.item>
+            <x-ui.breadcrumbs.item>Kiroku</x-ui.breadcrumbs.item>
             <x-ui.breadcrumbs.item href="{{ route('student_list') }}">Students List</x-ui.breadcrumbs.item>
         </x-ui.breadcrumbs>
 
@@ -84,7 +84,7 @@
         </div>
     </flux:modal>
 
-    {{-- Lazy Loaded Table --}}
+    {{-- Table --}}
     <livewire:management.student-list-table />
 
 

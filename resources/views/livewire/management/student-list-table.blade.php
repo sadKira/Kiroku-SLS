@@ -79,7 +79,7 @@
             @else
 
                 {{-- Search Students --}}
-                <flux:input size="sm" icon="magnifying-glass" placeholder="Search students" class="max-w-100" wire:model.live.debounce.300ms="search" autocomplete="off" clearable />
+                <flux:input size="sm" icon="magnifying-glass" placeholder="Search student" class="max-w-100" wire:model.live.debounce.300ms="search" autocomplete="off" clearable />
 
             @endif
             

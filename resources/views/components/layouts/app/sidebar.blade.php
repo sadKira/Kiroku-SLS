@@ -3,30 +3,6 @@
 
 <head>
     @include('partials.head')
-
-    <script>
-        // Load dark mode before page renders to prevent flicker
-        const loadDarkMode = () => {
-            const theme = localStorage.getItem('theme') ?? 'system'
-            
-            if (
-                theme === 'dark' ||
-                (theme === 'system' &&
-                    window.matchMedia('(prefers-color-scheme: dark)')
-                    .matches)
-            ) {
-                document.documentElement.classList.add('dark')
-            }
-        }
-                
-        // Initialize on page load
-        loadDarkMode();
-        
-        // Reinitialize after Livewire navigation (for spa mode)
-        document.addEventListener('livewire:navigated', function() {
-            loadDarkMode();
-        });
-    </script>
 </head>
 
 <body class="min-h-screen bg-zinc-50 dark:bg-zinc-800">
@@ -63,27 +39,29 @@
                         System Logs
                     </flux:sidebar.item>
                 </flux:sidebar.group>
-                @endcan
-
-        </flux:sidebar.nav>
-
-        <flux:sidebar.spacer />
-
-        <flux:sidebar.nav>
+            @endcan
 
             <flux:sidebar.item :href="route('about_kiroku')" :current="request()->routeIs('about_kiroku')" icon="information-circle" wire:navigate>
                 About Kiroku
             </flux:sidebar.item>
+
+        </flux:sidebar.nav>
+
+        <flux:sidebar.spacer />
+        
+        <flux:sidebar.nav>
+
+            <flux:radio.group x-data variant="segmented" x-model="$flux.appearance">
+                <flux:radio value="light" icon="sun" />
+                <flux:radio value="dark" icon="moon" />
+                <flux:radio value="system" icon="computer-desktop" />
+            </flux:radio.group>
         
         </flux:sidebar.nav>
 
     </flux:sidebar>
 
     {{ $slot }}
-
-    <script>
-        loadDarkMode()
-    </script>
 
     {{-- Sheaf UI Toast Notifications --}}
     <x-ui.toast position="bottom-right" maxToasts="5" />

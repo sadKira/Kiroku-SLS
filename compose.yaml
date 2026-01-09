@@ -41,9 +41,6 @@ services:
       - ./:/var/www
     networks:
       - laravel-development
-    depends_on:
-      postgres:
-        condition: service_started # Wait for postgres to start
 
   workspace:
     # For the workspace service, we will also create a custom image to install and setup all the necessary stuff.
@@ -67,6 +64,20 @@ services:
       - ./:/var/www
     networks:
       - laravel-development
+
+  postgres:
+    image: postgres:18
+    ports:
+      - "${POSTGRES_PORT:-5432}:5432"
+    environment:
+      - POSTGRES_DB=app
+      - POSTGRES_USER=laravel
+      - POSTGRES_PASSWORD=secret
+    volumes:
+      - postgres-data-development:/var/lib/postgresql
+    networks:
+      - laravel-development
+
 
 networks:
   laravel-development:
