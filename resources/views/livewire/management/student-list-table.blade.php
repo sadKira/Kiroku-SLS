@@ -8,9 +8,8 @@
             <div class="flex items-center gap-3">
 
                 <div class="flex items-center gap-2 text-nowrap">
-                    <flux:heading>Filter:</flux:heading>
                     <flux:dropdown>
-                        <flux:button variant="filled" icon="adjustments-horizontal" size="sm"></flux:button>
+                        <flux:button variant="filled" icon="adjustments-horizontal" size="sm">Filter</flux:button>
 
                         <flux:menu>
 
@@ -169,7 +168,6 @@
                                                     <div class="flex items-center justify-end">
                                                         
                                                         <flux:link wire:click="editProfile({{ $student->id }})" class="cursor-pointer">Edit</flux:link>
-                                                        {{-- <flux:button wire:click="removeProfile({{  $student->id }})" icon="trash" variant="danger" size="sm" class="ml-5 cursor-pointer"></flux:button> --}}
                                                         <div 
                                                             x-data="{ isHovered: false }" 
                                                             @mouseenter="isHovered = true" 
@@ -181,7 +179,6 @@
                                                                     x-show="!isHovered" 
                                                                     variant="outline" 
                                                                     class="text-red-500 cursor-pointer ml-5" 
-                                                                    wire:click="removeProfile({{  $student->id }})"
                                                                 />
                                                             </flux:tooltip>
 

@@ -48,13 +48,13 @@
                         <thead>
                             <tr>
                                 <th scope="col"
-                                    class="px-3 py-1 text-start text-sm font-medium text-gray-500 dark:text-neutral-500">
+                                    class="px-4 py-1 text-start text-sm font-medium text-gray-500 dark:text-neutral-500">
                                     Log</th>
                                 <th scope="col"
-                                    class="px-3 py-1 text-start text-sm font-medium text-gray-500 dark:text-neutral-500">
+                                    class="px-4 py-1 text-start text-sm font-medium text-gray-500 dark:text-neutral-500">
                                     Academic Year</th>
                                 <th scope="col"
-                                    class="px-3 py-1 text-end text-sm font-medium text-gray-500 dark:text-neutral-500">
+                                    class="px-4 py-1 text-end text-sm font-medium text-gray-500 dark:text-neutral-500">
                                 </th>
                             </tr>
                         </thead>
@@ -63,20 +63,20 @@
                             @for($i = 0; $i < 5; $i++)
                                 <tr class="bg-white dark:bg-zinc-900">
 
-                                    <td class="px-3 py-4 border-t border-b border-black/10 dark:border-white/10 border-l rounded-l-lg">
+                                    <td class="px-4 py-4 border-t border-b border-black/10 dark:border-white/10 border-l rounded-l-lg">
                                         <flux:skeleton.group animate="shimmer">
                                             <flux:skeleton.line />
                                         </flux:skeleton.group>
                                     </td>
 
-                                    <td class="px-3 py-4 border-t border-b border-black/10 dark:border-white/10">
+                                    <td class="px-4 py-4 border-t border-b border-black/10 dark:border-white/10">
                                         <flux:skeleton.group animate="shimmer">
                                             <flux:skeleton.line />
                                         </flux:skeleton.group>
                                     </td>
 
                                     <td
-                                        class="px-3 py-4 border-t border-b border-black/10 dark:border-white/10 border-r rounded-r-lg">
+                                        class="px-4 py-4 border-t border-b border-black/10 dark:border-white/10 border-r rounded-r-lg">
                                         <div class="flex items-center justify-end">
                                             <div class="flex items-center gap-1">
                                                 <flux:skeleton.group animate="shimmer">
