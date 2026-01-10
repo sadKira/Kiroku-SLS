@@ -125,20 +125,54 @@
                                         <div class="flex items-center justify-end">
                                             <div class="flex items-center gap-1">
                                                 
-                                                <flux:button
-                                                    icon="eye"
-                                                    variant="ghost"
-                                                    size="sm"
-                                                    class="cursor-pointer"
-                                                    wire:click="viewLogs({{ $logSession->id }})"
-                                                >
-                                                    View
-                                                </flux:button>
+                                                @if ($logSession->log_records_count > 0)
+                                                    <div wire:key="view-button-{{ $logSession->id }}">
+                                                        <flux:button
+                                                            icon="eye"
+                                                            variant="ghost"
+                                                            size="sm"
+                                                            class="cursor-pointer"
+                                                            wire:click="viewLogs({{ $logSession->id }})"
+                                                            wire:target="viewLogs({{ $logSession->id }})"
+                                                        >
+                                                            View
+                                                        </flux:button>
+                                                    </div>
 
-                                                <flux:tooltip content="Download Log" position="top">
-                                                    <flux:button wire:click="" icon="arrow-down-tray" variant="ghost"
-                                                        size="sm" class="cursor-pointer" />
-                                                </flux:tooltip>
+                                                    <div wire:key="export-dropdown-{{ $logSession->id }}">
+                                                        <flux:dropdown>
+                                                            <flux:button 
+                                                                icon="arrow-down-tray" 
+                                                                variant="ghost"
+                                                                size="sm" 
+                                                                class="cursor-pointer"
+                                                            />
+
+                                                            <flux:menu>
+                                                                <flux:menu.group heading="Paper Size">
+                                                                    <flux:menu.item 
+                                                                        wire:click="exportStudentLogs({{ $logSession->id }}, 'A4')"
+                                                                        wire:target="exportStudentLogs({{ $logSession->id }}, 'A4')"
+                                                                    >
+                                                                        A4
+                                                                    </flux:menu.item>
+                                                                    <flux:menu.item 
+                                                                        wire:click="exportStudentLogs({{ $logSession->id }}, 'Letter')"
+                                                                        wire:target="exportStudentLogs({{ $logSession->id }}, 'Letter')"
+                                                                    >
+                                                                        Letter
+                                                                    </flux:menu.item>
+                                                                    <flux:menu.item 
+                                                                        wire:click="exportStudentLogs({{ $logSession->id }}, 'Legal')"
+                                                                        wire:target="exportStudentLogs({{ $logSession->id }}, 'Legal')"
+                                                                    >
+                                                                        Legal
+                                                                    </flux:menu.item>
+                                                                </flux:menu.group>
+                                                            </flux:menu>
+                                                        </flux:dropdown>
+                                                    </div>
+                                                @endif
 
                                                 <div 
                                                     x-data="{ isHovered: false }" 

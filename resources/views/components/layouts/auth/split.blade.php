@@ -29,7 +29,7 @@
                     <span class="flex h-20 w-30 items-center justify-center rounded-md">
                         <x-app-logo-icon class="me-2 h-7 fill-current text-white" />
                     </span>
-                    Kiroku Attendance Logging System
+                    Kiroku Student Logging System
                 </a>
 
                 {{-- Auto Generated Quotes --}}
