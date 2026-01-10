@@ -2,39 +2,138 @@
 
 namespace App\Livewire\Management;
 
+use App\Models\LogRecord;
+use App\Models\LogSession;
+use Carbon\Carbon;
+use Exception;
+use Flux\Flux;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Illuminate\Database\QueryException;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Validation\ValidationException;
+use Livewire\Attributes\Lazy;
 use Livewire\Component;
 use Livewire\WithPagination;
-use Livewire\Attributes\Lazy;
-use Illuminate\Support\Facades\DB;
-
-use App\Models\LogSession;
-use App\Models\LogRecord;
-use Flux\Flux;
-use Illuminate\Validation\Rule;
-use Illuminate\Validation\ValidationException;
-use Illuminate\Database\QueryException;
-use Exception;
-use Illuminate\Support\Facades\Log;
-use Carbon\Carbon;
-use Illuminate\Database\Eloquent\ModelNotFoundException;
 
 #[Lazy]
 class StudentLogsTable extends Component
 {
     use WithPagination;
 
-    public $date, $start_year, $end_year, $school_year, $logSessionId, $logSessionDate, $logSessionSchoolYear;
+    public $date;
 
+    public $start_year;
+
+    public $end_year;
+
+    public $school_year;
+
+    public $logSessionId;
+
+    public $logSessionDate;
+
+    public $logSessionSchoolYear;
 
     public ?LogSession $selectedLogSession = null;
+
     public $selectedLogSessionId = null;
+
+    // Track which session is being viewed/exported for loading states
+    public $viewingSessionId = null;
+
+    public $exportingSessionId = null;
+
+    // Paper Size for Export
+    public $paperSize = 'A4';
 
     // Filter properties
     public $filterMonth = '';
+
     public $filterYear = '';
+
     public $filterAcademicYear = '';
 
     protected $listeners = ['log-session-created' => '$refresh'];
+
+    // Export Student Logs
+    public function exportStudentLogs($logSessionId, $paperSize = 'A4')
+    {
+        try {
+            $this->exportingSessionId = $logSessionId;
+            $this->paperSize = $paperSize;
+
+            // Validate paper size
+            $validPaperSizes = ['A4', 'Letter', 'Legal'];
+            if (! in_array($paperSize, $validPaperSizes)) {
+                $this->exportingSessionId = null;
+                $this->dispatch('notify',
+                    type: 'error',
+                    content: 'Invalid paper size selected. Please try again.',
+                    duration: 5000
+                );
+
+                return;
+            }
+
+            // Check if log session exists
+            $logSession = LogSession::find($logSessionId);
+            if (! $logSession) {
+                $this->exportingSessionId = null;
+                $this->dispatch('notify',
+                    type: 'error',
+                    content: 'Log session not found. Please refresh the page and try again.',
+                    duration: 5000
+                );
+
+                return;
+            }
+
+            // Check if there are any log records to export
+            $logRecordCount = LogRecord::where('log_session_id', $logSessionId)->count();
+            if ($logRecordCount === 0) {
+                $this->exportingSessionId = null;
+                $this->dispatch('notify',
+                    type: 'error',
+                    content: 'No log records found for this session. Please add log records first.',
+                    duration: 5000
+                );
+
+                return;
+            }
+
+            // Show success toast before redirecting
+            $this->dispatch('notify',
+                type: 'info',
+                content: 'Generating student logs PDF...',
+                duration: 5000
+            );
+
+            // Reset exporting state before redirect
+            $this->exportingSessionId = null;
+
+            // Redirect to export route with log session ID and paper size
+            return redirect()->route('export_student_logs', [
+                'log_session_id' => $logSessionId,
+                'paper_size' => $paperSize,
+            ]);
+
+        } catch (Exception $e) {
+            // Handle any unexpected errors
+            $this->exportingSessionId = null;
+            Log::error('Error initiating student logs export', [
+                'log_session_id' => $logSessionId ?? 'unknown',
+                'paper_size' => $paperSize ?? 'unknown',
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString(),
+            ]);
+
+            $this->dispatch('notify',
+                type: 'error',
+                content: 'An unexpected error occurred. Please try again or contact support if the problem persists.',
+                duration: 5000
+            );
+        }
+    }
 
     // Reset filters
     public function resetFilters()
@@ -69,7 +168,7 @@ class StudentLogsTable extends Component
     {
         // Set today's date automatically
         $this->date = Carbon::now()->format('Y-m-d');
-        
+
         // Reset form fields
         $this->start_year = '';
         $this->end_year = '';
@@ -77,16 +176,16 @@ class StudentLogsTable extends Component
 
         // Clear Error
         $this->resetErrorBag();
-        
+
         Flux::modal('create-log-session')->show();
     }
 
     // Auto-calculate end_year when start_year changes
     public function updatedStartYear($value)
     {
-        if (!empty($value) && is_numeric($value) && strlen($value) === 4) {
-            $this->end_year = (string)((int)$value + 1);
-            $this->school_year = $value . '-' . $this->end_year;
+        if (! empty($value) && is_numeric($value) && strlen($value) === 4) {
+            $this->end_year = (string) ((int) $value + 1);
+            $this->school_year = $value.'-'.$this->end_year;
         } else {
             $this->end_year = '';
             $this->school_year = '';
@@ -119,6 +218,7 @@ class StudentLogsTable extends Component
 
             if ($existingSession) {
                 $this->addError('school_year', 'A log session with this date and school year already exists.');
+
                 return;
             }
 
@@ -153,7 +253,7 @@ class StudentLogsTable extends Component
         } catch (QueryException $e) {
             // Handle database errors
             Flux::modals()->close();
-            
+
             // Check for specific database errors
             if ($e->getCode() == 23000) { // Integrity constraint violation
                 $this->dispatch('notify',
@@ -171,11 +271,11 @@ class StudentLogsTable extends Component
         } catch (Exception $e) {
             // Handle any other unexpected errors
             Flux::modals()->close();
-            
+
             // Log the error for debugging
             Log::error('Error adding log session', [
                 'error' => $e->getMessage(),
-                'trace' => $e->getTraceAsString()
+                'trace' => $e->getTraceAsString(),
             ]);
 
             $this->dispatch('notify',
@@ -185,7 +285,6 @@ class StudentLogsTable extends Component
             );
         }
     }
-
 
     public function resetCreateForms()
     {
@@ -205,7 +304,7 @@ class StudentLogsTable extends Component
         if (empty($this->date)) {
             return '';
         }
-        
+
         try {
             return Carbon::parse($this->date)->format('l, F j, Y');
         } catch (\Exception $e) {
@@ -241,7 +340,7 @@ class StudentLogsTable extends Component
     // Computed property for selected log records with eager loading
     public function getSelectedLogRecordsProperty()
     {
-        if (!$this->selectedLogSessionId) {
+        if (! $this->selectedLogSessionId) {
             return collect();
         }
 
@@ -251,13 +350,22 @@ class StudentLogsTable extends Component
             ->get();
     }
 
-    // View Logs 
+    // View Logs
     public function viewLogs($logSessionId)
     {
+        $this->viewingSessionId = $logSessionId;
+
+        // Reset previous selection
+        $this->selectedLogSession = null;
+        $this->selectedLogSessionId = null;
+
         $this->selectedLogSession = LogSession::findOrFail($logSessionId);
         $this->selectedLogSessionId = $logSessionId;
 
         Flux::modal('view-logs')->show();
+
+        // Reset viewing state after modal opens
+        $this->viewingSessionId = null;
     }
 
     // Remove Log Session
@@ -266,12 +374,13 @@ class StudentLogsTable extends Component
         try {
             $logSession = LogSession::find($logSessionId);
 
-            if (!$logSession) {
+            if (! $logSession) {
                 $this->dispatch('notify',
                     type: 'error',
                     content: 'Log session not found. Please refresh the page and try again.',
                     duration: 5000
                 );
+
                 return;
             }
 
@@ -284,7 +393,7 @@ class StudentLogsTable extends Component
         } catch (Exception $e) {
             Log::error('Error loading log session for delete', [
                 'log_session_id' => $logSessionId,
-                'error' => $e->getMessage()
+                'error' => $e->getMessage(),
             ]);
 
             $this->dispatch('notify',
@@ -323,7 +432,7 @@ class StudentLogsTable extends Component
         } catch (ModelNotFoundException $e) {
             // Handle model not found
             Flux::modals()->close();
-            
+
             // Reset properties
             $this->logSessionId = null;
             $this->logSessionDate = null;
@@ -337,12 +446,12 @@ class StudentLogsTable extends Component
         } catch (QueryException $e) {
             // Handle database errors
             Flux::modals()->close();
-            
+
             // Reset properties
             $this->logSessionId = null;
             $this->logSessionDate = null;
             $this->logSessionSchoolYear = null;
-            
+
             // Check for foreign key constraint violations
             if ($e->getCode() == 23000) {
                 $this->dispatch('notify',
@@ -360,17 +469,17 @@ class StudentLogsTable extends Component
         } catch (Exception $e) {
             // Handle any other unexpected errors
             Flux::modals()->close();
-            
+
             // Reset properties
             $this->logSessionId = null;
             $this->logSessionDate = null;
             $this->logSessionSchoolYear = null;
-            
+
             // Log the error for debugging
             Log::error('Error deleting log session', [
                 'log_session_id' => $this->logSessionId,
                 'error' => $e->getMessage(),
-                'trace' => $e->getTraceAsString()
+                'trace' => $e->getTraceAsString(),
             ]);
 
             $this->dispatch('notify',
@@ -391,7 +500,7 @@ class StudentLogsTable extends Component
         $query = LogSession::query();
 
         // Apply month filter
-        if (!empty($this->filterMonth)) {
+        if (! empty($this->filterMonth)) {
             $monthNumber = $this->getMonthNumber($this->filterMonth);
             if ($monthNumber) {
                 $query->whereMonth('date', $monthNumber);
@@ -399,16 +508,17 @@ class StudentLogsTable extends Component
         }
 
         // Apply year filter
-        if (!empty($this->filterYear)) {
+        if (! empty($this->filterYear)) {
             $query->whereYear('date', $this->filterYear);
         }
 
         // Apply academic year filter
-        if (!empty($this->filterAcademicYear)) {
+        if (! empty($this->filterAcademicYear)) {
             $query->where('school_year', $this->filterAcademicYear);
         }
 
-        $logSessions = $query->latest()->paginate(10);
+        // Eager load log records count to check if sessions have records
+        $logSessions = $query->withCount('logRecords')->latest()->paginate(10);
 
         return view('livewire.management.student-logs-table', [
             'logSessions' => $logSessions,

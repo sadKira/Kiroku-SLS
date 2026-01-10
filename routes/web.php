@@ -17,6 +17,7 @@ use App\Livewire\Management\StudentLogs;
 use App\Livewire\Logger\LoggerDashboard;
 
 use App\Http\Controllers\management\ExportBarcode;
+use App\Http\Controllers\management\ExportStudentLogs;
 
 // Admin Routes
 Route::middleware(['auth', 'admin'])->group(function () {
@@ -33,6 +34,7 @@ Route::middleware(['auth', 'admin'])->group(function () {
     Route::get('settings/appearance', Appearance::class)->name('appearance.edit');
 
     Route::get('/export-barcode', [ExportBarcode::class, 'generatePdf'])->name('export_barcode');
+    Route::get('/export-student-logs', [ExportStudentLogs::class, 'generatePdf'])->name('export_student_logs');
 });
 
 // Logger Routes

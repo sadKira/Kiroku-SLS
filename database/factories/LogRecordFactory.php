@@ -27,7 +27,11 @@ class LogRecordFactory extends Factory
 
         return [
             'student_id' => Student::factory(),
-            'log_session_id' => '1',
+            'log_session_id' => fake()->randomElement([
+            '1',
+            '2',
+            ]),
+
             'time_in'  => $timeIn,
             'time_out' => $timeOut,
         ];

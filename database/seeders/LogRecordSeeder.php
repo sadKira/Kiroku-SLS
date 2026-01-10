@@ -13,6 +13,6 @@ class LogRecordSeeder extends Seeder
      */
     public function run(): void
     {
-        LogRecord::factory(10)->create();
+        LogRecord::factory(30)->create();
     }
 }

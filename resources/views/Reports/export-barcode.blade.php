@@ -29,12 +29,13 @@
 </head>
 
 <body class="bg-white text-slate-900 antialiased p-4">
-    <div class="text-center mb-4">
-        <flux:heading size="xl"><span class="font-bold">Kiroku Attendance Logging System</span></flux:heading>
-        <div class="flex items-center gap-1 justify-center">
-            <flux:icon.user-group variant="mini" />
-            <flux:heading size="lg"><span>Student Barcodes: {{ $students->count() }}</flux:heading>
-        </div>
+
+    <div class="mb-10">
+        <flux:heading size="xl"><span class="font-bold">MKD Resource Center</span></flux:heading>
+        <flux:heading size="xl" class="mt-3"><span class="font-bold">Student Barcodes</span></flux:heading>
+        <p class=" text-gray-600">
+            Student Barcodes: {{ $students->count() }}
+        </p>
     </div>
 
     <div class="flex flex-wrap gap-3 justify-center">
@@ -67,6 +68,11 @@
             </x-ui.card>
 
         @endforeach
+    </div>
+
+    <div class="mt-6 text-center text-xs text-gray-500">
+        <p>Generated on {{ \Carbon\Carbon::now()->timezone('Asia/Manila')->format('F j, Y g:i a') }}</p>
+        <p>Kiroku Student Logging System 2025</p>
     </div>
 </body>
 
