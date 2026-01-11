@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}" class="dark">
+<html lang="{{ str_replace('_', '-', app()->getLocale()) }}" class="">
 
 <head>
     @include('partials.head')
@@ -49,24 +49,14 @@
 
         <flux:sidebar.spacer />
         
-        <flux:sidebar.nav>
-
-            <flux:radio.group x-data variant="segmented" x-model="$flux.appearance">
-                <flux:radio value="light" icon="sun" />
-                <flux:radio value="dark" icon="moon" />
-                <flux:radio value="system" icon="computer-desktop" />
-            </flux:radio.group>
-        
-        </flux:sidebar.nav>
-
     </flux:sidebar>
 
     {{ $slot }}
 
+    @fluxScripts
+
     {{-- Sheaf UI Toast Notifications --}}
     <x-ui.toast position="bottom-right" maxToasts="5" />
-
-    @fluxScripts
 
 </body>
 

@@ -11,7 +11,7 @@
                  style="background-image: url('{{ asset('images/mkdlib-login.jpg') }}')">
 
                 {{-- Gradient --}}
-                <div class="absolute inset-0"
+                {{-- <div class="absolute inset-0"
                     style="
                         background: radial-gradient(
                             circle at right center,
@@ -20,7 +20,21 @@
                             rgba(0, 0, 0, 0.85) 80%
                         );
                     ">
+                </div> --}}
+
+                {{-- Gradient --}}
+                <div class="absolute inset-0"
+                    style="
+                        background: radial-gradient(
+                            circle at top center,
+                            rgba(0, 0, 0, 0.12) 0%,
+                            rgba(0, 0, 0, 0.20) 45%,
+                            rgba(0, 0, 0, 0.45) 70%,
+                            rgba(0, 0, 0, 0.9) 95%
+                        );
+                    ">
                 </div>
+
 
                 {{-- 0.4, 0.55, 0.75 --}}
 
@@ -29,7 +43,7 @@
                     <span class="flex h-20 w-30 items-center justify-center rounded-md">
                         <x-app-logo-icon class="me-2 h-7 fill-current text-white" />
                     </span>
-                    Kiroku Student Logging System
+                    {{-- Kiroku Student Logging System --}}
                 </a>
 
                 {{-- Auto Generated Quotes --}}

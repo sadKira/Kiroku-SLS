@@ -49,11 +49,11 @@ document.addEventListener('alpine:init', () => {
         },
 
         setDark() {
-            this.setTheme('dark');
+            this.setTheme('light');
         },
 
         setSystem() {
-            this.setTheme('system');
+            this.setTheme('light');
         },
 
         /**
@@ -62,10 +62,10 @@ document.addEventListener('alpine:init', () => {
         toggle() {
             if (this.storedTheme === 'system') {
                 // If system, toggle to opposite of current computed theme
-                this.setTheme(this.currentTheme === 'dark' ? 'light' : 'dark');
+                this.setTheme(this.currentTheme === 'light');
             } else {
                 // Toggle between light and dark
-                this.setTheme(this.storedTheme === 'dark' ? 'light' : 'dark');
+                this.setTheme(this.storedTheme === 'light');
             }
         },
 
@@ -88,11 +88,11 @@ document.addEventListener('alpine:init', () => {
         },
 
         get isDark() {
-            return this.storedTheme === 'dark';
+            return this.storedTheme === 'light';
         },
 
         get isSystem() {
-            return this.storedTheme === 'system';
+            return this.storedTheme === 'light';
         },
 
         /**
@@ -108,7 +108,7 @@ document.addEventListener('alpine:init', () => {
 
         get isResolvedToDark() {
             if (this.isSystem) {
-                return getSystemTheme() === 'dark';
+                return getSystemTheme() === 'light';
             }
             return this.isDark;
         }
@@ -120,25 +120,21 @@ document.addEventListener('alpine:init', () => {
     */
 
 function computeTheme(themePreference) {
-    if (themePreference === 'system') {
-        return getSystemTheme();
-    }
-    return themePreference;
+    return 'light';
+   
 }
 
 function getSystemTheme() {
-    return window.matchMedia('(prefers-color-scheme: dark)').matches 
-        ? 'dark' 
-        : 'light';
+    return 'light';
 }
 
 function applyTheme(theme) {
     const documentElement = document.documentElement;
     
     if (theme === 'dark') {
-        documentElement.classList.add('dark');
+        documentElement.classList.add('light');
     } else {
-        documentElement.classList.remove('dark');
+        documentElement.classList.remove('light');
     }
     
     // Dispatch custom event for theme change listeners
