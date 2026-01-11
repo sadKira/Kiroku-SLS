@@ -63,12 +63,11 @@ class AppServiceProvider extends ServiceProvider
                     'student_list' => 'Student List',
                     'student_logs' => 'Student Logs',
                     'about_kiroku' => 'About Kiroku SLS',
-                    'profile.edit' => 'Profile',
-                    'user-password.edit' => 'Password',
-                    'appearance.edit' => 'Appearance',
 
                     // Logger
-                    'logger_dashboard' => 'Dashboard'
+                    'logger_dashboard' => 'Dashboard',
+                    'view_logs' => 'View Log',
+                    
                 ],
                 default => [
                     'error' => "error",
