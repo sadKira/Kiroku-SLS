@@ -5,7 +5,7 @@
         {{-- Breadcrumbs --}}
         <x-ui.breadcrumbs>
             <x-ui.breadcrumbs.item>Kiroku</x-ui.breadcrumbs.item>
-            <x-ui.breadcrumbs.item href="{{ route('logger_dashboard') }}">Dashboard</x-ui.breadcrumbs.item>
+            <x-ui.breadcrumbs.item href="{{ route('logger_dashboard') }}" wire:navigate>Dashboard</x-ui.breadcrumbs.item>
         </x-ui.breadcrumbs>
 
     </div>
