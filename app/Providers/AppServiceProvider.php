@@ -59,7 +59,7 @@ class AppServiceProvider extends ServiceProvider
 
                     // Management
                     'home' => 'Kiroku SLS',
-                    'admin_dashboard' => 'Admin Dashboard',
+                    'admin_dashboard' => 'Dashboard',
                     'student_list' => 'Student List',
                     'student_logs' => 'Student Logs',
                     'about_kiroku' => 'About Kiroku SLS',
