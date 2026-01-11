@@ -294,7 +294,7 @@
         </div>
     </flux:modal>
 
-        {{-- Delete Log Session Modal --}}
+    {{-- Delete Log Session Modal --}}
     <flux:modal name="remove-log-session" :dismissible="false"
         class="min-w-[22rem]">
         <div class="space-y-6">

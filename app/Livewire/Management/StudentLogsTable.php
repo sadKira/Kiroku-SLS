@@ -518,7 +518,11 @@ class StudentLogsTable extends Component
         }
 
         // Eager load log records count to check if sessions have records
-        $logSessions = $query->withCount('logRecords')->latest()->paginate(10);
+        // Sort by most recent: date DESC, then school_year DESC
+        $logSessions = $query->withCount('logRecords')
+            ->orderBy('date', 'desc')
+            ->orderBy('school_year', 'desc')
+            ->paginate(10);
 
         return view('livewire.management.student-logs-table', [
             'logSessions' => $logSessions,

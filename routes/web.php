@@ -2,10 +2,6 @@
 
 use Illuminate\Support\Facades\Route;
 
-use App\Livewire\Settings\Appearance;
-use App\Livewire\Settings\Password;
-use App\Livewire\Settings\Profile;
-
 use App\Livewire\Auth\Login;
 use App\Livewire\Actions\Logout;
 
@@ -15,6 +11,7 @@ use App\Livewire\Management\AboutKiroku;
 use App\Livewire\Management\StudentLogs;
 
 use App\Livewire\Logger\LoggerDashboard;
+use App\Livewire\Logger\ViewLogs;
 
 use App\Http\Controllers\management\ExportBarcode;
 use App\Http\Controllers\management\ExportStudentLogs;
@@ -27,12 +24,6 @@ Route::middleware(['auth', 'admin'])->group(function () {
     Route::get('/student-logs', StudentLogs::class)->name('student_logs');
     Route::get('/about-kiroku', AboutKiroku::class)->name('about_kiroku');
 
-    // Route::redirect('settings', 'settings/profile');
-
-    Route::get('settings/profile', Profile::class)->name('profile.edit');
-    Route::get('settings/password', Password::class)->name('user-password.edit');
-    Route::get('settings/appearance', Appearance::class)->name('appearance.edit');
-
     Route::get('/export-barcode', [ExportBarcode::class, 'generatePdf'])->name('export_barcode');
     Route::get('/export-student-logs', [ExportStudentLogs::class, 'generatePdf'])->name('export_student_logs');
 });
@@ -41,6 +32,7 @@ Route::middleware(['auth', 'admin'])->group(function () {
 Route::middleware(['auth', 'logger'])->group(function () {
 
     Route::get('/dashboard', LoggerDashboard::class)->name('logger_dashboard');
+    Route::get('/view-log/{logSession}', ViewLogs::class)->name('view_logs');
     
 
 });

@@ -15,35 +15,25 @@
             <flux:spacer />
 
             <flux:navbar class="mr-5 me-1.5 space-x-0.5 rtl:space-x-reverse py-0!">
-
-                <flux:input as="button" size="sm" placeholder="Search..." icon="magnifying-glass" kbd="⌘K" />
                 
-                {{-- <flux:tooltip content="Toggle Dark Mode" position="bottom">
-                    <flux:button x-data x-on:click="$flux.dark = ! $flux.dark" class="h-10 [&>div>svg]:size-5" icon="moon" variant="subtle" aria-label="Toggle dark mode" />
-                </flux:tooltip> --}}
-                
-            </flux:navbar>
-
-            <flux:dropdown position="bottom" align="end">
-              
                 <flux:profile
                     circle
                     class="cursor-pointer"
                     :initials="auth()->user()->initials()"
                     :name="auth()->user()->name"
-                    icon:trailing="chevron-up-down"
+                    :chevron="false"
                 />
-                <flux:navmenu>
-                    
-                    {{-- Log Out --}}
-                    <form method="POST" action="{{ route('logout') }}" class="w-full">
-                        @csrf
-                        <flux:navmenu.item type="submit" icon="arrow-right-start-on-rectangle" variant="danger">Log Out</flux:navmenu.item>
-                    </form>
-                    
-                </flux:navmenu>
-            </flux:dropdown>
 
+                {{-- Log Out Button --}}
+                <form method="POST" action="{{ route('logout') }}" class="w-full">
+                    @csrf
+                    <flux:navmenu.item type="submit" icon="arrow-right-start-on-rectangle">
+                        Log Out
+                    </flux:navmenu.item>
+                </form>
+                
+            </flux:navbar>
+              
         </flux:header>
 
        
