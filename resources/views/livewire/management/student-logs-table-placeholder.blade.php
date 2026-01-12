@@ -9,25 +9,22 @@
 
                 {{-- Select Month --}}
                 <div class="flex items-center gap-2 text-nowrap">
-                    <flux:heading>Month:</flux:heading>
                     <flux:skeleton.group animate="shimmer">
-                        <flux:skeleton.line class="w-40 h-8" />
+                        <flux:skeleton.line class="w-45 h-8" />
                     </flux:skeleton.group>
                 </div>
 
                 {{-- Select Year --}}
                 <div class="flex items-center gap-2 text-nowrap">
-                    <flux:heading>Year:</flux:heading>
                     <flux:skeleton.group animate="shimmer">
-                        <flux:skeleton.line class="w-40 h-8" />
+                        <flux:skeleton.line class="w-45 h-8" />
                     </flux:skeleton.group>
                 </div>
 
                 {{-- Select Academic Year --}}
                 <div class="flex items-center gap-2 text-nowrap">
-                    <flux:heading>Academic Year:</flux:heading>
                     <flux:skeleton.group animate="shimmer">
-                        <flux:skeleton.line class="w-40 h-8" />
+                        <flux:skeleton.line class="w-50 h-8" />
                     </flux:skeleton.group>
                 </div>
 
@@ -49,10 +46,22 @@
                             <tr>
                                 <th scope="col"
                                     class="px-4 py-1 text-start text-sm font-medium text-gray-500 dark:text-neutral-500">
-                                    Log</th>
+                                    <flux:skeleton.group animate="shimmer">
+                                        <flux:skeleton.line class="w-20 h-4" />
+                                    </flux:skeleton.group>
+                                </th>
                                 <th scope="col"
                                     class="px-4 py-1 text-start text-sm font-medium text-gray-500 dark:text-neutral-500">
-                                    Academic Year</th>
+                                    <flux:skeleton.group animate="shimmer">
+                                        <flux:skeleton.line class="w-20 h-4" />
+                                    </flux:skeleton.group>
+                                </th>
+                                <th scope="col"
+                                    class="px-4 py-1 text-start text-sm font-medium text-gray-500 dark:text-neutral-500">
+                                    <flux:skeleton.group animate="shimmer">
+                                        <flux:skeleton.line class="w-20 h-4" />
+                                    </flux:skeleton.group>
+                                </th>
                                 <th scope="col"
                                     class="px-4 py-1 text-end text-sm font-medium text-gray-500 dark:text-neutral-500">
                                 </th>
@@ -72,6 +81,12 @@
                                     <td class="px-4 py-4 border-t border-b border-black/10 dark:border-white/10">
                                         <flux:skeleton.group animate="shimmer">
                                             <flux:skeleton.line />
+                                        </flux:skeleton.group>
+                                    </td>
+
+                                    <td class="px-4 py-4 border-t border-b border-black/10 dark:border-white/10">
+                                        <flux:skeleton.group animate="shimmer">
+                                            <flux:skeleton.line class="w-24" />
                                         </flux:skeleton.group>
                                     </td>
 

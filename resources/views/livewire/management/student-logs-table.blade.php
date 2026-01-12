@@ -90,6 +90,9 @@
                                     class="px-4 py-1 text-start text-sm font-medium text-gray-500 dark:text-neutral-500">
                                     Academic Year</th>
                                 <th scope="col"
+                                    class="px-4 py-1 text-start text-sm font-medium text-gray-500 dark:text-neutral-500">
+                                    Students</th>
+                                <th scope="col"
                                     class="px-4 py-1 text-end text-sm font-medium text-gray-500 dark:text-neutral-500">
                                 </th>
                             </tr>
@@ -99,7 +102,7 @@
                             @if ($logSessions->isEmpty())
                                 
                                 <tr>
-                                    <td colspan="3" class="px-6 py-10 whitespace-nowrap text-sm text-gray-800 dark:text-neutral-200">
+                                    <td colspan="4" class="px-6 py-10 whitespace-nowrap text-sm text-gray-800 dark:text-neutral-200">
                                         <div class="flex justify-center items-center gap-2 w-full">
                                             <flux:icon.magnifying-glass variant="solid" class="" />
                                             <flux:heading size="lg">No Log Sessions</flux:heading>
@@ -119,6 +122,17 @@
                                     <td
                                         class="px-4 py-4 whitespace-nowrap text-sm text-gray-800 dark:text-neutral-200 border-t border-b border-black/10 dark:border-white/10">
                                         {{ $logSession->school_year }}
+                                    </td>
+                                    <td
+                                        class="px-4 py-4 whitespace-nowrap text-sm text-gray-800 dark:text-neutral-200 border-t border-b border-black/10 dark:border-white/10">
+                                        @if ($logSession->log_records_count > 0)
+                                            <div class="flex items-center gap-1">
+                                                <flux:icon.users variant="outline" class="w-4 h-4 text-gray-500 dark:text-neutral-400" />
+                                                <span>{{ $logSession->log_records_count }} {{ $logSession->log_records_count == 1 ? 'student' : 'students' }}</span>
+                                            </div>
+                                        @else
+                                            <span class="text-gray-400 dark:text-neutral-500">—</span>
+                                        @endif
                                     </td>
                                     <td
                                         class="px-4 py-4 whitespace-nowrap text-end text-sm font-medium border-t border-b border-black/10 dark:border-white/10 border-r rounded-r-lg">
@@ -329,78 +343,135 @@
                 <div class="space-y-3">
                     <div class="space-y-1">
                         <flux:heading size="lg" class="font-semibold">
-                            {{ \Carbon\Carbon::parse($selectedLogSession->date)->format('l, F j, Y') }}
+                            {{ \Carbon\Carbon::parse($selectedLogSession->date)->format('F j, Y') }} ({{ \Carbon\Carbon::parse($selectedLogSession->date)->format('l') }})
                         </flux:heading>
-                        <p class="text-sm text-gray-500 dark:text-neutral-400">
-                            Academic Year: {{ $selectedLogSession->school_year }}
-                        </p>
+                        <div class="flex items-center gap-4">
+                            <p class="text-sm text-gray-500 dark:text-neutral-400">
+                                Academic Year: {{ $selectedLogSession->school_year }}
+                            </p>
+                            @if ($this->selectedLogRecords->isNotEmpty())
+                                <div class="flex items-center gap-1 text-sm text-gray-500 dark:text-neutral-400">
+                                    <flux:icon.users variant="outline" class="w-4 h-4" />
+                                    <span>{{ $this->selectedLogRecords->count() }} {{ $this->selectedLogRecords->count() == 1 ? 'student' : 'students' }}</span>
+                                </div>
+                            @endif
+                        </div>
                     </div>
 
                     @if ($this->selectedLogRecords->isNotEmpty())
-                        <div class="mt-2 space-y-2
-                            overflow-y-auto
-                            {{-- max-h-100 --}}
-                            max-h-[75vh]
-                            [&::-webkit-scrollbar]:w-2
-                            [&::-webkit-scrollbar-thumb]:rounded-full
-                            [&::-webkit-scrollbar-track]:bg-gray-100
-                            [&::-webkit-scrollbar-thumb]:bg-gray-300
-                            dark:[&::-webkit-scrollbar-track]:bg-neutral-700
-                            dark:[&::-webkit-scrollbar-thumb]:bg-neutral-500
-                        ">
-                            @foreach ($this->selectedLogRecords as $record)
-                                <div
-                                    class="mr-2 flex items-center justify-between gap-4 rounded-lg border border-black/10 dark:border-white/10 px-3 py-2 text-sm bg-white/60 dark:bg-zinc-900/70">
-                                    <div class="space-y-0.5">
+                        {{-- Scrollable container with blur effects --}}
+                        <div class="mt-3 relative overflow-hidden max-h-[75vh]"
+                             x-data="{
+                                 showTopBlur: false,
+                                 showBottomBlur: false,
+                                 init() {
+                                     const scrollContainer = this.$refs.scrollContainer;
+                                     const checkScroll = () => {
+                                         this.showTopBlur = scrollContainer.scrollTop > 10;
+                                         const maxScroll = scrollContainer.scrollHeight - scrollContainer.clientHeight;
+                                         this.showBottomBlur = scrollContainer.scrollTop < maxScroll - 10;
+                                     };
+                                     scrollContainer.addEventListener('scroll', checkScroll);
+                                     checkScroll();
+                                     
+                                     // Also check on Livewire updates
+                                     if (typeof Livewire !== 'undefined') {
+                                         Livewire.hook('morph.updated', () => {
+                                             setTimeout(checkScroll, 100);
+                                         });
+                                     }
+                                     
+                                     // Check periodically in case content changes
+                                     setInterval(checkScroll, 500);
+                                 }
+                             }">
+                            {{-- Top blur overlay --}}
+                            {{-- <div class="absolute top-0 left-0 right-0 h-16 pointer-events-none z-10 
+                                        bg-gradient-to-b from-white via-white/80 to-transparent
+                                        dark:from-zinc-900 dark:via-zinc-900/80 dark:to-transparent"
+                                 x-show="showTopBlur"
+                                 x-transition:enter="transition ease-out duration-200"
+                                 x-transition:enter-start="opacity-0"
+                                 x-transition:enter-end="opacity-100"
+                                 x-transition:leave="transition ease-in duration-200"
+                                 x-transition:leave-start="opacity-100"
+                                 x-transition:leave-end="opacity-0">
+                            </div> --}}
 
-                                        {{-- Student Name --}}
-                                        <p class="font-semibold text-gray-900 dark:text-neutral-50">
-                                            @php
-                                                $student = $record->student;
-                                            @endphp
-                                            @if ($student)
-                                                {{ $student->last_name }}, {{ $student->first_name }}
-                                            @else
-                                                <span class="text-gray-400">Unknown student</span>
-                                            @endif
-                                        </p>
+                            {{-- Bottom blur overlay --}}
+                            <div class="absolute bottom-0 left-0 right-0 h-16 pointer-events-none z-10
+                                        bg-gradient-to-t from-white via-white/80 to-transparent
+                                        dark:from-zinc-900 dark:via-zinc-900/80 dark:to-transparent"
+                                 x-show="showBottomBlur"
+                                 x-transition:enter="transition ease-out duration-200"
+                                 x-transition:enter-start="opacity-0"
+                                 x-transition:enter-end="opacity-100"
+                                 x-transition:leave="transition ease-in duration-200"
+                                 x-transition:leave-start="opacity-100"
+                                 x-transition:leave-end="opacity-0">
+                            </div>
 
-                                        {{-- Student Year Leve & Course --}}
-                                        @if ($student)
-                                            <p class="text-xs text-gray-500 dark:text-neutral-400">
-                                                {{ $student->year_level }}-{{ $student->course }}
+                            <div class="space-y-2 overflow-y-auto max-h-[75vh]
+                                [&::-webkit-scrollbar]:w-2
+                                [&::-webkit-scrollbar-thumb]:rounded-full
+                                [&::-webkit-scrollbar-track]:bg-gray-100
+                                [&::-webkit-scrollbar-thumb]:bg-gray-300
+                                dark:[&::-webkit-scrollbar-track]:bg-neutral-700
+                                dark:[&::-webkit-scrollbar-thumb]:bg-neutral-500"
+                                 x-ref="scrollContainer">
+                                @foreach ($this->selectedLogRecords as $record)
+                                    <div
+                                        class="mr-2 flex items-center justify-between gap-4 rounded-lg border border-black/10 dark:border-white/10 px-3 py-2 text-sm bg-white/60 dark:bg-zinc-900/70">
+                                        <div class="space-y-0.5">
+
+                                            {{-- Student Name --}}
+                                            <p class="font-semibold text-gray-900 dark:text-neutral-50">
+                                                @php
+                                                    $student = $record->student;
+                                                @endphp
+                                                @if ($student)
+                                                    {{ $student->last_name }}, {{ $student->first_name }}
+                                                @else
+                                                    <span class="text-gray-400">Unknown student</span>
+                                                @endif
                                             </p>
-                                        @endif
-                                    </div>
-                                    <div>
-                                        {{-- Student Time In --}}
-                                        @if ($record->time_in)
-                                            <div class="flex items-center gap-1">
-                                                <flux:icon.log-in class="text-green-500" variant="micro" />
-                                                <p class="text-right text-green-500">
-                                                    {{ \Carbon\Carbon::parse($record->time_in)->timezone('Asia/Manila')->format('g:i a') }}
+
+                                            {{-- Student Year Leve & Course --}}
+                                            @if ($student)
+                                                <p class="text-xs text-gray-500 dark:text-neutral-400">
+                                                    {{ $student->year_level }}-{{ $student->course }}
                                                 </p>
-                                            </div>
-                                        @else
-                                            <span class="text-gray-400 italic">—</span>
-                                        @endif
+                                            @endif
+                                        </div>
+                                        <div>
+                                            {{-- Student Time In --}}
+                                            @if ($record->time_in)
+                                                <div class="flex items-center gap-1">
+                                                    <flux:icon.log-in class="text-green-500" variant="micro" />
+                                                    <p class="text-right text-green-500">
+                                                        {{ \Carbon\Carbon::parse($record->time_in)->timezone('Asia/Manila')->format('g:i a') }}
+                                                    </p>
+                                                </div>
+                                            @else
+                                                <span class="text-gray-400 italic">—</span>
+                                            @endif
 
-                                        {{-- Student Time out --}}
-                                        @if ($record->time_out)
-                                            <div class="flex items-center gap-1">
-                                                <flux:icon.log-out class="text-red-500" variant="micro" />
-                                                <p class="text-right text-red-500">
-                                                    {{ \Carbon\Carbon::parse($record->time_out)->timezone('Asia/Manila')->format('g:i a') }}
-                                                </p>
-                                            </div>
-                                        @else
-                                            <span class="text-gray-400 italic">—</span>
-                                        @endif
+                                            {{-- Student Time out --}}
+                                            @if ($record->time_out)
+                                                <div class="flex items-center gap-1">
+                                                    <flux:icon.log-out class="text-red-500" variant="micro" />
+                                                    <p class="text-right text-red-500">
+                                                        {{ \Carbon\Carbon::parse($record->time_out)->timezone('Asia/Manila')->format('g:i a') }}
+                                                    </p>
+                                                </div>
+                                            @else
+                                                <span class="text-gray-400 italic">—</span>
+                                            @endif
 
+                                        </div>
                                     </div>
-                                </div>
-                            @endforeach
-
+                                @endforeach
+                            </div>
                         </div>
                     @else
                         <p class="text-sm text-gray-500 dark:text-neutral-400">

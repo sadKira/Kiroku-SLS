@@ -33,16 +33,28 @@
                                 </th>
                                 <th scope="col"
                                     class="px-1 py-3 text-start text-sm font-medium text-gray-500 dark:text-neutral-500">
-                                    Name</th>
+                                    <flux:skeleton.group animate="shimmer">
+                                        <flux:skeleton.line class="w-20 h-4" />
+                                    </flux:skeleton.group>
+                                </th>
                                 <th scope="col"
                                     class="px-1 py-3 text-start text-sm font-medium text-gray-500 dark:text-neutral-500">
-                                    Student ID</th>
+                                    <flux:skeleton.group animate="shimmer">
+                                        <flux:skeleton.line class="w-20 h-4" />
+                                    </flux:skeleton.group>
+                                </th>
                                 <th scope="col"
                                     class="px-1 py-3 text-start text-sm font-medium text-gray-500 dark:text-neutral-500">
-                                    Year Level</th>
+                                    <flux:skeleton.group animate="shimmer">
+                                        <flux:skeleton.line class="w-20 h-4" />
+                                    </flux:skeleton.group>
+                                </th>
                                 <th scope="col"
                                     class="px-1 py-3 text-start text-sm font-medium text-gray-500 dark:text-neutral-500">
-                                    Course</th>
+                                    <flux:skeleton.group animate="shimmer">
+                                        <flux:skeleton.line class="w-20 h-4" />
+                                    </flux:skeleton.group>
+                                </th>
                                 <th scope="col"
                                         class="px-3 py-3 text-end text-sm font-medium text-gray-500 dark:text-neutral-500">
                                         </th>

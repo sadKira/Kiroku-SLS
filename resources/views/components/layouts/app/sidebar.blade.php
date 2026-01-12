@@ -41,13 +41,15 @@
                 </flux:sidebar.group>
             @endcan
 
-            <flux:sidebar.item :href="route('about_kiroku')" :current="request()->routeIs('about_kiroku')" icon="information-circle" wire:navigate>
-                About Kiroku
-            </flux:sidebar.item>
-
         </flux:sidebar.nav>
 
         <flux:sidebar.spacer />
+
+        <flux:sidebar.nav>
+            <flux:sidebar.item :href="route('about_kiroku')" :current="request()->routeIs('about_kiroku')" icon="information-circle" wire:navigate>
+                About Kiroku
+            </flux:sidebar.item>
+        </flux:sidebar.nav>
         
     </flux:sidebar>
 
