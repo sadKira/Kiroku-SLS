@@ -19,6 +19,10 @@ return new class extends Migration
             $table->timestamp('time_out')->nullable();
 
             $table->timestamps();
+
+            // Attendance-optimized indexes
+            $table->index(['student_id', 'time_in']);
+            $table->index(['log_session_id', 'time_in']);
         });
     }
 

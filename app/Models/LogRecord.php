@@ -22,7 +22,7 @@ class LogRecord extends Model
     // Many is to One
     public function logSessions()
     {
-        return $this->belongsTo(LogSession::class);
+        return $this->belongsTo(LogSession::class, 'log_session_id');
     }
 
     // Many is to One

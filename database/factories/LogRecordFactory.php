@@ -18,12 +18,23 @@ class LogRecordFactory extends Factory
      */
     public function definition(): array
     {
-        // Generate 'time_in' within a specific range (e.g., last 30 days)
-        $timeIn = $this->faker->dateTimeBetween('-30 days', 'now');
+        // Generate date within last 30 days
+        $date = $this->faker->dateTimeBetween('-30 days', 'now');
 
-        // Generate 'time_out' starting from 'time_in' up to a maximum duration (e.g., +12 hours)
-        // You can use a relative string like '+8 hours' as the second parameter
-        $timeOut = $this->faker->dateTimeBetween($timeIn, $timeIn->format('Y-m-d H:i:s').' +12 hours');
+        // Force time_in between 8 AM and 5 PM
+        $hourIn = $this->faker->numberBetween(8, 17);
+        $minuteIn = $this->faker->numberBetween(0, 59);
+        $timeIn = (clone $date)->setTime($hourIn, $minuteIn, 0);
+
+        // 70% chance of having time_out, within working hours window
+        $timeOut = null;
+        if ($this->faker->boolean(70)) {
+            // Add 1-4 hours but cap at 5:59 PM
+            $timeOutCandidate = (clone $timeIn)->modify('+' . $this->faker->numberBetween(1, 4) . ' hours')
+                ->modify('+' . $this->faker->numberBetween(0, 59) . ' minutes');
+            $endOfDay = (clone $timeIn)->setTime(17, 59, 59);
+            $timeOut = $timeOutCandidate > $endOfDay ? $endOfDay : $timeOutCandidate;
+        }
 
         return [
             'student_id' => Student::factory(),
