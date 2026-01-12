@@ -11,16 +11,15 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('log_sessions', function (Blueprint $table) {
+        Schema::create('school_year_settings', function (Blueprint $table) {
             $table->id();
-            $table->date('date');
-            $table->string('school_year');
+            $table->string('school_year')->unique();
+            $table->boolean('is_active')->default(true);
             $table->timestamps();
-
-            // Performance-optimized indexes
-            $table->index('date');
+            
+            // Index for performance
             $table->index('school_year');
-            $table->index(['date', 'school_year']);
+            $table->index('is_active');
         });
     }
 
@@ -29,6 +28,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('log_sessions');
+        Schema::dropIfExists('school_year_settings');
     }
 };

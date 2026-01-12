@@ -117,7 +117,7 @@
 
                                     <td
                                         class="px-4 py-4 whitespace-nowrap text-sm font-medium text-gray-800 dark:text-neutral-200 border-t border-b border-black/10 dark:border-white/10 border-l rounded-l-lg">
-                                        {{ \Carbon\Carbon::parse($logSession->date)->format('l, F j, Y') }}
+                                        {{ \Carbon\Carbon::parse($logSession->date)->format('F j, Y') }} ({{ \Carbon\Carbon::parse($logSession->date)->format('l') }})
                                     </td>
                                     <td
                                         class="px-4 py-4 whitespace-nowrap text-sm text-gray-800 dark:text-neutral-200 border-t border-b border-black/10 dark:border-white/10">
@@ -449,7 +449,7 @@
                                                 <div class="flex items-center gap-1">
                                                     <flux:icon.log-in class="text-green-500" variant="micro" />
                                                     <p class="text-right text-green-500">
-                                                        {{ \Carbon\Carbon::parse($record->time_in)->timezone('Asia/Manila')->format('g:i a') }}
+                                                        {{ \Carbon\Carbon::parse($record->time_in)->format('g:i a') }}
                                                     </p>
                                                 </div>
                                             @else
@@ -461,7 +461,7 @@
                                                 <div class="flex items-center gap-1">
                                                     <flux:icon.log-out class="text-red-500" variant="micro" />
                                                     <p class="text-right text-red-500">
-                                                        {{ \Carbon\Carbon::parse($record->time_out)->timezone('Asia/Manila')->format('g:i a') }}
+                                                        {{ \Carbon\Carbon::parse($record->time_out)->format('g:i a') }}
                                                     </p>
                                                 </div>
                                             @else

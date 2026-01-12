@@ -54,7 +54,7 @@
                                     <flux:icon.log-in class="text-green-500" variant="micro" />
                                     <div class="text-right">
                                         <p class="text-sm font-medium text-green-600 dark:text-green-400">
-                                            {{ \Carbon\Carbon::parse($record->time_in)->timezone('Asia/Manila')->format('g:i a') }}
+                                            {{ \Carbon\Carbon::parse($record->time_in)->format('g:i a') }}
                                         </p>
                                     </div>
                                 </div>
@@ -68,7 +68,7 @@
                                     <flux:icon.log-out class="text-red-500" variant="micro" />
                                     <div class="text-right">
                                         <p class="text-sm font-medium text-red-600 dark:text-red-400">
-                                            {{ \Carbon\Carbon::parse($record->time_out)->timezone('Asia/Manila')->format('g:i a') }}
+                                            {{ \Carbon\Carbon::parse($record->time_out)->format('g:i a') }}
                                         </p>
                                     </div>
                                 </div>
