@@ -6,15 +6,6 @@
 
             $route = request()->route()->getName();
 
-            $routeName = match (true) {
-                $route == 'admin_dashboard' => 'admin_dashboard',
-                $route == 'student_list' => 'student_list',
-                $route ==  'student_logs' => 'student_logs',
-                $route == 'about_kiroku' => 'about_kiroku',               
-                
-                default => 'Breadcrumb',
-            };
-
             $output = match (true) {
                 $route == 'admin_dashboard' => 'Dashboard',
                 $route == 'student_list' => 'Student List',
@@ -30,7 +21,7 @@
         {{-- Breadcrumbs --}}
         <x-ui.breadcrumbs>
             <x-ui.breadcrumbs.item>Kiroku</x-ui.breadcrumbs.item>
-            <x-ui.breadcrumbs.item href="{{ route($routeName) }}" wire:navigate>{{ $output }}</x-ui.breadcrumbs.item>
+            <x-ui.breadcrumbs.item wire:navigate>{{ $output }}</x-ui.breadcrumbs.item>
         </x-ui.breadcrumbs>
 
         {{-- Profile Section --}}
