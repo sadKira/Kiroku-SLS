@@ -83,6 +83,9 @@ class AdminDashboard extends Component
         Flux::modals()->close();
         $this->resetSetSchoolYearForm();
 
+        // Dispatch event to reload charts
+        $this->dispatch('school-year-changed');
+
         $this->dispatch('notify',
             type: 'success',
             content: 'Academic year set successfully.',
@@ -211,6 +214,68 @@ class AdminDashboard extends Component
         return number_format($this->totalLogs);
     }
 
+    // Monthly daily activity data for time-series chart (current month)
+    public function getMonthlyDailyActivityProperty()
+    {
+        $now = Carbon::now('Asia/Manila');
+        $monthStart = $now->copy()->startOfMonth();
+        $monthEnd = $now->copy()->endOfMonth();
+        $schoolYear = $this->activeSchoolYear;
+        
+        $data = [];
+        $current = $monthStart->copy();
+        
+        while ($current <= $monthEnd) {
+            $count = LogRecord::whereHas('logSessions', function ($query) use ($current, $schoolYear) {
+                $query->where('school_year', $schoolYear)
+                    ->whereDate('date', $current->format('Y-m-d'));
+            })->count();
+            
+            $data[] = [
+                'x' => $current->copy()->startOfDay()->timestamp * 1000, // JavaScript timestamp in milliseconds
+                'y' => $count,
+            ];
+            $current->addDay();
+        }
+        
+        return $data;
+    }
+
+    // Today's hourly activity data (8am-5pm) for sparkline chart
+    public function getTodayHourlyActivityProperty()
+    {
+        $today = Carbon::now('Asia/Manila')->startOfDay();
+        $schoolYear = $this->activeSchoolYear;
+        
+        $logSession = LogSession::where('school_year', $schoolYear)
+            ->whereDate('date', $today->format('Y-m-d'))
+            ->first();
+        
+        if (!$logSession) {
+            return [];
+        }
+        
+        $data = [];
+        
+        // Generate data for each hour from 8am to 5pm
+        for ($hour = 8; $hour <= 17; $hour++) {
+            $hourStart = $today->copy()->setHour($hour)->setMinute(0)->setSecond(0);
+            $hourEnd = $today->copy()->setHour($hour)->setMinute(59)->setSecond(59);
+            
+            $count = LogRecord::where('log_session_id', $logSession->id)
+                ->whereNotNull('time_in')
+                ->whereBetween('time_in', [$hourStart->format('Y-m-d H:i:s'), $hourEnd->format('Y-m-d H:i:s')])
+                ->count();
+            
+            $data[] = [
+                'x' => $hourStart->timestamp * 1000,
+                'y' => $count,
+            ];
+        }
+        
+        return $data;
+    }
+
     // Today's log records filtered by hour (8am-5pm) for timeline
     public function getTodayLogRecordsProperty()
     {
@@ -250,6 +315,8 @@ class AdminDashboard extends Component
             'attendancePercentage' => $this->attendancePercentage,
             'logSessionsCount' => $this->logSessionsCount,
             'activityChartData' => $this->activityChartData,
+            'monthlyDailyActivity' => $this->monthlyDailyActivity,
+            'todayHourlyActivity' => $this->todayHourlyActivity,
             'chartTitleValue' => $this->chartTitleValue,
             'todayLogRecords' => $this->todayLogRecords,
         ]);

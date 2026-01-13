@@ -21,6 +21,7 @@
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 max-h-screen">
             {{-- Left Column: Cards and Chart --}}
             <div class="lg:col-span-2 space-y-6">
+                
                 {{-- Metric Cards Grid --}}
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                     {{-- Academic Year - Highlight Card --}}
@@ -48,18 +49,48 @@
                     </x-ui.card>
                 </div>
 
-                {{-- Activity Chart --}}
-                <x-ui.card class="!max-w-none">
-                    <div class="flex flex-col">
-                        <div class="flex items-center justify-between">
-                            <flux:heading class="">
-                                {{ $chartTitleValue }} total logs for A.Y. {{ $activeSchoolYear }}
-                            </flux:heading>
-                        </div>
+                {{-- Charts Grid --}}
+                <div class="grid lg:grid-cols-3 gap-6">
 
-                        <div id="activityChart" wire:key="activity-chart-{{ $activeSchoolYear }}" class="w-full"></div>
+                    {{-- Yearly Activity Chart --}}
+                    <x-ui.card class="!max-w-none grid lg:col-span-2">
+                        <div class="flex flex-col w-full">
+                            <div class="flex items-center justify-center mb-4">
+                                <flux:heading>
+                                    A.Y. {{ $activeSchoolYear }}
+                                </flux:heading>
+                            </div>
+                            <div id="activityChart" wire:key="activity-chart-{{ $activeSchoolYear }}" class="w-full"></div>
+                        </div>
+                    </x-ui.card>
+
+                    <div class="col-span-1 flex flex-col gap-6">
+
+                        {{-- This month Frequency --}}
+                        <x-ui.card class="!max-w-none ">
+                            <div class="flex flex-col h-full">
+                                <flux:heading class="mb-5">
+                                    This {{ \Carbon\Carbon::now('Asia/Manila')->format('F') }}
+                                </flux:heading>
+                                <div id="monthlyActivityChart" wire:key="monthly-activity-chart-{{ $activeSchoolYear }}" class="w-full flex-1"></div>
+                            </div>
+                        </x-ui.card>
+
+                        {{-- Today Frequency --}}
+                        <x-ui.card class="!max-w-none ">
+                            <div class="flex flex-col h-full">
+                                <flux:heading class="mb-5">
+                                    Today
+                                </flux:heading>
+                                <div id="todayActivityChart" wire:key="today-activity-chart-{{ $activeSchoolYear }}" class="w-full flex-1"></div>
+                            </div>
+                        </x-ui.card>
+                        
                     </div>
-                </x-ui.card>
+
+                </div>
+
+                
             </div>
 
             {{-- Right Column: Today's Logs Table --}}
@@ -68,16 +99,14 @@
                     <div class="flex flex-col">
                         <div class="flex items-center mb-2">
                             <flux:heading size="" class="">
-                                {{ \Carbon\Carbon::now('Asia/Manila')->format('F j, Y') }}
+                            <span class="relative flex items-center gap-2">
+                                <span>{{ \Carbon\Carbon::now('Asia/Manila')->format('F j, Y') }}</span>
+                                <span class="relative flex size-2">
+                                    <span class="absolute inline-flex h-full w-full animate-ping rounded-full bg-green-400 opacity-75"></span>
+                                    <span class="relative inline-flex size-2 rounded-full bg-green-500"></span>
+                                </span>
+                            </span>
                             </flux:heading>
-                            <svg fill="#00C951" width="24px" height="24px" viewBox="0 0 20 20"
-                                xmlns="http://www.w3.org/2000/svg" stroke="#00C951">
-                                <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
-                                <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g>
-                                <g id="SVGRepo_iconCarrier">
-                                    <path d="M7.8 10a2.2 2.2 0 0 0 4.4 0 2.2 2.2 0 0 0-4.4 0z"></path>
-                                </g>
-                            </svg>
                         </div>
                         
                         @if($todayLogRecords->isEmpty())
@@ -203,15 +232,17 @@
 </div>
 <script>
     let activityChart = null;
+    let monthlyActivityChart = null;
+    let todayActivityChart = null;
 
-    function initializeChart() {
+    function initializeCharts() {
         // Check if ApexCharts is loaded
         if (typeof ApexCharts === 'undefined') {
             console.warn('ApexCharts is not loaded');
             return;
         }
 
-        // Activity Chart
+        // Yearly Activity Chart
         const activityChartElement = document.querySelector("#activityChart");
         if (activityChartElement) {
             // Destroy existing chart if it exists
@@ -228,7 +259,7 @@
                 }],
                 chart: {
                     type: 'area',
-                    height: 200,
+                    height: 150,
                     toolbar: { show: false },
                     fontFamily: 'Instrument Sans, ui-sans-serif, system-ui, sans-serif',
                     sparkline: { enabled: false }
@@ -265,15 +296,23 @@
                 },
                 grid: {
                     show: true,
+                    padding: {
+                        // left: -5,
+                        // bottom: -10,
+                        // right:-5,
+                        top: -10,
+                    },
                     borderColor: '#e4e4e7',
                     strokeDashArray: 0,
                     xaxis: { lines: { show: false } },
-                    yaxis: { lines: { show: true } }
+                    yaxis: { lines: { show: false } }
                 },
                 xaxis: {
                     categories: activityData.map(item => item.label),
+                    // floating: true,
                     labels: {
                         style: {
+                            // colors: '#ffffff',
                             colors: '#71717a',
                             fontSize: '12px',
                             fontFamily: 'Instrument Sans, ui-sans-serif, system-ui, sans-serif'
@@ -283,6 +322,7 @@
                 yaxis: {
                     floating: true,
                     labels: {
+                        // offsetX: -15,
                         style: {
                             colors: '#ffffff',
                             fontSize: '12px',
@@ -300,37 +340,290 @@
 
             activityChart.render();
         }
+
+        // Monthly Daily Activity Chart (Time-Series)
+        const monthlyActivityChartElement = document.querySelector("#monthlyActivityChart");
+        if (monthlyActivityChartElement) {
+            // Destroy existing chart if it exists
+            if (monthlyActivityChart) {
+                monthlyActivityChart.destroy();
+            }
+
+            const monthlyData = @json($monthlyDailyActivity);
+            
+            monthlyActivityChart = new ApexCharts(monthlyActivityChartElement, {
+                series: [{
+                    name: 'Logged Students',
+                    data: monthlyData
+                }],
+                chart: {
+                    type: 'area',
+                    height: 80,
+                    toolbar: { show: false },
+                    fontFamily: 'Instrument Sans, ui-sans-serif, system-ui, sans-serif',
+                    sparkline: { enabled: true },
+                    zoom: { enabled: false }
+                },
+                colors: ['#52525b'],
+                stroke: {
+                    curve: 'smooth',
+                    width: 2,
+                    colors: ['#52525b']
+                },
+                dataLabels: {
+                    enabled: false
+                },
+                fill: {
+                    type: 'gradient',
+                    gradient: {
+                        shadeIntensity: 0.5,
+                        opacityFrom: 0.7,
+                        opacityTo: 0.3,
+                        stops: [0, 100],
+                        colorStops: [
+                            {
+                                offset: 0,
+                                color: '#52525b',
+                                opacity: 0.7
+                            },
+                            {
+                                offset: 100,
+                                color: '#52525b',
+                                opacity: 0.3
+                            }
+                        ]
+                    }
+                },
+                grid: {
+                    show: true,
+                    // padding: {
+                    //     left: -5,
+                    //     bottom: -5,
+                    //     right:-5,
+                    //     top: -5,
+                    // },
+                    borderColor: '#e4e4e7',
+                    strokeDashArray: 0,
+                    xaxis: { lines: { show: false } },
+                    yaxis: { lines: { show: false } }
+                },
+                xaxis: {
+                    type: 'datetime',
+                    labels: {
+                        style: {
+                            colors: '#71717a',
+                            fontSize: '12px',
+                            fontFamily: 'Instrument Sans, ui-sans-serif, system-ui, sans-serif'
+                        },
+                        datetimeUTC: false
+                    }
+                },
+                yaxis: {
+                    floating: true,
+                    labels: {
+                        // offsetX: -15,
+                        style: {
+                            colors: '#ffffff',
+                            fontSize: '12px',
+                            fontFamily: 'Instrument Sans, ui-sans-serif, system-ui, sans-serif'
+                        }
+                    }
+                },
+                tooltip: {
+                    theme: 'light',
+                    x: {
+                        format: 'MMM dd, yyyy'
+                    },
+                    style: {
+                        fontFamily: 'Instrument Sans, ui-sans-serif, system-ui, sans-serif'
+                    }
+                }
+            });
+
+            monthlyActivityChart.render();
+        }
+
+        // Today's Activity Chart (Sparkline - Hourly 8am-5pm)
+        const todayActivityChartElement = document.querySelector("#todayActivityChart");
+        if (todayActivityChartElement) {
+            // Destroy existing chart if it exists
+            if (todayActivityChart) {
+                todayActivityChart.destroy();
+            }
+
+            const todayData = @json($todayHourlyActivity);
+            
+            todayActivityChart = new ApexCharts(todayActivityChartElement, {
+                series: [{
+                    name: 'Logged Students',
+                    data: todayData
+                }],
+                chart: {
+                    type: 'area',
+                    height: 20,
+                    toolbar: { show: false },
+                    fontFamily: 'Instrument Sans, ui-sans-serif, system-ui, sans-serif',
+                    sparkline: { enabled: true },
+                    zoom: { enabled: false }
+                },
+                colors: ['#52525b'],
+                stroke: {
+                    curve: 'smooth',
+                    width: 2,
+                    colors: ['#52525b']
+                },
+                dataLabels: {
+                    enabled: false
+                },
+                fill: {
+                    type: 'gradient',
+                    gradient: {
+                        shadeIntensity: 0.5,
+                        opacityFrom: 0.7,
+                        opacityTo: 0.3,
+                        stops: [0, 100],
+                        colorStops: [
+                            {
+                                offset: 0,
+                                color: '#52525b',
+                                opacity: 0.7
+                            },
+                            {
+                                offset: 100,
+                                color: '#52525b',
+                                opacity: 0.3
+                            }
+                        ]
+                    }
+                },
+                grid: {
+                    show: true,
+                    borderColor: '#e4e4e7',
+                    strokeDashArray: 0,
+                    xaxis: { lines: { show: false } },
+                    yaxis: { lines: { show: false } }
+                },
+                xaxis: {
+                    type: 'datetime',
+                    labels: {
+                        style: {
+                            colors: '#71717a',
+                            fontSize: '12px',
+                            fontFamily: 'Instrument Sans, ui-sans-serif, system-ui, sans-serif'
+                        },
+                        datetimeUTC: false
+                    }
+                },
+                yaxis: {
+                    floating: true,
+                    labels: {
+                        style: {
+                            colors: '#ffffff',
+                            fontSize: '12px',
+                            fontFamily: 'Instrument Sans, ui-sans-serif, system-ui, sans-serif'
+                        }
+                    }
+                },
+                tooltip: {
+                    theme: 'light',
+                    x: {
+                        format: 'h:mm TT'
+                    },
+                    style: {
+                        fontFamily: 'Instrument Sans, ui-sans-serif, system-ui, sans-serif'
+                    }
+                }
+            });
+
+            todayActivityChart.render();
+        }
     }
 
     // Initialize on DOMContentLoaded
-    document.addEventListener('DOMContentLoaded', initializeChart);
+    document.addEventListener('DOMContentLoaded', initializeCharts);
 
     // Handle Livewire navigation events
-    document.addEventListener('livewire:navigated', initializeChart);
+    document.addEventListener('livewire:navigated', initializeCharts);
     document.addEventListener('livewire:navigating', () => {
         if (activityChart) {
             activityChart.destroy();
             activityChart = null;
         }
+        if (monthlyActivityChart) {
+            monthlyActivityChart.destroy();
+            monthlyActivityChart = null;
+        }
+        if (todayActivityChart) {
+            todayActivityChart.destroy();
+            todayActivityChart = null;
+        }
     });
 
     // Handle wire:navigate
-    document.addEventListener('wire:navigated', initializeChart);
+    document.addEventListener('wire:navigated', initializeCharts);
 
     // Update charts when Livewire updates
     if (typeof Livewire !== 'undefined') {
-        Livewire.hook('morph.updated', () => {
-            setTimeout(initializeChart, 100);
+        Livewire.hook('morph.updated', ({ el, component }) => {
+            // Check if charts need to be reinitialized
+            const hasChartElements = el.querySelector('#activityChart') || el.querySelector('#monthlyActivityChart') || el.querySelector('#todayActivityChart');
+            if (hasChartElements || el.id === 'activityChart' || el.id === 'monthlyActivityChart' || el.id === 'todayActivityChart') {
+                setTimeout(initializeCharts, 150);
+            }
         });
     }
     
-    // Make initializeChart globally accessible for Alpine.js
-    window.initializeChart = initializeChart;
+    // Make initializeCharts globally accessible
+    window.initializeCharts = initializeCharts;
     
-    // Listen for Livewire property updates
+    // Listen for Livewire property updates and school year changes
     document.addEventListener('livewire:init', () => {
         Livewire.on('$refresh', () => {
-            setTimeout(initializeChart, 150);
+            setTimeout(initializeCharts, 150);
         });
+        
+        // Listen for school year change event
+        Livewire.on('school-year-changed', () => {
+            setTimeout(() => {
+                initializeCharts();
+            }, 200);
+        });
+    });
+    
+    // Watch for wire:key changes on chart elements (when activeSchoolYear changes)
+    document.addEventListener('DOMContentLoaded', () => {
+        const checkAndObserve = () => {
+            const activityChartEl = document.querySelector('#activityChart');
+            const monthlyChartEl = document.querySelector('#monthlyActivityChart');
+            const todayChartEl = document.querySelector('#todayActivityChart');
+            
+            if (activityChartEl || monthlyChartEl || todayChartEl) {
+                const observer = new MutationObserver((mutations) => {
+                    let shouldReload = false;
+                    mutations.forEach((mutation) => {
+                        if (mutation.type === 'attributes' && 
+                            (mutation.attributeName === 'wire:key' || mutation.attributeName === 'data-wire-key')) {
+                            shouldReload = true;
+                        }
+                    });
+                    if (shouldReload) {
+                        setTimeout(initializeCharts, 200);
+                    }
+                });
+                
+                [activityChartEl, monthlyChartEl, todayChartEl].forEach((el) => {
+                    if (el) {
+                        observer.observe(el, { 
+                            attributes: true, 
+                            attributeFilter: ['wire:key', 'data-wire-key'] 
+                        });
+                    }
+                });
+            }
+        };
+        
+        checkAndObserve();
+        // Re-check after a short delay in case elements aren't ready yet
+        setTimeout(checkAndObserve, 500);
     });
 </script>
