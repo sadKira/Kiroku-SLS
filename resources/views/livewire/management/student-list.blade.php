@@ -1,7 +1,17 @@
 <div>
 
     {{-- App Header --}}
-    <x-management.profile-section />
+    <div class="flex items-center justify-between mb-10">
+        
+        {{-- Breadcrumbs --}}
+        <x-ui.breadcrumbs>
+            <x-ui.breadcrumbs.item href="{{ route('admin_dashboard') }}" wire:navigate>Kiroku</x-ui.breadcrumbs.item>
+            <x-ui.breadcrumbs.item>Student List</x-ui.breadcrumbs.item>
+        </x-ui.breadcrumbs>
+
+        <x-management.profile-section />
+
+    </div>    
 
     {{-- Upper --}}
     <div class="flex items-center justify-between mb-5">
@@ -12,19 +22,23 @@
             <flux:button icon="plus" wire:click="addStudent" variant="ghost" size="sm">Add Student</flux:button>
 
             
-            <flux:dropdown>
-                <flux:button icon="arrow-down-tray" variant="primary" size="sm">
-                    Download Barcodes
-                </flux:button>
+            @if ($students->count() > 0)
+                
+                <flux:dropdown>
+                    <flux:button icon="arrow-down-tray" variant="primary" size="sm">
+                        Download Barcodes
+                    </flux:button>
 
-                <flux:menu>
-                    <flux:menu.group heading="Paper Size">
-                        <flux:menu.item wire:click="exportBarcodes('A4')">A4</flux:menu.item>
-                        <flux:menu.item wire:click="exportBarcodes('Letter')">Letter</flux:menu.item>
-                        <flux:menu.item wire:click="exportBarcodes('Legal')">Legal</flux:menu.item>
-                    </flux:menu.group>
-                </flux:menu>
-            </flux:dropdown>
+                    <flux:menu>
+                        <flux:menu.group heading="Paper Size">
+                            <flux:menu.item wire:click="exportBarcodes('A4')">A4</flux:menu.item>
+                            <flux:menu.item wire:click="exportBarcodes('Letter')">Letter</flux:menu.item>
+                            <flux:menu.item wire:click="exportBarcodes('Legal')">Legal</flux:menu.item>
+                        </flux:menu.group>
+                    </flux:menu>
+                </flux:dropdown>
+            
+            @endif
         </div>
 
     </div>

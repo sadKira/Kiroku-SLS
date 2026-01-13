@@ -1,20 +1,42 @@
 <div class=""> 
 
     {{-- App Header --}}
-    <x-management.profile-section />
+    <div class="flex items-center justify-between mb-10">
+        
+        {{-- Breadcrumbs --}}
+        <x-ui.breadcrumbs>
+            <x-ui.breadcrumbs.item href="{{ route('admin_dashboard') }}" wire:navigate>Kiroku</x-ui.breadcrumbs.item>
+            <x-ui.breadcrumbs.item>Dashboard</x-ui.breadcrumbs.item>
+        </x-ui.breadcrumbs>
+
+        <x-management.profile-section />
+
+    </div>
 
     <div class="">
         {{-- Header with Set Academic Year Button --}}
         <div class="mt-6 mb-6 flex items-center justify-between">
             <flux:heading size="lg">Dashboard</flux:heading>
-            <flux:button 
-                icon="cog-6-tooth" 
-                wire:click="openSetSchoolYearModal" 
-                variant="ghost" 
-                size="sm"
-            >
-                Set Academic Year
-            </flux:button>
+
+            <div class="flex-items-center gap-1">
+                <flux:button 
+                    icon="arrow-down-tray" 
+                    wire:click="" 
+                    variant="ghost" 
+                    size="sm"
+                >
+                    Export
+                </flux:button>
+
+                <flux:button 
+                    icon="cog-6-tooth" 
+                    wire:click="openSetSchoolYearModal" 
+                    variant="ghost" 
+                    size="sm"
+                >
+                    Set Academic Year
+                </flux:button>
+            </div>
         </div>
 
         {{-- Two Column Layout --}}
@@ -53,40 +75,74 @@
                 <div class="grid lg:grid-cols-3 gap-6">
 
                     {{-- Yearly Activity Chart --}}
-                    <x-ui.card class="!max-w-none grid lg:col-span-2">
+                    <x-ui.card class="!max-w-none grid lg:col-span-3">
                         <div class="flex flex-col w-full">
                             <div class="flex items-center justify-center mb-4">
                                 <flux:heading>
                                     A.Y. {{ $activeSchoolYear }}
                                 </flux:heading>
                             </div>
-                            <div id="activityChart" wire:key="activity-chart-{{ $activeSchoolYear }}" class="w-full"></div>
+
+                            <div class="relative">
+                                @if(collect($activityChartData)->sum('value') > 0)
+                                    <div id="activityChart" wire:key="activity-chart-{{ $activeSchoolYear }}" class="w-full"></div>
+                                @else
+                                    {{-- Empty State --}}
+                                    <div id="activityChart" wire:key="activity-chart-{{ $activeSchoolYear }}" class="w-full h-[100px]"></div>
+                                    <div class="absolute bottom-15 inset-0 flex items-center justify-center pointer-events-none">
+                                        <p class="text-sm text-[#71717a]">No activity data available</p>
+                                    </div>
+                                @endif
+                            </div>
+                            
                         </div>
                     </x-ui.card>
+                </div>
 
-                    <div class="col-span-1 flex flex-col gap-6">
+                <div class="grid lg:grid-cols-2 gap-6">
 
                         {{-- This month Frequency --}}
                         <x-ui.card class="!max-w-none ">
                             <div class="flex flex-col h-full">
-                                <flux:heading class="mb-5">
+                                <flux:heading class="">
                                     This {{ \Carbon\Carbon::now('Asia/Manila')->format('F') }}
                                 </flux:heading>
-                                <div id="monthlyActivityChart" wire:key="monthly-activity-chart-{{ $activeSchoolYear }}" class="w-full flex-1"></div>
+
+                                <div class="relative">
+                                    @if(collect($monthlyDailyActivity)->sum(fn($item) => $item['y']) > 0)
+                                        <div id="monthlyActivityChart" wire:key="monthly-activity-chart-{{ $activeSchoolYear }}" class="w-full flex-1 mt-5"></div>
+                                    @else
+                                        {{-- Empty State --}}
+                                        <div class="flex items-center justify-center py-2">
+                                            <p class="text-sm text-[#71717a] py-2">No data this month</p>
+                                        </div>
+                                    @endif
+                                </div>
+                                
                             </div>
                         </x-ui.card>
 
                         {{-- Today Frequency --}}
                         <x-ui.card class="!max-w-none ">
                             <div class="flex flex-col h-full">
-                                <flux:heading class="mb-5">
+                                <flux:heading class="">
                                     Today
                                 </flux:heading>
-                                <div id="todayActivityChart" wire:key="today-activity-chart-{{ $activeSchoolYear }}" class="w-full flex-1"></div>
+
+                                <div class="relative">
+                                    @if(collect($todayHourlyActivity)->sum(fn($item) => $item['y']) > 0)
+                                        <div id="todayActivityChart" wire:key="today-activity-chart-{{ $activeSchoolYear }}" class="w-full flex-1 mt-5"></div>
+                                    @else
+                                        {{-- Empty State --}}
+                                        <div class="flex items-center justify-center py-2">
+                                            <p class="text-sm text-[#71717a] py-2">No activity today</p>
+                                        </div>
+                                    @endif
+                                </div>
+
                             </div>
                         </x-ui.card>
                         
-                    </div>
 
                 </div>
 
@@ -110,12 +166,12 @@
                         </div>
                         
                         @if($todayLogRecords->isEmpty())
-                            <div class="flex flex-col justify-center items-center gap-3 py-12">
-                                <flux:icon.clipboard-document-list variant="solid" class="w-12 h-12 text-gray-400 dark:text-neutral-500" />
-                                <flux:heading size="lg" class="text-gray-800 dark:text-neutral-200">No Log Records Today</flux:heading>
+                            <div class="flex justify-center items-center gap-3 py-12 max-h-[60vh]">
+                                <flux:icon.book-text variant="mini" />
+                                <flux:heading size="lg" class="">No Log Records Today</flux:heading>
                             </div>
                         @else
-                            <div class="max-h-[50vh] overflow-y-auto
+                            <div class="max-h-[60vh] overflow-y-auto
                                 [&::-webkit-scrollbar]:w-2
                                 [&::-webkit-scrollbar-thumb]:rounded-full
                                 [&::-webkit-scrollbar-track]:bg-gray-100
@@ -259,7 +315,7 @@
                 }],
                 chart: {
                     type: 'area',
-                    height: 150,
+                    height: 100,
                     toolbar: { show: false },
                     fontFamily: 'Instrument Sans, ui-sans-serif, system-ui, sans-serif',
                     sparkline: { enabled: false }
@@ -358,7 +414,7 @@
                 }],
                 chart: {
                     type: 'area',
-                    height: 80,
+                    height: 20,
                     toolbar: { show: false },
                     fontFamily: 'Instrument Sans, ui-sans-serif, system-ui, sans-serif',
                     sparkline: { enabled: true },

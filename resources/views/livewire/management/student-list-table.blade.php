@@ -4,63 +4,67 @@
 
         <div class="flex items-center justify-between mb-5">
 
-            {{-- Filter --}}
-            <div class="flex items-center gap-3">
+            @if ($hasStudents && empty($search))
 
-                <div class="flex items-center gap-2 text-nowrap">
-                    <flux:dropdown>
-                        <flux:button variant="filled" icon="adjustments-horizontal" size="sm">Filter</flux:button>
+                {{-- Filter --}}
+                <div class="flex items-center gap-3">
 
-                        <flux:menu>
+                    <div class="flex items-center gap-2 text-nowrap">
+                        <flux:dropdown>
+                            <flux:button variant="filled" icon="adjustments-horizontal" size="sm">Filter</flux:button>
 
-                            <flux:menu.submenu heading="Year Level">
-                                <flux:menu.radio.group wire:model.live="selectedYearLevel">
-                                    <flux:menu.radio value="1st Year">1st Year</flux:menu.radio>
-                                    <flux:menu.radio value="2nd Year">2nd Year</flux:menu.radio>
-                                    <flux:menu.radio value="3rd Year">3rd Year</flux:menu.radio>
-                                    <flux:menu.radio value="4th Year">4th Year</flux:menu.radio>
-                                </flux:menu.radio.group>
-                            </flux:menu.submenu>
+                            <flux:menu>
 
-                            <flux:menu.submenu heading="Course">
-                                <flux:menu.radio.group wire:model.live="selectedCourse">
-                                    <flux:menu.radio value="Bachelor of Arts in International Studies">
-                                        Bachelor of Arts in International Studies</flux:menu.radio>
-                                        
-                                    <flux:menu.radio value="Bachelor of Science in Information Systems">
-                                        Bachelor of Science in Information Systems</flux:menu.radio>
+                                <flux:menu.submenu heading="Year Level">
+                                    <flux:menu.radio.group wire:model.live="selectedYearLevel">
+                                        <flux:menu.radio value="1st Year">1st Year</flux:menu.radio>
+                                        <flux:menu.radio value="2nd Year">2nd Year</flux:menu.radio>
+                                        <flux:menu.radio value="3rd Year">3rd Year</flux:menu.radio>
+                                        <flux:menu.radio value="4th Year">4th Year</flux:menu.radio>
+                                    </flux:menu.radio.group>
+                                </flux:menu.submenu>
 
-                                    <flux:menu.radio value="Bachelor of Human Services">
-                                        Bachelor of Human Services</flux:menu.radio>
+                                <flux:menu.submenu heading="Course">
+                                    <flux:menu.radio.group wire:model.live="selectedCourse">
+                                        <flux:menu.radio value="Bachelor of Arts in International Studies">
+                                            Bachelor of Arts in International Studies</flux:menu.radio>
+                                            
+                                        <flux:menu.radio value="Bachelor of Science in Information Systems">
+                                            Bachelor of Science in Information Systems</flux:menu.radio>
 
-                                    <flux:menu.radio value="Bachelor of Secondary Education">
-                                        Bachelor of Secondary Education</flux:menu.radio>
+                                        <flux:menu.radio value="Bachelor of Human Services">
+                                            Bachelor of Human Services</flux:menu.radio>
 
-                                    <flux:menu.radio value="Bachelor of Elementary Education">
-                                        Bachelor of Elementary Education</flux:menu.radio>
+                                        <flux:menu.radio value="Bachelor of Secondary Education">
+                                            Bachelor of Secondary Education</flux:menu.radio>
 
-                                    <flux:menu.radio value="Bachelor of Special Needs Education">
-                                        Bachelor of Special Needs Education</flux:menu.radio>
-                                </flux:menu.radio.group>
-                            </flux:menu.submenu>
+                                        <flux:menu.radio value="Bachelor of Elementary Education">
+                                            Bachelor of Elementary Education</flux:menu.radio>
 
-                        </flux:menu>
-                    </flux:dropdown>
+                                        <flux:menu.radio value="Bachelor of Special Needs Education">
+                                            Bachelor of Special Needs Education</flux:menu.radio>
+                                    </flux:menu.radio.group>
+                                </flux:menu.submenu>
+
+                            </flux:menu>
+                        </flux:dropdown>
+                    </div>
+                    
+                    {{-- Filter Indicators --}}
+                    @if ($selectedYearLevel != 'All')
+                        <flux:badge variant="solid" color="zinc">
+                            {{ $selectedYearLevel }} <flux:badge.close wire:click="clearYearLevel" />
+                        </flux:badge>
+                    @endif
+                    @if ($selectedCourse != 'All')
+                        <flux:badge variant="solid" color="zinc">
+                            {{ $selectedCourse }} <flux:badge.close wire:click="clearCourse" />
+                        </flux:badge>
+                    @endif
+
                 </div>
-                
-                {{-- Filter Indicators --}}
-                @if ($selectedYearLevel != 'All')
-                    <flux:badge variant="solid" color="zinc">
-                        {{ $selectedYearLevel }} <flux:badge.close wire:click="clearYearLevel" />
-                    </flux:badge>
-                @endif
-                @if ($selectedCourse != 'All')
-                    <flux:badge variant="solid" color="zinc">
-                        {{ $selectedCourse }} <flux:badge.close wire:click="clearCourse" />
-                    </flux:badge>
-                @endif
 
-            </div>
+            @endif
 
             {{-- Selection Indicator and Action --}}
             @if ( count($selected) > 0 )
@@ -77,8 +81,10 @@
                 
             @else
 
-                {{-- Search Students --}}
-                <flux:input size="sm" icon="magnifying-glass" placeholder="name, student id, course, etc." class="max-w-100" wire:model.live.debounce.300ms="search" autocomplete="off" clearable />
+                @if ($students->isNotEmpty() || !empty($search))
+                    {{-- Search Students --}}
+                    <flux:input size="sm" icon="magnifying-glass" placeholder="name, student id, course, etc." class="max-w-100" wire:model.live.debounce.300ms="search" autocomplete="off" clearable />
+                @endif
 
             @endif
             
@@ -123,7 +129,7 @@
                                         <tr>
                                             <td colspan="6" class="px-6 py-10 whitespace-nowrap text-sm  text-gray-800 dark:text-neutral-200">
                                                 <div class="flex justify-center items-center gap-2 w-full">
-                                                    <flux:icon.magnifying-glass variant="solid" class="" />
+                                                    <flux:icon.user-search variant="mini" class="" />
                                                     <flux:heading size="lg">No Student Found</flux:heading>
                                                 </div>
                                             </td>
@@ -135,7 +141,7 @@
                                         <tr>
                                             <td colspan="6" class="px-6 py-10 whitespace-nowrap text-sm  text-gray-800 dark:text-neutral-200">
                                                 <div class="flex justify-center items-center gap-2 w-full">
-                                                    <flux:icon.magnifying-glass variant="solid" class="" />
+                                                    <flux:icon.users variant="mini" class="" />
                                                     <flux:heading size="lg">No Students</flux:heading>
                                                 </div>
                                             </td>

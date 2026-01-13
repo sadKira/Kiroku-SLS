@@ -3,56 +3,68 @@
     {{-- Table --}}
     <div class="flex flex-col">
 
-        <div class="flex items-center justify-between mb-5">
+        @if ($hasLogSessions)
+            <div class="flex items-center justify-between mb-5">
 
-            {{-- Filter --}}
-            <div class="flex items-center gap-3">
+                {{-- Filter --}}
+                <div class="flex items-center gap-3">
 
-                {{-- Select Month --}}
-                <div class="flex items-center gap-2 text-nowrap">
-                    <flux:heading>Month:</flux:heading>
-                    <flux:select size="sm" wire:model.live="filterMonth" placeholder="Select Month" clearable>
-                        <flux:select.option class="text-black dark:text-white" value="January">January</flux:select.option>
-                        <flux:select.option class="text-black dark:text-white" value="February">February</flux:select.option>
-                        <flux:select.option class="text-black dark:text-white" value="March">March</flux:select.option>
-                        <flux:select.option class="text-black dark:text-white" value="April">April</flux:select.option>
-                        <flux:select.option class="text-black dark:text-white" value="May">May</flux:select.option>
-                        <flux:select.option class="text-black dark:text-white" value="June">June</flux:select.option>
-                        <flux:select.option class="text-black dark:text-white" value="July">July</flux:select.option>
-                        <flux:select.option class="text-black dark:text-white" value="August">August</flux:select.option>
-                        <flux:select.option class="text-black dark:text-white" value="September">September</flux:select.option>
-                        <flux:select.option class="text-black dark:text-white" value="October">October</flux:select.option>
-                        <flux:select.option class="text-black dark:text-white" value="November">November</flux:select.option>
-                        <flux:select.option class="text-black dark:text-white" value="December">December</flux:select.option>
-                    </flux:select>
+                    {{-- Select Month --}}
+                    <div class="flex items-center gap-2 text-nowrap">
+                        <flux:heading>Month:</flux:heading>
+                        <flux:select size="sm" wire:model.live="filterMonth" placeholder="Select Month" clearable>
+                            <flux:select.option class="text-black dark:text-white" value="January">January</flux:select.option>
+                            <flux:select.option class="text-black dark:text-white" value="February">February</flux:select.option>
+                            <flux:select.option class="text-black dark:text-white" value="March">March</flux:select.option>
+                            <flux:select.option class="text-black dark:text-white" value="April">April</flux:select.option>
+                            <flux:select.option class="text-black dark:text-white" value="May">May</flux:select.option>
+                            <flux:select.option class="text-black dark:text-white" value="June">June</flux:select.option>
+                            <flux:select.option class="text-black dark:text-white" value="July">July</flux:select.option>
+                            <flux:select.option class="text-black dark:text-white" value="August">August</flux:select.option>
+                            <flux:select.option class="text-black dark:text-white" value="September">September</flux:select.option>
+                            <flux:select.option class="text-black dark:text-white" value="October">October</flux:select.option>
+                            <flux:select.option class="text-black dark:text-white" value="November">November</flux:select.option>
+                            <flux:select.option class="text-black dark:text-white" value="December">December</flux:select.option>
+                        </flux:select>
+                    </div>
+
+                    {{-- Select Year --}}
+                    <div class="flex items-center gap-2 text-nowrap">
+                        <flux:heading>Year:</flux:heading>
+                        <flux:select size="sm" wire:model.live="filterYear" placeholder="Select Year" clearable>
+                            @foreach ($availableYears as $year)
+                                <flux:select.option class="text-black dark:text-white" value="{{ $year }}">{{ $year }}</flux:select.option>
+                            @endforeach
+                        </flux:select>
+                    </div>
+
+                    {{-- Select Academic Year --}}
+                    <div class="flex items-center gap-2 text-nowrap">
+                        <flux:heading>Academic Year:</flux:heading>
+                        <flux:select size="sm" wire:model.live="filterAcademicYear" placeholder="Select Academic Year" clearable>
+                            @foreach ($availableAcademicYears as $academicYear)
+                                <flux:select.option class="text-black dark:text-white" value="{{ $academicYear }}">{{ $academicYear }}</flux:select.option>
+                            @endforeach
+                        </flux:select>
+                    </div>
+
                 </div>
 
-                {{-- Select Year --}}
-                <div class="flex items-center gap-2 text-nowrap">
-                    <flux:heading>Year:</flux:heading>
-                    <flux:select size="sm" wire:model.live="filterYear" placeholder="Select Year" clearable>
-                        @foreach ($availableYears as $year)
-                            <flux:select.option class="text-black dark:text-white" value="{{ $year }}">{{ $year }}</flux:select.option>
-                        @endforeach
-                    </flux:select>
-                </div>
-
-                {{-- Select Academic Year --}}
-                <div class="flex items-center gap-2 text-nowrap">
-                    <flux:heading>Academic Year:</flux:heading>
-                    <flux:select size="sm" wire:model.live="filterAcademicYear" placeholder="Select Academic Year" clearable>
-                        @foreach ($availableAcademicYears as $academicYear)
-                            <flux:select.option class="text-black dark:text-white" value="{{ $academicYear }}">{{ $academicYear }}</flux:select.option>
-                        @endforeach
-                    </flux:select>
-                </div>
+                {{-- Add Log --}}
+                <flux:button icon="plus" wire:click="addLogSession" variant="primary" size="sm">Add Log</flux:button>
 
             </div>
+        
+        @else
+            <div class="flex items-center justify-end mb-5">
 
-            {{-- Add Log --}}
-            <flux:button icon="plus" wire:click="addLogSession" variant="primary" size="sm">Add Log</flux:button>
+                {{-- Add Log --}}
+                <flux:button icon="plus" wire:click="addLogSession" variant="primary" size="sm">Add Log</flux:button>
 
-        </div>
+            </div>
+        @endif
+
+        
 
         {{-- Filter Indicators --}}
         <div class="flex items-center gap-3 mb-5">
@@ -104,7 +116,7 @@
                                 <tr>
                                     <td colspan="4" class="px-6 py-10 whitespace-nowrap text-sm text-gray-800 dark:text-neutral-200">
                                         <div class="flex justify-center items-center gap-2 w-full">
-                                            <flux:icon.magnifying-glass variant="solid" class="" />
+                                            <flux:icon.book-text variant="mini" class="" />
                                             <flux:heading size="lg">No Log Sessions</flux:heading>
                                         </div>
                                     </td>
@@ -318,7 +330,7 @@
                     You are about to delete the log session for 
                 </flux:text>
                 <flux:text class="">
-                    <span class="font-bold">{{ $logSessionDate ?? 'error' }}</span> ({{ $logSessionSchoolYear ?? 'error' }}).
+                    <span class="font-bold">{{ $logSessionDate ?? 'error' }}</span>, A.Y. {{ $logSessionSchoolYear ?? 'error' }}.
                 </flux:text>
             </div>
             
