@@ -6,5 +6,6 @@
         "cursor",
         "vscode"
     ],
-    "guidelines": []
+    "guidelines": [],
+    "herd_mcp": true
 }

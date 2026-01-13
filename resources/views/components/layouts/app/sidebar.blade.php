@@ -10,7 +10,7 @@
 
         <flux:sidebar.header>
 
-            <flux:sidebar.brand :href="route('admin_dashboard')" name="Kiroku SLS">
+            <flux:sidebar.brand :href="route('admin_dashboard')" name="Kiroku SLS" wire:navigate>
                 <x-slot>
                     <img src="{{ asset('mkdlib-logo.svg') }}" alt="MKD Library Logo" class="w-auto h-5">
                 </x-slot>

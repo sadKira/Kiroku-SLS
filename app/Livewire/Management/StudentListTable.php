@@ -75,6 +75,19 @@ class StudentListTable extends Component
         $this->selected = [];
     }
 
+     // Listen for the student-added event
+    #[On('student-added')]
+    public function refreshTable()
+    {
+        // Reset to first page to show the newly added student
+        $this->resetPage();
+        
+        // Clear any active search/filters 
+        $this->search = '';
+        $this->selectedCourse = 'All';
+        $this->selectedYearLevel = 'All';
+    }
+
     // Edit Student Details
     public function editProfile($studentId)
     {
@@ -231,6 +244,9 @@ class StudentListTable extends Component
             // Close Modal
             Flux::modals()->close();
 
+            // Dispatch event to refresh parent component
+            $this->dispatch('student-deleted');
+
             // Success Toast
             $this->dispatch('notify',
                 type: 'success',
@@ -344,6 +360,9 @@ class StudentListTable extends Component
             // Close Modal
             Flux::modals()->close();
 
+            // Dispatch event to refresh parent component
+            $this->dispatch('student-deleted');
+
             // Success Toast
             $this->dispatch('notify',
                 type: 'success',
@@ -406,7 +425,8 @@ class StudentListTable extends Component
             ->orderBy('last_name');
 
         return view('livewire.management.student-list-table', [
-            'students' => $query->paginate(10)
+            'students' => $query->paginate(10),
+            'hasStudents' => Student::exists()
         ]);
     }
 }

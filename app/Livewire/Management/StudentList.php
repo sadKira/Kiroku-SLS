@@ -4,6 +4,7 @@ namespace App\Livewire\Management;
 
 use Livewire\Component;
 use Livewire\Attributes\Layout;
+use Livewire\Attributes\On;
 
 use App\Models\Student;
 use Flux\Flux;
@@ -24,6 +25,12 @@ class StudentList extends Component
 
     // Paper Size for Export
     public $paperSize = 'A4';
+
+    #[On('student-deleted')]
+    public function refreshStudentList()
+    {
+        // This will trigger a re-render of the component
+    }
 
     // Set Paper Size and Export
     public function exportBarcodes($paperSize)
@@ -134,6 +141,9 @@ class StudentList extends Component
             $this->year_level = '';
             $this->course = '';
 
+            // Dispatch event to refresh the table
+            $this->dispatch('student-added');
+
             // Close Modal
             Flux::modals()->close();
 
@@ -197,6 +207,10 @@ class StudentList extends Component
 
     public function render()
     {
-        return view('livewire.management.student-list');
+        $students = Student::all();
+
+        return view('livewire.management.student-list', [
+            'students' => $students
+        ]);
     }
 }

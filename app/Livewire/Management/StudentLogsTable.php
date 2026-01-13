@@ -528,6 +528,7 @@ class StudentLogsTable extends Component
             'logSessions' => $logSessions,
             'availableYears' => $this->availableYears,
             'availableAcademicYears' => $this->availableAcademicYears,
+            'hasLogSessions' => LogSession::exists()
         ]);
     }
 
