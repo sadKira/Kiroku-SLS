@@ -215,7 +215,8 @@ class ExportDashboardReport extends Controller
     private function calculateStatistics($logRecords, $logSessions, $dateRange, $reportType, $schoolYear)
     {
         // Total log records
-        $totalLogs = $logRecords->count();
+        $uniqueStudentIds = $logRecords->pluck('student_id')->unique();
+        $totalLogs = $uniqueStudentIds->count();
         
         // Total students (all time)
         $totalStudents = Student::count();
@@ -243,7 +244,10 @@ class ExportDashboardReport extends Controller
             $sessionIds = $sessionsByDate[$dateStr] ?? [];
             $count = $logRecords->filter(function ($record) use ($sessionIds) {
                 return in_array($record->log_session_id, $sessionIds);
-            })->count();
+            })
+            ->pluck('student_id')
+            ->unique()
+            ->count();
             
             $dailyActivity[] = [
                 'date' => $dateStr,
@@ -270,7 +274,10 @@ class ExportDashboardReport extends Controller
                 $sessionIds = $sessions->pluck('id');
                 $count = $logRecords->filter(function ($record) use ($sessionIds) {
                     return $sessionIds->contains($record->log_session_id);
-                })->count();
+                })
+                ->pluck('student_id')
+                ->unique()
+                ->count();
                 
                 $date = Carbon::createFromFormat('Y-m', $yearMonth);
                 
@@ -284,7 +291,9 @@ class ExportDashboardReport extends Controller
         // Course distribution
         $courseDistribution = $logRecords->filter(function ($record) {
             return $record->student && $record->student->course;
-        })->groupBy(function ($record) {
+        })  
+        ->unique('student_id')
+        ->groupBy(function ($record) {
             return $record->student->course;
         })->map(function ($group) {
             return $group->count();
