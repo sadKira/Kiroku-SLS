@@ -60,7 +60,7 @@
 
 <body class="bg-white text-slate-900 antialiased p-4">
     <div class="mb-6">
-        <flux:heading size="xl"><span class="font-bold">MKD Resource Center</span></flux:heading>
+        <flux:heading size="xl"><span class="font-bold">MKD Learning Resource Center</span></flux:heading>
         <flux:heading size="xl" class="mt-3"><span class="font-bold">Student Logs</span></flux:heading>
         <flux:heading size="lg">
             {{ \Carbon\Carbon::parse($logSession->date)->format('F j, Y') }}

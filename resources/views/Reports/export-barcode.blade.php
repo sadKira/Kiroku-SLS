@@ -31,7 +31,7 @@
 <body class="bg-white text-slate-900 antialiased p-4">
 
     <div class="mb-10">
-        <flux:heading size="xl"><span class="font-bold">MKD Resource Center</span></flux:heading>
+        <flux:heading size="xl"><span class="font-bold">MKD Learning Resource Center</span></flux:heading>
         <flux:heading size="xl" class="mt-3"><span class="font-bold">Student Barcodes</span></flux:heading>
         <p class=" text-gray-600">
             Student Barcodes: {{ $students->count() }}
