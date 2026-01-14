@@ -1,6 +1,6 @@
 ## Kiroku SLS (Student Logging System)
 
-On-the-job training project for Mindanao Kokusai Daigaku (MKD) to streamline library entry/exit logging through barcode scanning. Built on the TALL stack for a responsive, real-time experience tailored to MKD librarians and students.
+On-the-job training project for Mindanao Kokusai Daigaku (MKD) Learning Resource Center to streamline library entry/exit logging through barcode scanning. Built on the TALL stack for a responsive, real-time experience tailored to MKD librarians and students.
 
 ### Project Overview
 - Replaces manual paper logs with barcode scans for students entering/leaving the MKD library.
