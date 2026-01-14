@@ -145,8 +145,10 @@ class ExportDashboardReport extends Controller
         $now = Carbon::now('Asia/Manila');
         
         if ($reportType === 'monthly') {
-            // Get year from school year (first part)
-            $year = (int) explode('-', $schoolYear)[0];
+            // Parse school year (e.g., "2025-2026")
+            $yearParts = explode('-', $schoolYear);
+            $startYear = (int) $yearParts[0];
+            $endYear = (int) $yearParts[1] ?? ($startYear + 1);
             
             // Get month number
             $monthNumber = $this->getMonthNumber($month);
@@ -154,15 +156,22 @@ class ExportDashboardReport extends Controller
                 throw new Exception('Invalid month provided.');
             }
 
+            // For school year 2025-2026:
+            // - June-December (6-12) use startYear (2025)
+            // - January-May (1-5) use endYear (2026)
+            $year = ($monthNumber >= 6) ? $startYear : $endYear;
+
             $start = Carbon::create($year, $monthNumber, 1, 0, 0, 0, 'Asia/Manila')->startOfMonth();
             $end = $start->copy()->endOfMonth();
         } else {
             // Semestral: Cover entire school year (June of start year to May of end year)
-            $year = (int) explode('-', $schoolYear)[0];
+            $yearParts = explode('-', $schoolYear);
+            $startYear = (int) $yearParts[0];
+            $endYear = (int) $yearParts[1] ?? ($startYear + 1);
             
             // School year typically runs from June to May of the following year
-            $start = Carbon::create($year, 6, 1, 0, 0, 0, 'Asia/Manila')->startOfMonth();
-            $end = Carbon::create($year + 1, 5, 31, 23, 59, 59, 'Asia/Manila')->endOfMonth();
+            $start = Carbon::create($startYear, 6, 1, 0, 0, 0, 'Asia/Manila')->startOfMonth();
+            $end = Carbon::create($endYear, 5, 31, 23, 59, 59, 'Asia/Manila')->endOfMonth();
         }
 
         return [
