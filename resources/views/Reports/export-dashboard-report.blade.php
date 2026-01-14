@@ -16,17 +16,10 @@
 
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 
-    {{-- ApexCharts CDN --}}
-    <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
-
     {{-- Avoid splitting content across PDF pages --}}
     <style>
         @media print {
             .page-break {
-                break-inside: avoid;
-                page-break-inside: avoid;
-            }
-            .log-record {
                 break-inside: avoid;
                 page-break-inside: avoid;
             }
@@ -47,7 +40,7 @@
         .summary-table th {
             background-color: #f9fafb;
             font-weight: 600;
-            font-size: 16px;
+            font-size: 14px;
             color: #374151;
         }
 
@@ -84,7 +77,7 @@
         <div class="mb-6">
             <flux:heading size="xl"><span class="font-bold">MKD Learning Resource Center</span></flux:heading>
             <flux:heading size="xl" class="mt-3"><span class="font-bold">Monthly Activity Report</span></flux:heading>
-            <flux:heading size="lg" class="mt-2">{{ $month }} {{ explode('-', $schoolYear)[0] }}</flux:heading>
+            <flux:heading size="lg" class="mt-2">{{ $month }} {{ Carbon\Carbon::parse($dateRange['start'])->format('Y') }}</flux:heading>
             <p class="text-gray-600 mt-1">
                 Academic Year: {{ $schoolYear }} | 
                 Period: {{ \Carbon\Carbon::parse($dateRange['start'])->format('F j') }} - 
@@ -95,14 +88,10 @@
         {{-- Monthly Statistics --}}
         <div class="mb-6 page-break">
             <flux:heading size="lg" class="mb-4">Monthly Overview</flux:heading>
-            <div class="grid grid-cols-4 gap-4">
+            <div class="grid grid-cols-3 gap-4">
                 <div class="stat-box">
                     <div class="stat-label">Total Logs</div>
                     <div class="stat-value">{{ number_format($stats['totalLogs']) }}</div>
-                </div>
-                <div class="stat-box">
-                    <div class="stat-label">Active Students</div>
-                    <div class="stat-value">{{ number_format($stats['uniqueStudents']) }}</div>
                 </div>
                 <div class="stat-box">
                     <div class="stat-label">Log Sessions</div>
@@ -117,64 +106,85 @@
             </div>
         </div>
 
-        {{-- Daily Activity Chart --}}
-        @if (count($stats['dailyActivity']) > 0)
-            <div class="mb-6 page-break">
-                <flux:heading size="lg" class="mb-4">Daily Activity Breakdown</flux:heading>
-                <div id="dailyActivityChart" style="height: 350px;"></div>
-            </div>
-        @endif
-
-        {{-- Course Distribution --}}
-        @if (count($stats['courseDistribution']) > 0)
-            <div class="mb-6 page-break">
-                <flux:heading size="lg" class="mb-4">Course Distribution</flux:heading>
-                <div id="courseDistributionChart" style="height: 300px;"></div>
-            </div>
-        @endif
-
-        {{-- Daily Summary Table --}}
-        <div class="mt-6 page-break">
-            <flux:heading size="lg" class="mb-4">Daily Summary</flux:heading>
+        {{-- Daily Activity Table --}}
+        <div class="mb-6 page-break">
+            <flux:heading size="lg" class="mb-4">Daily Activity Breakdown</flux:heading>
             <table class="summary-table">
                 <thead>
                     <tr>
                         <th>Date</th>
+                        <th>Day of Week</th>
                         <th style="text-align: right;">Log Records</th>
-                        <th style="text-align: right;">Day of Week</th>
                     </tr>
                 </thead>
                 <tbody>
                     @php
-                        $dailySummary = collect($stats['dailyActivity'])
-                            ->map(function($item) {
-                                $date = \Carbon\Carbon::parse($item['date']);
-                                return [
-                                    'date' => $date->format('F j, Y'),
-                                    'day' => $date->format('l'),
-                                    'count' => $item['value']
-                                ];
-                            })
-                            ->filter(fn($item) => $item['count'] > 0)
-                            ->sortByDesc('count')
-                            ->take(10);
+                        $dailyData = collect($stats['dailyActivity'])
+                            ->filter(fn($item) => $item['value'] > 0);
                     @endphp
-                    @if ($dailySummary->isEmpty())
+                    @if ($dailyData->isEmpty())
                         <tr>
                             <td colspan="3" class="text-sm text-gray-400 text-center py-4">No activity recorded for this month</td>
                         </tr>
                     @else
-                        @foreach ($dailySummary as $day)
+                        @foreach ($dailyData as $day)
                             <tr>
-                                <td class="text-sm">{{ $day['date'] }}</td>
-                                <td class="text-sm font-medium" style="text-align: right;">{{ number_format($day['count']) }}</td>
-                                <td class="text-sm text-gray-500" style="text-align: right;">{{ $day['day'] }}</td>
+                                <td class="text-sm">{{ $day['label'] }}</td>
+                                <td class="text-sm text-gray-500">{{ $day['day'] }}</td>
+                                <td class="text-sm font-medium" style="text-align: right;">{{ number_format($day['value']) }}</td>
                             </tr>
                         @endforeach
+                        <tr style="border-top: 2px solid #374151;">
+                            <td class="text-sm font-bold" colspan="2">Total</td>
+                            <td class="text-sm font-bold" style="text-align: right;">{{ number_format($dailyData->sum('value')) }}</td>
+                        </tr>
                     @endif
                 </tbody>
             </table>
         </div>
+
+        {{-- Course Distribution Table --}}
+        @if (count($stats['courseDistribution']) > 0)
+            <div class="mb-6 page-break">
+                <flux:heading size="lg" class="mb-4">Course Distribution</flux:heading>
+                <table class="summary-table">
+                    <thead>
+                        <tr>
+                            <th>Course</th>
+                            <th style="text-align: right;">Log Records</th>
+                            <th style="text-align: right;">Percentage</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @php
+                            $totalForPercentage = array_sum($stats['courseDistribution']);
+                            $courseAbbreviations = [
+                                'Bachelor of Arts in International Studies' => 'ABIS',
+                                'Bachelor of Science in Information Systems' => 'BSIS',
+                                'Bachelor of Human Services' => 'BHS',
+                                'Bachelor of Secondary Education' => 'BSED',
+                                'Bachelor of Elementary Education' => 'ECED',
+                                'Bachelor of Special Needs Education' => 'SNED'
+                            ];
+                        @endphp
+                        @foreach ($stats['courseDistribution'] as $course => $count)
+                            <tr>
+                                <td class="text-sm">{{ $courseAbbreviations[$course] ?? $course }}</td>
+                                <td class="text-sm font-medium" style="text-align: right;">{{ number_format($count) }}</td>
+                                <td class="text-sm text-gray-500" style="text-align: right;">
+                                    {{ $totalForPercentage > 0 ? number_format(($count / $totalForPercentage) * 100, 1) : '0' }}%
+                                </td>
+                            </tr>
+                        @endforeach
+                        <tr style="border-top: 2px solid #374151;">
+                            <td class="text-sm font-bold">Total</td>
+                            <td class="text-sm font-bold" style="text-align: right;">{{ number_format($totalForPercentage) }}</td>
+                            <td class="text-sm font-bold" style="text-align: right;">100%</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        @endif
 
     @else
         {{-- SEMESTRAL REPORT DESIGN --}}
@@ -197,76 +207,38 @@
                     <div class="stat-value">{{ number_format($stats['totalLogs']) }}</div>
                 </div>
                 <div class="stat-box">
-                    <div class="stat-label">Unique Students</div>
-                    <div class="stat-value">{{ number_format($stats['uniqueStudents']) }}</div>
-                </div>
-                <div class="stat-box">
                     <div class="stat-label">Log Sessions</div>
                     <div class="stat-value">{{ number_format($stats['logSessionsCount']) }}</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-label">Avg per Session</div>
+                    <div class="stat-value">
+                        {{ $stats['logSessionsCount'] > 0 ? number_format($stats['totalLogs'] / $stats['logSessionsCount'], 1) : '0' }}
+                    </div>
                 </div>
                 <div class="stat-box">
                     <div class="stat-label">Total Students</div>
                     <div class="stat-value">{{ number_format($stats['totalStudents']) }}</div>
                 </div>
             </div>
-            <div class="grid grid-cols-3 gap-4">
-                <div class="stat-box">
-                    <div class="stat-label">Avg Logs per Session</div>
-                    <div class="stat-value">
-                        {{ $stats['logSessionsCount'] > 0 ? number_format($stats['totalLogs'] / $stats['logSessionsCount'], 1) : '0' }}
-                    </div>
-                </div>
-                <div class="stat-box">
-                    <div class="stat-label">Student Participation</div>
-                    <div class="stat-value">
-                        {{ $stats['totalStudents'] > 0 ? number_format(($stats['uniqueStudents'] / $stats['totalStudents']) * 100, 1) : '0' }}%
-                    </div>
-                </div>
-                <div class="stat-box">
-                    <div class="stat-label">Avg Logs per Student</div>
-                    <div class="stat-value">
-                        {{ $stats['uniqueStudents'] > 0 ? number_format($stats['totalLogs'] / $stats['uniqueStudents'], 1) : '0' }}
-                    </div>
-                </div>
-            </div>
         </div>
 
-        {{-- Monthly Activity Chart --}}
+        {{-- Monthly Activity Table --}}
         @if (count($stats['monthlyActivity']) > 0)
             <div class="mb-6 page-break">
-                <flux:heading size="lg" class="mb-4">Monthly Activity Trends</flux:heading>
-                <div id="monthlyActivityChart" style="height: 350px;"></div>
-            </div>
-        @endif
-
-        {{-- Course Distribution --}}
-        @if (count($stats['courseDistribution']) > 0)
-            <div class="mb-6 page-break">
-                <flux:heading size="lg" class="mb-4">Course Distribution</flux:heading>
-                <div id="courseDistributionChart" style="height: 300px;"></div>
-            </div>
-        @endif
-
-        {{-- Monthly Summary Table --}}
-        <div class="mt-6 page-break">
-            <flux:heading size="lg" class="mb-4">Monthly Summary</flux:heading>
-            <table class="summary-table">
-                <thead>
-                    <tr>
-                        <th>Month</th>
-                        <th style="text-align: right;">Log Records</th>
-                        <th style="text-align: right;">Percentage</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @php
-                        $totalForPercentage = collect($stats['monthlyActivity'])->sum('value');
-                    @endphp
-                    @if (count($stats['monthlyActivity']) === 0)
+                <flux:heading size="lg" class="mb-4">Monthly Activity Breakdown</flux:heading>
+                <table class="summary-table">
+                    <thead>
                         <tr>
-                            <td colspan="3" class="text-sm text-gray-400 text-center py-4">No activity recorded for this semester</td>
+                            <th>Month</th>
+                            <th style="text-align: right;">Log Records</th>
+                            <th style="text-align: right;">Percentage</th>
                         </tr>
-                    @else
+                    </thead>
+                    <tbody>
+                        @php
+                            $totalForPercentage = collect($stats['monthlyActivity'])->sum('value');
+                        @endphp
                         @foreach ($stats['monthlyActivity'] as $month)
                             <tr>
                                 <td class="text-sm font-medium">{{ $month['label'] }}</td>
@@ -276,10 +248,58 @@
                                 </td>
                             </tr>
                         @endforeach
-                    @endif
-                </tbody>
-            </table>
-        </div>
+                        <tr style="border-top: 2px solid #374151;">
+                            <td class="text-sm font-bold">Total</td>
+                            <td class="text-sm font-bold" style="text-align: right;">{{ number_format($totalForPercentage) }}</td>
+                            <td class="text-sm font-bold" style="text-align: right;">100%</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        @endif
+
+        {{-- Course Distribution Table --}}
+        @if (count($stats['courseDistribution']) > 0)
+            <div class="mb-6 page-break">
+                <flux:heading size="lg" class="mb-4">Course Distribution</flux:heading>
+                <table class="summary-table">
+                    <thead>
+                        <tr>
+                            <th>Course</th>
+                            <th style="text-align: right;">Log Records</th>
+                            <th style="text-align: right;">Percentage</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @php
+                            $totalForPercentage = array_sum($stats['courseDistribution']);
+                            $courseAbbreviations = [
+                                'Bachelor of Arts in International Studies' => 'ABIS',
+                                'Bachelor of Science in Information Systems' => 'BSIS',
+                                'Bachelor of Human Services' => 'BHS',
+                                'Bachelor of Secondary Education' => 'BSED',
+                                'Bachelor of Elementary Education' => 'ECED',
+                                'Bachelor of Special Needs Education' => 'SNED'
+                            ];
+                        @endphp
+                        @foreach ($stats['courseDistribution'] as $course => $count)
+                            <tr>
+                                <td class="text-sm">{{ $courseAbbreviations[$course] ?? $course }}</td>
+                                <td class="text-sm font-medium" style="text-align: right;">{{ number_format($count) }}</td>
+                                <td class="text-sm text-gray-500" style="text-align: right;">
+                                    {{ $totalForPercentage > 0 ? number_format(($count / $totalForPercentage) * 100, 1) : '0' }}%
+                                </td>
+                            </tr>
+                        @endforeach
+                        <tr style="border-top: 2px solid #374151;">
+                            <td class="text-sm font-bold">Total</td>
+                            <td class="text-sm font-bold" style="text-align: right;">{{ number_format($totalForPercentage) }}</td>
+                            <td class="text-sm font-bold" style="text-align: right;">100%</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        @endif
 
         {{-- Detailed Summary --}}
         <div class="mt-6 page-break">
@@ -297,10 +317,6 @@
                         <td class="text-sm font-medium" style="text-align: right;">{{ number_format($stats['totalLogs']) }}</td>
                     </tr>
                     <tr>
-                        <td class="text-sm">Unique Students</td>
-                        <td class="text-sm font-medium" style="text-align: right;">{{ number_format($stats['uniqueStudents']) }}</td>
-                    </tr>
-                    <tr>
                         <td class="text-sm">Total Students (All Time)</td>
                         <td class="text-sm font-medium" style="text-align: right;">{{ number_format($stats['totalStudents']) }}</td>
                     </tr>
@@ -314,18 +330,6 @@
                             {{ $stats['logSessionsCount'] > 0 ? number_format($stats['totalLogs'] / $stats['logSessionsCount'], 1) : '0' }}
                         </td>
                     </tr>
-                    <tr>
-                        <td class="text-sm">Average Logs per Student</td>
-                        <td class="text-sm font-medium" style="text-align: right;">
-                            {{ $stats['uniqueStudents'] > 0 ? number_format($stats['totalLogs'] / $stats['uniqueStudents'], 1) : '0' }}
-                        </td>
-                    </tr>
-                    <tr>
-                        <td class="text-sm">Student Participation Rate</td>
-                        <td class="text-sm font-medium" style="text-align: right;">
-                            {{ $stats['totalStudents'] > 0 ? number_format(($stats['uniqueStudents'] / $stats['totalStudents']) * 100, 1) : '0' }}%
-                        </td>
-                    </tr>
                 </tbody>
             </table>
         </div>
@@ -336,216 +340,6 @@
         <p>Kiroku Student Logging System 2025</p>
     </div>
 
-    <script>
-        // Wait for DOM to be ready
-        document.addEventListener('DOMContentLoaded', function() {
-            @if ($reportType === 'monthly')
-                // Daily Activity Chart (Monthly Reports)
-                @if (count($stats['dailyActivity']) > 0)
-                    const dailyData = @json($stats['dailyActivity']);
-                    const dailyChart = new ApexCharts(document.querySelector("#dailyActivityChart"), {
-                        series: [{
-                            name: 'Log Records',
-                            data: dailyData.map(item => item.value)
-                        }],
-                        chart: {
-                            type: 'column',
-                            height: 350,
-                            toolbar: { show: false },
-                            fontFamily: 'Instrument Sans, ui-sans-serif, system-ui, sans-serif'
-                        },
-                        colors: ['#52525b'],
-                        plotOptions: {
-                            bar: {
-                                columnWidth: '60%',
-                                borderRadius: 4
-                            }
-                        },
-                        dataLabels: {
-                            enabled: true,
-                            style: {
-                                fontSize: '12px',
-                                fontFamily: 'Instrument Sans, ui-sans-serif, system-ui, sans-serif',
-                                fontWeight: 500,
-                                colors: ['#111827']
-                            }
-                        },
-                        xaxis: {
-                            categories: dailyData.map(item => item.label),
-                            labels: {
-                                style: {
-                                    colors: '#71717a',
-                                    fontSize: '11px',
-                                    fontFamily: 'Instrument Sans, ui-sans-serif, system-ui, sans-serif'
-                                },
-                                rotate: -45,
-                                rotateAlways: false
-                            }
-                        },
-                        yaxis: {
-                            labels: {
-                                style: {
-                                    colors: '#71717a',
-                                    fontSize: '12px',
-                                    fontFamily: 'Instrument Sans, ui-sans-serif, system-ui, sans-serif'
-                                }
-                            }
-                        },
-                        grid: {
-                            borderColor: '#e4e4e7',
-                            strokeDashArray: 0
-                        },
-                        tooltip: {
-                            theme: 'light',
-                            style: {
-                                fontFamily: 'Instrument Sans, ui-sans-serif, system-ui, sans-serif'
-                            }
-                        }
-                    });
-                    dailyChart.render();
-                @endif
-            @else
-                // Monthly Activity Chart (Semestral Reports)
-                @if (count($stats['monthlyActivity']) > 0)
-                    const monthlyData = @json($stats['monthlyActivity']);
-                    const monthlyChart = new ApexCharts(document.querySelector("#monthlyActivityChart"), {
-                        series: [{
-                            name: 'Log Records',
-                            data: monthlyData.map(item => item.value)
-                        }],
-                        chart: {
-                            type: 'column',
-                            height: 350,
-                            toolbar: { show: false },
-                            fontFamily: 'Instrument Sans, ui-sans-serif, system-ui, sans-serif'
-                        },
-                        colors: ['#52525b'],
-                        plotOptions: {
-                            bar: {
-                                columnWidth: '60%',
-                                borderRadius: 4
-                            }
-                        },
-                        dataLabels: {
-                            enabled: true,
-                            style: {
-                                fontSize: '12px',
-                                fontFamily: 'Instrument Sans, ui-sans-serif, system-ui, sans-serif',
-                                fontWeight: 500,
-                                colors: ['#111827']
-                            }
-                        },
-                        xaxis: {
-                            categories: monthlyData.map(item => item.label),
-                            labels: {
-                                style: {
-                                    colors: '#71717a',
-                                    fontSize: '12px',
-                                    fontFamily: 'Instrument Sans, ui-sans-serif, system-ui, sans-serif'
-                                }
-                            }
-                        },
-                        yaxis: {
-                            labels: {
-                                style: {
-                                    colors: '#71717a',
-                                    fontSize: '12px',
-                                    fontFamily: 'Instrument Sans, ui-sans-serif, system-ui, sans-serif'
-                                }
-                            }
-                        },
-                        grid: {
-                            borderColor: '#e4e4e7',
-                            strokeDashArray: 0
-                        },
-                        tooltip: {
-                            theme: 'light',
-                            style: {
-                                fontFamily: 'Instrument Sans, ui-sans-serif, system-ui, sans-serif'
-                            }
-                        }
-                    });
-                    monthlyChart.render();
-                @endif
-            @endif
-
-            // Course Distribution Chart (Both Report Types)
-            @if (count($stats['courseDistribution']) > 0)
-                const courseData = @json($stats['courseDistribution']);
-                const courseLabels = Object.keys(courseData).map(course => {
-                    const abbreviations = {
-                        'Bachelor of Arts in International Studies': 'ABIS',
-                        'Bachelor of Science in Information Systems': 'BSIS',
-                        'Bachelor of Human Services': 'BHS',
-                        'Bachelor of Secondary Education': 'BSED',
-                        'Bachelor of Elementary Education': 'ECED',
-                        'Bachelor of Special Needs Education': 'SNED'
-                    };
-                    return abbreviations[course] || course;
-                });
-                const courseValues = Object.values(courseData);
-                
-                const courseChart = new ApexCharts(document.querySelector("#courseDistributionChart"), {
-                    series: [{
-                        name: 'Log Records',
-                        data: courseValues
-                    }],
-                    chart: {
-                        type: 'column',
-                        height: 300,
-                        toolbar: { show: false },
-                        fontFamily: 'Instrument Sans, ui-sans-serif, system-ui, sans-serif'
-                    },
-                    colors: ['#52525b'],
-                    plotOptions: {
-                        bar: {
-                            columnWidth: '60%',
-                            borderRadius: 4
-                        }
-                    },
-                    dataLabels: {
-                        enabled: true,
-                        style: {
-                            fontSize: '12px',
-                            fontFamily: 'Instrument Sans, ui-sans-serif, system-ui, sans-serif',
-                            fontWeight: 500,
-                            colors: ['#111827']
-                        }
-                    },
-                    xaxis: {
-                        categories: courseLabels,
-                        labels: {
-                            style: {
-                                colors: '#71717a',
-                                fontSize: '12px',
-                                fontFamily: 'Instrument Sans, ui-sans-serif, system-ui, sans-serif'
-                            }
-                        }
-                    },
-                    yaxis: {
-                        labels: {
-                            style: {
-                                colors: '#71717a',
-                                fontSize: '12px',
-                                fontFamily: 'Instrument Sans, ui-sans-serif, system-ui, sans-serif'
-                            }
-                        }
-                    },
-                    grid: {
-                        borderColor: '#e4e4e7',
-                        strokeDashArray: 0
-                    },
-                    tooltip: {
-                        theme: 'light',
-                        style: {
-                            fontFamily: 'Instrument Sans, ui-sans-serif, system-ui, sans-serif'
-                        }
-                    }
-                });
-                courseChart.render();
-            @endif
-        });
-    </script>
 </body>
 
 </html>

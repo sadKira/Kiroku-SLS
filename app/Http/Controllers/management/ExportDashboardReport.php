@@ -81,7 +81,7 @@ class ExportDashboardReport extends Controller
                 ->get();
 
             // Calculate statistics
-            $stats = $this->calculateStatistics($logRecords, $logSessions, $dateRange, $reportType);
+            $stats = $this->calculateStatistics($logRecords, $logSessions, $dateRange, $reportType, $schoolYear);
 
             // Render the export view to HTML
             $html = view('Reports/export-dashboard-report', [
@@ -142,36 +142,48 @@ class ExportDashboardReport extends Controller
 
     private function getDateRange($reportType, $month, $schoolYear)
     {
-        $now = Carbon::now('Asia/Manila');
-        
         if ($reportType === 'monthly') {
-            // Parse school year (e.g., "2025-2026")
-            $yearParts = explode('-', $schoolYear);
-            $startYear = (int) $yearParts[0];
-            $endYear = (int) $yearParts[1] ?? ($startYear + 1);
-            
             // Get month number
             $monthNumber = $this->getMonthNumber($month);
             if (!$monthNumber) {
                 throw new Exception('Invalid month provided.');
             }
 
-            // For school year 2025-2026:
-            // - June-December (6-12) use startYear (2025)
-            // - January-May (1-5) use endYear (2026)
-            $year = ($monthNumber >= 6) ? $startYear : $endYear;
+            // Find the actual date range for this month in the school year
+            // Query log sessions to find which year this month belongs to
+            $logSession = LogSession::where('school_year', $schoolYear)
+                ->whereMonth('date', $monthNumber)
+                ->orderBy('date')
+                ->first();
+
+            if (!$logSession) {
+                // If no log session found, make an educated guess based on school year
+                $yearParts = explode('-', $schoolYear);
+                $startYear = (int) $yearParts[0];
+                $endYear = (int) $yearParts[1] ?? ($startYear + 1);
+                
+                // June-December typically use start year, January-May use end year
+                $year = ($monthNumber >= 6) ? $startYear : $endYear;
+            } else {
+                // Use the year from the actual log session
+                $year = Carbon::parse($logSession->date)->year;
+            }
 
             $start = Carbon::create($year, $monthNumber, 1, 0, 0, 0, 'Asia/Manila')->startOfMonth();
             $end = $start->copy()->endOfMonth();
         } else {
-            // Semestral: Cover entire school year (June of start year to May of end year)
-            $yearParts = explode('-', $schoolYear);
-            $startYear = (int) $yearParts[0];
-            $endYear = (int) $yearParts[1] ?? ($startYear + 1);
-            
-            // School year typically runs from June to May of the following year
-            $start = Carbon::create($startYear, 6, 1, 0, 0, 0, 'Asia/Manila')->startOfMonth();
-            $end = Carbon::create($endYear, 5, 31, 23, 59, 59, 'Asia/Manila')->endOfMonth();
+            // Semestral: Get ALL log sessions for this school year
+            // Simply find the earliest and latest dates in the log sessions
+            $dates = LogSession::where('school_year', $schoolYear)
+                ->selectRaw('MIN(date) as first_date, MAX(date) as last_date')
+                ->first();
+
+            if (!$dates || !$dates->first_date || !$dates->last_date) {
+                throw new Exception('No log sessions found for the selected school year.');
+            }
+
+            $start = Carbon::parse($dates->first_date, 'Asia/Manila')->startOfDay();
+            $end = Carbon::parse($dates->last_date, 'Asia/Manila')->endOfDay();
         }
 
         return [
@@ -200,13 +212,10 @@ class ExportDashboardReport extends Controller
         return $months[$monthName] ?? null;
     }
 
-    private function calculateStatistics($logRecords, $logSessions, $dateRange, $reportType)
+    private function calculateStatistics($logRecords, $logSessions, $dateRange, $reportType, $schoolYear)
     {
         // Total log records
         $totalLogs = $logRecords->count();
-        
-        // Unique students
-        $uniqueStudents = $logRecords->pluck('student_id')->unique()->count();
         
         // Total students (all time)
         $totalStudents = Student::count();
@@ -214,7 +223,7 @@ class ExportDashboardReport extends Controller
         // Log sessions count
         $logSessionsCount = $logSessions->count();
         
-        // Daily activity data for chart
+        // Daily activity data (for both monthly and semestral reports)
         $dailyActivity = [];
         $current = Carbon::parse($dateRange['start'], 'Asia/Manila');
         $end = Carbon::parse($dateRange['end'], 'Asia/Manila');
@@ -238,7 +247,8 @@ class ExportDashboardReport extends Controller
             
             $dailyActivity[] = [
                 'date' => $dateStr,
-                'label' => $current->format('M j'),
+                'label' => $current->format('F j, Y'),
+                'day' => $current->format('l'),
                 'value' => $count,
             ];
             
@@ -248,34 +258,26 @@ class ExportDashboardReport extends Controller
         // Monthly activity data (for semestral reports)
         $monthlyActivity = [];
         if ($reportType === 'semestral') {
-            $current = Carbon::parse($dateRange['start'], 'Asia/Manila');
-            $end = Carbon::parse($dateRange['end'], 'Asia/Manila');
-            
-            while ($current <= $end) {
-                $monthStart = $current->copy()->startOfMonth();
-                $monthEnd = $current->copy()->endOfMonth();
+            // Group log sessions by year-month
+            $sessionsByMonth = $logSessions->groupBy(function ($session) {
+                return Carbon::parse($session->date)->format('Y-m');
+            });
+
+            // Sort by year-month
+            $sessionsByMonth = $sessionsByMonth->sortKeys();
+
+            foreach ($sessionsByMonth as $yearMonth => $sessions) {
+                $sessionIds = $sessions->pluck('id');
+                $count = $logRecords->filter(function ($record) use ($sessionIds) {
+                    return $sessionIds->contains($record->log_session_id);
+                })->count();
                 
-                // Ensure we don't go beyond the date range
-                if ($monthStart->lt(Carbon::parse($dateRange['start'], 'Asia/Manila'))) {
-                    $monthStart = Carbon::parse($dateRange['start'], 'Asia/Manila');
-                }
-                if ($monthEnd->gt(Carbon::parse($dateRange['end'], 'Asia/Manila'))) {
-                    $monthEnd = Carbon::parse($dateRange['end'], 'Asia/Manila');
-                }
-                
-                $sessionIds = $logSessions->filter(function ($session) use ($monthStart, $monthEnd) {
-                    $sessionDate = Carbon::parse($session->date);
-                    return $sessionDate->between($monthStart, $monthEnd);
-                })->pluck('id');
-                
-                $count = LogRecord::whereIn('log_session_id', $sessionIds)->count();
+                $date = Carbon::createFromFormat('Y-m', $yearMonth);
                 
                 $monthlyActivity[] = [
-                    'label' => $current->format('M'),
+                    'label' => $date->format('F Y'),
                     'value' => $count,
                 ];
-                
-                $current->addMonth();
             }
         }
         
@@ -290,7 +292,6 @@ class ExportDashboardReport extends Controller
         
         return [
             'totalLogs' => $totalLogs,
-            'uniqueStudents' => $uniqueStudents,
             'totalStudents' => $totalStudents,
             'logSessionsCount' => $logSessionsCount,
             'dailyActivity' => $dailyActivity,
