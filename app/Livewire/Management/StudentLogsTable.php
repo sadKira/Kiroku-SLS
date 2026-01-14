@@ -14,6 +14,7 @@ use Illuminate\Validation\ValidationException;
 use Livewire\Attributes\Lazy;
 use Livewire\Component;
 use Livewire\WithPagination;
+use Illuminate\Support\Facades\DB;
 
 #[Lazy]
 class StudentLogsTable extends Component
@@ -519,7 +520,11 @@ class StudentLogsTable extends Component
 
         // Eager load log records count to check if sessions have records
         // Sort by most recent: date DESC, then school_year DESC
-        $logSessions = $query->withCount('logRecords')
+        $logSessions = $query->withCount([
+                'logRecords as unique_students_count' => function ($query) {
+                    $query->select(DB::raw('COUNT(DISTINCT student_id)'));
+                }
+            ])
             ->orderBy('date', 'desc')
             ->orderBy('school_year', 'desc')
             ->paginate(10);

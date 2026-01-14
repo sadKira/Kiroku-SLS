@@ -200,24 +200,14 @@ class AdminDashboard extends Component
         ];
     }
 
-    // Total Log Records (filtered by school year and time)
+    // Total UNIQUE Students who logged (filtered by school year and time)
+    // This counts unique students across all log sessions in the date range
     public function getTotalLogsProperty()
     {
         $range = $this->getDateRange();
         $schoolYear = $this->activeSchoolYear;
         
-        return LogRecord::whereHas('logSessions', function ($query) use ($range, $schoolYear) {
-            $query->where('school_year', $schoolYear)
-                ->whereBetween('date', [$range['start']->format('Y-m-d'), $range['end']->format('Y-m-d')]);
-        })->count();
-    }
-
-    // Unique Students (filtered)
-    public function getUniqueStudentsProperty()
-    {
-        $range = $this->getDateRange();
-        $schoolYear = $this->activeSchoolYear;
-        
+        // Count unique students across all sessions
         return LogRecord::whereHas('logSessions', function ($query) use ($range, $schoolYear) {
             $query->where('school_year', $schoolYear)
                 ->whereBetween('date', [$range['start']->format('Y-m-d'), $range['end']->format('Y-m-d')]);
@@ -226,13 +216,19 @@ class AdminDashboard extends Component
         ->count('student_id');
     }
 
+    // Unique Students (filtered) - Same as totalLogs since we're counting unique students
+    public function getUniqueStudentsProperty()
+    {
+        return $this->totalLogs;
+    }
+
     // Total Students (all time)
     public function getTotalStudentsProperty()
     {
         return Student::count();
     }
 
-    // Active Students Today (for the active school year)
+    // Active Students Today (unique students for the active school year)
     public function getActiveStudentsTodayProperty()
     {
         $today = Carbon::now('Asia/Manila')->startOfDay();
@@ -268,23 +264,26 @@ class AdminDashboard extends Component
             ->count();
     }
 
-    // Monthly activity data for chart (12 months)
+    // Monthly activity data for chart (12 months) - counts UNIQUE students per month
     public function getActivityChartDataProperty()
     {
         $range = $this->getDateRange();
         $schoolYear = $this->activeSchoolYear;
         
-        // Monthly data for this year
+        // Monthly data for this year - count unique students
         $data = [];
         $current = $range['start']->copy();
         while ($current <= $range['end']) {
             $monthStart = $current->copy()->startOfMonth();
             $monthEnd = $current->copy()->endOfMonth();
             
+            // Count unique students for this month
             $count = LogRecord::whereHas('logSessions', function ($query) use ($monthStart, $monthEnd, $schoolYear) {
                 $query->where('school_year', $schoolYear)
                     ->whereBetween('date', [$monthStart->format('Y-m-d'), $monthEnd->format('Y-m-d')]);
-            })->count();
+            })
+            ->distinct('student_id')
+            ->count('student_id');
             
             $data[] = [
                 'label' => $current->format('M'),
@@ -295,13 +294,13 @@ class AdminDashboard extends Component
         return $data;
     }
 
-    // Get chart title value (total for the period)
+    // Get chart title value (total unique students for the period)
     public function getChartTitleValueProperty()
     {
         return number_format($this->totalLogs);
     }
 
-    // Monthly daily activity data for time-series chart (current month)
+    // Monthly daily activity data for time-series chart (current month) - counts UNIQUE students per day
     public function getMonthlyDailyActivityProperty()
     {
         $now = Carbon::now('Asia/Manila');
@@ -313,10 +312,13 @@ class AdminDashboard extends Component
         $current = $monthStart->copy();
         
         while ($current <= $monthEnd) {
+            // Count unique students for this day
             $count = LogRecord::whereHas('logSessions', function ($query) use ($current, $schoolYear) {
                 $query->where('school_year', $schoolYear)
                     ->whereDate('date', $current->format('Y-m-d'));
-            })->count();
+            })
+            ->distinct('student_id')
+            ->count('student_id');
             
             $data[] = [
                 'x' => $current->copy()->startOfDay()->timestamp * 1000, // JavaScript timestamp in milliseconds
@@ -328,7 +330,7 @@ class AdminDashboard extends Component
         return $data;
     }
 
-    // Today's hourly activity data (8am-5pm) for sparkline chart
+    // Today's hourly activity data (8am-5pm) for sparkline chart - counts UNIQUE students per hour
     public function getTodayHourlyActivityProperty()
     {
         $today = Carbon::now('Asia/Manila')->startOfDay();
@@ -344,15 +346,17 @@ class AdminDashboard extends Component
         
         $data = [];
         
-        // Generate data for each hour from 8am to 5pm
+        // Generate data for each hour from 8am to 5pm - count unique students
         for ($hour = 8; $hour <= 17; $hour++) {
             $hourStart = $today->copy()->setHour($hour)->setMinute(0)->setSecond(0);
             $hourEnd = $today->copy()->setHour($hour)->setMinute(59)->setSecond(59);
             
+            // Count unique students who logged in during this hour
             $count = LogRecord::where('log_session_id', $logSession->id)
                 ->whereNotNull('time_in')
                 ->whereBetween('time_in', [$hourStart->format('Y-m-d H:i:s'), $hourEnd->format('Y-m-d H:i:s')])
-                ->count();
+                ->distinct('student_id')
+                ->count('student_id');
             
             $data[] = [
                 'x' => $hourStart->timestamp * 1000,
@@ -364,6 +368,7 @@ class AdminDashboard extends Component
     }
 
     // Today's log records filtered by hour (8am-5pm) for timeline
+    // This shows ALL records (including duplicates) for the timeline display
     public function getTodayLogRecordsProperty()
     {
         $today = Carbon::now('Asia/Manila')->startOfDay();

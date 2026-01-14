@@ -57,15 +57,16 @@ class ViewLogs extends Component
                 return;
             }
 
-            // Check if log record exists for this student in this session
+            // Find the most recent log record for this student in this session
             $logRecord = LogRecord::where('log_session_id', $this->logSession->id)
                 ->where('student_id', $student->id)
+                ->orderBy('created_at', 'desc')
                 ->first();
 
             $now = Carbon::now('Asia/Manila');
 
             if (!$logRecord) {
-                // Create new log record with time_in
+                // No previous record - create new log record with time_in
                 LogRecord::create([
                     'student_id' => $student->id,
                     'log_session_id' => $this->logSession->id,
@@ -73,35 +74,47 @@ class ViewLogs extends Component
                     'time_out' => null,
                 ]);
 
-                // Set student data for display FIRST
+                // Set student data for display
                 $this->studentName = $student->last_name . ', ' . $student->first_name;
                 $this->studentYearLevel = $student->year_level;
                 $this->studentCourse = $student->course;
 
-                // Then dispatch events after properties are set
+                // Dispatch success events
                 $this->dispatch('scan-label');
                 $this->dispatch('scan-success');
                 
             } elseif ($logRecord->time_in && !$logRecord->time_out) {
-                // Update existing record with time_out
+                // Most recent record has time_in but no time_out - set time_out
                 $logRecord->update([
                     'time_out' => $now,
                 ]);
 
-                // Set student data for display FIRST
+                // Set student data for display
                 $this->studentName = $student->last_name . ', ' . $student->first_name;
                 $this->studentYearLevel = $student->year_level;
                 $this->studentCourse = $student->course;
 
-                // Then dispatch events after properties are set
+                // Dispatch success events
                 $this->dispatch('scan-label');
                 $this->dispatch('scan-success');
-
-                
                 
             } else {
-                // Both time_in and time_out exist
-                $this->dispatch('scan-error', message: 'Student has already logged in and out for this session.');
+                // Most recent record has both time_in and time_out - create a new log record
+                LogRecord::create([
+                    'student_id' => $student->id,
+                    'log_session_id' => $this->logSession->id,
+                    'time_in' => $now,
+                    'time_out' => null,
+                ]);
+
+                // Set student data for display
+                $this->studentName = $student->last_name . ', ' . $student->first_name;
+                $this->studentYearLevel = $student->year_level;
+                $this->studentCourse = $student->course;
+
+                // Dispatch success events
+                $this->dispatch('scan-label');
+                $this->dispatch('scan-success');
             }
 
             // Refresh the log records table

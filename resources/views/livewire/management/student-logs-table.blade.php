@@ -137,10 +137,10 @@
                                     </td>
                                     <td
                                         class="px-4 py-4 whitespace-nowrap text-sm text-gray-800 dark:text-neutral-200 border-t border-b border-black/10 dark:border-white/10">
-                                        @if ($logSession->log_records_count > 0)
+                                        @if ($logSession->unique_students_count > 0)
                                             <div class="flex items-center gap-1">
                                                 <flux:icon.users variant="outline" class="w-4 h-4 text-gray-500 dark:text-neutral-400" />
-                                                <span>{{ $logSession->log_records_count }} {{ $logSession->log_records_count == 1 ? 'student' : 'students' }}</span>
+                                                <span>{{ $logSession->unique_students_count }} {{ $logSession->unique_students_count == 1 ? 'student' : 'students' }}</span>
                                             </div>
                                         @else
                                             <span class="text-gray-400 dark:text-neutral-500">—</span>
@@ -151,7 +151,7 @@
                                         <div class="flex items-center justify-end">
                                             <div class="flex items-center gap-1">
                                                 
-                                                @if ($logSession->log_records_count > 0)
+                                                @if ($logSession->unique_students_count > 0)
                                                     <div wire:key="view-button-{{ $logSession->id }}">
                                                         <flux:button
                                                             icon="eye"
@@ -362,9 +362,12 @@
                                 Academic Year: {{ $selectedLogSession->school_year }}
                             </p>
                             @if ($this->selectedLogRecords->isNotEmpty())
+                                @php
+                                    $uniqueStudentsCount = $this->selectedLogRecords->pluck('student_id')->unique()->count();
+                                @endphp
                                 <div class="flex items-center gap-1 text-sm text-gray-500 dark:text-neutral-400">
                                     <flux:icon.users variant="outline" class="w-4 h-4" />
-                                    <span>{{ $this->selectedLogRecords->count() }} {{ $this->selectedLogRecords->count() == 1 ? 'student' : 'students' }}</span>
+                                    <span>{{ $uniqueStudentsCount }} {{ $uniqueStudentsCount == 1 ? 'student' : 'students' }}</span>
                                 </div>
                             @endif
                         </div>
@@ -398,7 +401,7 @@
                                  }
                              }">
                             {{-- Top blur overlay --}}
-                            {{-- <div class="absolute top-0 left-0 right-0 h-16 pointer-events-none z-10 
+                            <div class="absolute top-0 left-0 right-0 h-4 pointer-events-none z-10 
                                         bg-gradient-to-b from-white via-white/80 to-transparent
                                         dark:from-zinc-900 dark:via-zinc-900/80 dark:to-transparent"
                                  x-show="showTopBlur"
@@ -408,10 +411,10 @@
                                  x-transition:leave="transition ease-in duration-200"
                                  x-transition:leave-start="opacity-100"
                                  x-transition:leave-end="opacity-0">
-                            </div> --}}
+                            </div>
 
                             {{-- Bottom blur overlay --}}
-                            <div class="absolute bottom-0 left-0 right-0 h-16 pointer-events-none z-10
+                            <div class="absolute bottom-0 left-0 right-0 h-4 pointer-events-none z-10
                                         bg-gradient-to-t from-white via-white/80 to-transparent
                                         dark:from-zinc-900 dark:via-zinc-900/80 dark:to-transparent"
                                  x-show="showBottomBlur"

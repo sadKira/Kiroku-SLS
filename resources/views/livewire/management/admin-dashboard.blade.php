@@ -76,7 +76,14 @@
                     <x-ui.card class="!max-w-none">
                         <div class="flex flex-col">
                             <p class="text-sm text-neutral-600 dark:text-neutral-400">Active Students</p>
-                            <p class="text-2xl font-semibold">{{ $attendancePercentage }}%</p>
+                            <div class="flex items-center gap-1">
+                                <p class="text-2xl font-semibold">{{ $attendancePercentage }}%</p>
+                                @if ($attendancePercentage > 0)
+                                    <flux:icon.arrow-up-right variant="mini" class="text-green-500" />
+                                @else
+                                    <p class="text-2xl">--</p>
+                                @endif
+                            </div>
                         </div>
                     </x-ui.card>
                 </div>
