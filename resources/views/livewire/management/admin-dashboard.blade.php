@@ -95,7 +95,7 @@
 
                             <div class="relative">
                                 @if(collect($activityChartData)->sum('value') > 0)
-                                    <div id="activityChart" wire:key="activity-chart-{{ $activeSchoolYear }}" class="w-full"></div>
+                                    <div id="activityChart" wire:key="activity-chart-{{ $activeSchoolYear }}" class="w-full flex-1"></div>
                                 @else
                                     {{-- Empty State --}}
                                     <div id="activityChart" wire:key="activity-chart-{{ $activeSchoolYear }}" class="w-full h-[100px]"></div>
@@ -303,7 +303,6 @@
         <div class="space-y-6">
             {{-- Report Type (readonly, set by dropdown) --}}
             <div>
-                <flux:heading size="sm" class="mb-2">Report Type</flux:heading>
                 <flux:field>
                     <flux:input 
                         readonly 
@@ -319,7 +318,6 @@
             {{-- Month (only for monthly reports) --}}
             @if ($exportReportType === 'monthly')
                 <div>
-                    <flux:heading size="sm" class="mb-2">Month</flux:heading>
                     <flux:field>
                         <flux:select wire:model="exportMonth" label="Select Month" placeholder="Select Month">
                             <flux:select.option class="text-black dark:text-white" value="January">January</flux:select.option>
@@ -335,34 +333,29 @@
                             <flux:select.option class="text-black dark:text-white" value="November">November</flux:select.option>
                             <flux:select.option class="text-black dark:text-white" value="December">December</flux:select.option>
                         </flux:select>
-                        <flux:error name="exportMonth" />
                     </flux:field>
                 </div>
             @endif
 
             {{-- School Year --}}
             <div>
-                <flux:heading size="sm" class="mb-2">Academic Year</flux:heading>
                 <flux:field>
                     <flux:select wire:model="exportSchoolYear" label="Select Academic Year" placeholder="Select Academic Year">
                         @foreach ($availableAcademicYears as $academicYear)
                             <flux:select.option class="text-black dark:text-white" value="{{ $academicYear }}">{{ $academicYear }}</flux:select.option>
                         @endforeach
                     </flux:select>
-                    <flux:error name="exportSchoolYear" />
                 </flux:field>
             </div>
 
             {{-- Paper Size --}}
             <div>
-                <flux:heading size="sm" class="mb-2">Paper Size</flux:heading>
                 <flux:field>
                     <flux:select wire:model="exportPaperSize" label="Select Paper Size" placeholder="Select Paper Size">
                         <flux:select.option class="text-black dark:text-white" value="A4">A4</flux:select.option>
                         <flux:select.option class="text-black dark:text-white" value="Letter">Letter</flux:select.option>
                         <flux:select.option class="text-black dark:text-white" value="Legal">Legal</flux:select.option>
                     </flux:select>
-                    <flux:error name="exportPaperSize" />
                 </flux:field>
             </div>
         </div>
