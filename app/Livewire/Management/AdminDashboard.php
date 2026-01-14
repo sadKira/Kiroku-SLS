@@ -27,6 +27,12 @@ class AdminDashboard extends Component
     public $end_year = '';
     public $school_year = '';
 
+    // Export report modal
+    public $exportReportType = 'monthly'; // 'monthly' or 'semestral'
+    public $exportMonth = '';
+    public $exportSchoolYear = '';
+    public $exportPaperSize = 'A4';
+
     public function mount()
     {
         // Ensure there's an active school year
@@ -100,6 +106,87 @@ class AdminDashboard extends Component
         $this->end_year = '';
         $this->school_year = '';
         Flux::modals()->close();
+    }
+
+    // Get available academic years from log sessions
+    public function getAvailableAcademicYearsProperty()
+    {
+        return LogSession::select('school_year')
+            ->distinct()
+            ->orderBy('school_year', 'desc')
+            ->pluck('school_year')
+            ->toArray();
+    }
+
+    // Open export report modal
+    public function openExportReportModal($reportType = 'monthly')
+    {
+        $this->exportReportType = $reportType;
+        $this->exportMonth = '';
+        $this->exportSchoolYear = '';
+        $this->exportPaperSize = 'A4';
+        $this->resetErrorBag();
+        Flux::modal('export-dashboard-report')->show();
+    }
+
+    // Reset fields when report type changes
+    public function updatedExportReportType()
+    {
+        $this->exportMonth = '';
+        $this->resetErrorBag();
+    }
+
+    // Reset export form
+    public function resetExportForm()
+    {
+        $this->exportReportType = 'monthly';
+        $this->exportMonth = '';
+        $this->exportSchoolYear = '';
+        $this->exportPaperSize = 'A4';
+        Flux::modals()->close();
+    }
+
+    // Export dashboard report
+    public function exportDashboardReport()
+    {
+        $this->validate([
+            'exportReportType' => ['required', 'in:monthly,semestral'],
+            'exportSchoolYear' => ['required', 'string', 'min:1'],
+            'exportMonth' => ['required_if:exportReportType,monthly', 'nullable', 'string'],
+            'exportPaperSize' => ['required', 'in:A4,Letter,Legal'],
+        ], [
+            'exportReportType.required' => 'Report type is required.',
+            'exportReportType.in' => 'Invalid report type selected.',
+            'exportSchoolYear.required' => 'Academic year is required. Please select an academic year.',
+            'exportSchoolYear.min' => 'Academic year is required. Please select an academic year.',
+            'exportMonth.required_if' => 'Month is required for monthly reports. Please select a month.',
+            'exportPaperSize.required' => 'Paper size is required.',
+            'exportPaperSize.in' => 'Invalid paper size selected.',
+        ]);
+
+        // Store values before resetting
+        $reportType = $this->exportReportType;
+        $schoolYear = $this->exportSchoolYear;
+        $month = $this->exportMonth;
+        $paperSize = $this->exportPaperSize;
+
+        // Reset form fields
+        $this->resetExportForm();
+
+        // Show info toast before redirecting
+        $this->dispatch('notify',
+            type: 'info',
+            content: 'Generating dashboard report PDF...',
+            duration: 5000
+        );
+
+        // Redirect to export route
+        return redirect()->route('export_dashboard_report', [
+            'report_type' => $reportType,
+            'school_year' => $schoolYear,
+            'month' => $month,
+            'paper_size' => $paperSize,
+        ]);
     }
 
     // Get date range for the whole year
@@ -319,6 +406,7 @@ class AdminDashboard extends Component
             'todayHourlyActivity' => $this->todayHourlyActivity,
             'chartTitleValue' => $this->chartTitleValue,
             'todayLogRecords' => $this->todayLogRecords,
+            'availableAcademicYears' => $this->availableAcademicYears,
         ]);
     }
 }
