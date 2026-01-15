@@ -12,7 +12,7 @@
 <body class="min-h-screen bg-zinc-50 dark:bg-zinc-800">
     <flux:header container class="border-b border-zinc-200 bg-white dark:border-zinc-700 dark:bg-zinc-900">
 
-        <flux:brand href="{{ route('logger_dashboard') }}" wire:navigate name="MKD Resource Center | Student Logger"
+        <flux:brand href="{{ route('logger_dashboard') }}" wire:navigate name="MKD Learning Resource Center | Student Logger"
             class="font-logo">
             <x-slot name="logo" class="size-8">
                 <img src="{{ asset('mkdlib-logo.svg') }}" alt="MKD Logo" class="">
