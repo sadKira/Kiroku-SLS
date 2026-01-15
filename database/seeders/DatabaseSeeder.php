@@ -20,6 +20,7 @@ class DatabaseSeeder extends Seeder
             LoggerSeeder::class,
             StudentSeeder::class,
             SchoolYearSettingSeeder::class,
+            SettingSeeder::class,
 
             LogSessionSeeder::class,
             LogRecordSeeder::class,
