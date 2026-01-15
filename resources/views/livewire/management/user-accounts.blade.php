@@ -86,23 +86,4 @@
         </div>
     </div>
 
-    {{-- Export Dashboard Report Modal --}}
-    <flux:modal name="export-dashboard-report" :dismissible="false">
-        <flux:heading size="lg" class="mb-4">Enter Private Key</flux:heading>
-        
-        <div class="space-y-6">
-
-            {{-- Private Key --}}
-            <flux:otp wire:model="code" length="6" />
-
-        </div>
-
-        <div class="flex gap-2 mt-6">
-            <flux:spacer />
-            <flux:button variant="ghost" size="sm" wire:click="">Cancel</flux:button>
-            <flux:button wire:click="" variant="primary" size="sm">
-                Export PDF
-            </flux:button>
-        </div>
-    </flux:modal>
 </div>
