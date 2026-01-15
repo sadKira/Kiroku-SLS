@@ -32,7 +32,7 @@
         </div>
 
         <!-- Remember Me -->
-        <flux:checkbox wire:model="remember" name="remember" label="Remember me" :checked="old('remember')" />
+        {{-- <flux:checkbox wire:model="remember" name="remember" label="Remember me" :checked="old('remember')" /> --}}
 
         <div class="flex items-center justify-end">
             <flux:button variant="primary" type="submit" class="w-full" >
