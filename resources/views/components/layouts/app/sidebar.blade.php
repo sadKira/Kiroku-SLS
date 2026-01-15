@@ -5,6 +5,11 @@
     @include('partials.head')
 </head>
 
+<script>
+  // Ensure the 'dark' class is removed from the html element
+  document.documentElement.classList.remove('dark');
+</script>   
+
 <body class="min-h-screen bg-zinc-50 dark:bg-zinc-800">
     <flux:sidebar sticky class="border-e border-zinc-200 bg-white dark:border-zinc-700 dark:bg-zinc-900">
 

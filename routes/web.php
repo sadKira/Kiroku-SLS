@@ -34,7 +34,7 @@ Route::middleware(['auth', 'admin'])->group(function () {
 // Admin Routes
 Route::middleware(['auth', 'super_admin'])->group(function () {
 
-    Route::get('super-administrator/manage-accounts', UserAccounts::class)->name('user_accounts');
+    // Route::get('super-administrator/manage-accounts', UserAccounts::class)->name('user_accounts');
 
 });
 
