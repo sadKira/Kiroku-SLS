@@ -1,44 +1,47 @@
 <!DOCTYPE html>
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}" class="">
-    <head>
-        @include('partials.head')
-    </head>
-    <body class="min-h-screen bg-zinc-50 dark:bg-zinc-800">
-        <flux:header container class="border-b border-zinc-200 bg-white dark:border-zinc-700 dark:bg-zinc-900">
 
-            <flux:brand href="{{ route('logger_dashboard') }}" wire:navigate name="MKD Resource Center | Student Logger" class="font-logo">
-                <x-slot name="logo" class="size-8">
-                    <img src="{{ asset('mkdlib-logo.svg') }}" alt="MKD Logo" class="">
-                </x-slot>
-            </flux:brand>
+<head>
+    @include('partials.head')
+</head>
+<script>
+    // Ensure the 'dark' class is removed from the html element
+    document.documentElement.classList.remove('dark');
+</script>
 
-            <flux:spacer />
+<body class="min-h-screen bg-zinc-50 dark:bg-zinc-800">
+    <flux:header container class="border-b border-zinc-200 bg-white dark:border-zinc-700 dark:bg-zinc-900">
 
-            <flux:navbar class="mr-5 me-1.5 space-x-0.5 rtl:space-x-reverse py-0!">
-                
-                <flux:profile
-                    circle
-                    class="cursor-pointer"
-                    :initials="auth()->user()->initials()"
-                    :name="auth()->user()->name"
-                    :chevron="false"
-                />
+        <flux:brand href="{{ route('logger_dashboard') }}" wire:navigate name="MKD Resource Center | Student Logger"
+            class="font-logo">
+            <x-slot name="logo" class="size-8">
+                <img src="{{ asset('mkdlib-logo.svg') }}" alt="MKD Logo" class="">
+            </x-slot>
+        </flux:brand>
 
-                {{-- Log Out Button --}}
-                <form method="POST" action="{{ route('logout') }}" class="w-full">
-                    @csrf
-                    <flux:navmenu.item type="submit" icon="arrow-right-start-on-rectangle">
-                        Log Out
-                    </flux:navmenu.item>
-                </form>
-                
-            </flux:navbar>
-              
-        </flux:header>
+        <flux:spacer />
 
-       
-        {{ $slot }}
+        <flux:navbar class="mr-5 me-1.5 space-x-0.5 rtl:space-x-reverse py-0!">
 
-        @fluxScripts
-    </body>
+            <flux:profile circle class="cursor-pointer" :initials="auth()->user()->initials()"
+                :name="auth()->user()->name" :chevron="false" />
+
+            {{-- Log Out Button --}}
+            <form method="POST" action="{{ route('logout') }}" class="w-full">
+                @csrf
+                <flux:navmenu.item type="submit" icon="arrow-right-start-on-rectangle">
+                    Log Out
+                </flux:navmenu.item>
+            </form>
+
+        </flux:navbar>
+
+    </flux:header>
+
+
+    {{ $slot }}
+
+    @fluxScripts
+</body>
+
 </html>
