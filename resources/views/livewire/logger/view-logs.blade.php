@@ -199,7 +199,7 @@
                  }
              }">
             {{-- Top blur overlay --}}
-            <div class="absolute top-0 left-0 right-0 h-16 pointer-events-none z-10 
+            <div class="absolute top-0 left-0 right-0 h-4 pointer-events-none z-10 
                         bg-gradient-to-b from-gray-50 via-gray-50/80 to-transparent
                         dark:from-zinc-900 dark:via-zinc-900/80 dark:to-transparent"
                  x-show="showTopBlur"
@@ -212,7 +212,7 @@
             </div>
 
             {{-- Bottom blur overlay --}}
-            <div class="absolute bottom-0 left-0 right-0 h-16 pointer-events-none z-10
+            <div class="absolute bottom-0 left-0 right-0 h-4 pointer-events-none z-10
                         bg-gradient-to-t from-gray-50 via-gray-50/80 to-transparent
                         dark:from-zinc-900 dark:via-zinc-900/80 dark:to-transparent"
                  x-show="showBottomBlur"
