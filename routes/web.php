@@ -23,14 +23,19 @@ Route::middleware(['auth', 'admin'])->group(function () {
 
     Route::get('/admin-dashboard', AdminDashboard::class)->name('admin_dashboard');
     Route::get('/student-list', StudentList::class)->name('student_list');
-    Route::get('/about-kiroku', AboutKiroku::class)->name('about_kiroku');
-
     Route::get('/student-logs', StudentLogs::class)->name('student_logs');
-    Route::get('/user-accounts', UserAccounts::class)->name('user_accounts');
+    Route::get('/about-kiroku', AboutKiroku::class)->name('about_kiroku');
 
     Route::get('/export-barcode', [ExportBarcode::class, 'generatePdf'])->name('export_barcode');
     Route::get('/export-student-logs', [ExportStudentLogs::class, 'generatePdf'])->name('export_student_logs');
     Route::get('/export-dashboard-report', [ExportDashboardReport::class, 'generatePdf'])->name('export_dashboard_report');
+});
+
+// Admin Routes
+Route::middleware(['auth', 'super_admin'])->group(function () {
+
+    Route::get('super-administrator/manage-accounts', UserAccounts::class)->name('user_accounts');
+
 });
 
 // Logger Routes

@@ -63,6 +63,7 @@ class AppServiceProvider extends ServiceProvider
                     'student_list' => 'Student List',
                     'student_logs' => 'Student Logs',
                     'about_kiroku' => 'About Kiroku SLS',
+                    'user_accounts' => 'Manage Accounts',
 
                     // Logger
                     'logger_dashboard' => 'Dashboard',
