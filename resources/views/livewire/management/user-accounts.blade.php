@@ -59,23 +59,7 @@
                         </div>
                     </div>
 
-                    <div class="flex items-center gap-2">
-
-                        <!-- Password -->
-                        <flux:input
-                            wire:model.defer=""
-                            name="password"
-                            type="password"
-                            required
-                            placeholder="Password"
-                            viewable
-                            readonly
-                            disabled
-                        />
-
-                        <flux:button size="sm" variant="primary">Reset Password</flux:button>
-
-                    </div>
+                    <flux:button size="sm" variant="primary">Reset Password</flux:button>
 
                 </div>
 
@@ -94,23 +78,8 @@
                         </div>
 
                     </div>
-                    
-                    <div class="flex items-center gap-2">
 
-                        <!-- Password -->
-                        <flux:input
-                            wire:model.defer=""
-                            name="password"
-                            type="password"
-                            required
-                            placeholder="Password"
-                            viewable
-                            readonly
-                        />
-
-                        <flux:button size="sm" variant="primary">Reset Password</flux:button>
-
-                    </div>
+                    <flux:button size="sm" variant="primary">Reset Password</flux:button>
 
                 </div>
             </div> 
@@ -122,47 +91,16 @@
         <flux:heading size="lg" class="mb-4">Enter Private Key</flux:heading>
         
         <div class="space-y-6">
-            {{-- Report Type (readonly, set by dropdown) --}}
-            <div>
-                <flux:field>
-                    <flux:input 
-                        readonly 
-                        type="text" 
-                        label="Report Type" 
-                        value="{{ $exportReportType === 'monthly' ? 'Monthly Report' : 'Semestral Report' }}"
-                        variant="filled"
-                        icon:trailing="lock-closed"
-                    />
-                </flux:field>
-            </div>
 
-            {{-- School Year --}}
-            <div>
-                <flux:field>
-                    <flux:select wire:model="exportSchoolYear" label="Select Academic Year" placeholder="Select Academic Year">
-                        @foreach ($availableAcademicYears as $academicYear)
-                            <flux:select.option class="text-black dark:text-white" value="{{ $academicYear }}">{{ $academicYear }}</flux:select.option>
-                        @endforeach
-                    </flux:select>
-                </flux:field>
-            </div>
+            {{-- Private Key --}}
+            <flux:otp wire:model="code" length="6" />
 
-            {{-- Paper Size --}}
-            <div>
-                <flux:field>
-                    <flux:select wire:model="exportPaperSize" label="Select Paper Size" placeholder="Select Paper Size">
-                        <flux:select.option class="text-black dark:text-white" value="A4">A4</flux:select.option>
-                        <flux:select.option class="text-black dark:text-white" value="Letter">Letter</flux:select.option>
-                        <flux:select.option class="text-black dark:text-white" value="Legal">Legal</flux:select.option>
-                    </flux:select>
-                </flux:field>
-            </div>
         </div>
 
         <div class="flex gap-2 mt-6">
             <flux:spacer />
-            <flux:button variant="ghost" size="sm" wire:click="resetExportForm">Cancel</flux:button>
-            <flux:button wire:click="exportDashboardReport" variant="primary" size="sm">
+            <flux:button variant="ghost" size="sm" wire:click="">Cancel</flux:button>
+            <flux:button wire:click="" variant="primary" size="sm">
                 Export PDF
             </flux:button>
         </div>
