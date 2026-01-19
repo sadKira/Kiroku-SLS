@@ -9,8 +9,8 @@ On-the-job training project for Mindanao Kokusai Daigaku (MKD) Learning Resource
 
 ### System Architecture
 - **Stack:** Tailwind CSS (styling), Alpine.js (lightweight interactivity), Laravel (API, services, routing), Livewire (real-time UI bindings).
-- **Layers:** Presentation (Livewire + Tailwind/Alpine UI), Application (Laravel services/jobs/policies), Domain (attendance sessions/records, students), Persistence (Eloquent models, MySQL).
-- **Modules:** Student Management, Attendance Sessions, Attendance Records, Settings (appearance/profile/password), Reports (per session/day/month/semester), Admin dashboard.
+- **Layers:** Presentation (Livewire + Tailwind/Alpine UI), Application (Laravel services/jobs/policies), Domain (attendance sessions/records, students), Persistence (Eloquent models, MySQL SQLite).
+- **Modules:** Student Management, Attendance Sessions, Attendance Records, Reports (per day/month/semester), Admin dashboard.
 
 ### Key Features
 - **Barcode-Based Logging**
@@ -22,9 +22,6 @@ On-the-job training project for Mindanao Kokusai Daigaku (MKD) Learning Resource
 - **Attendance Sessions & Records**
   - Track active sessions, capture hourly/daily/monthly/semestral summaries.
   - View and export attendance history for audits and monitoring.
-- **Settings & UI**
-  - Profile and password management.
-  - Admin controls for maintaining roster and records.
 
 ### Project Status
 - Actively developed and tested during OJT for MKD library operations.
@@ -32,7 +29,7 @@ On-the-job training project for Mindanao Kokusai Daigaku (MKD) Learning Resource
 
 ### Technologies Used
 - Tailwind CSS, Alpine.js, Laravel, Livewire
-- MySQL
+- MySQL, SQLite
 - PHP, Composer, Node.js, npm
 - Optional: queues/cache for future scaling; PHPUnit/Pest for automated testing
 
