@@ -16,19 +16,19 @@ class AdminSeeder extends Seeder
      */
     public function run(): void
     {
-        // Admin 1
+        // Admin
         User::create([
-            'username' => 'mkdlibrary25',
-            'name' => 'Admin Account',
-            'password' => Hash::make("mkd2025-admin"),
+            'username' => env('ADMIN_USERNAME'),
+            'name' => env('ADMIN_NAME'),
+            'password' => Hash::make(env('ADMIN_PASSWORD')),
             'role' => UserRole::Admin,
         ]);
 
-        // Admin 0
+        // Super Admin
         User::create([
-            'username' => 'kamisama',
-            'name' => 'Super Admin',
-            'password' => Hash::make("mkd2025-masterminad"),
+            'username' => env('SUPER_ADMIN_USERNAME'),
+            'name' => env('SUPER_ADMIN_NAME'),
+            'password' => Hash::make(env('SUPER_ADMIN_PASSWORD')),
             'role' => UserRole::SuperAdmin,
         ]);
     }

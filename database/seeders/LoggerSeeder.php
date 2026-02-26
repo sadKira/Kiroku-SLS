@@ -18,9 +18,9 @@ class LoggerSeeder extends Seeder
     {
         // Logger
         User::create([
-            'username' => 'mkdlogger25',
-             'name' => 'Logger Account',
-            'password' => Hash::make("mkd2025-logger"),
+            'username' => env('LOGGER_USERNAME'),
+            'name' => env('LOGGER_NAME'),
+            'password' => Hash::make(env('LOGGER_PASSWORD')),
             'role' => UserRole::Logger,
         ]);
     }
