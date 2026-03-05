@@ -43,9 +43,9 @@
                     <flux:sidebar.item :href="url('/system-logs')" icon="folder-git-2" target="_blank">
                         System Logs
                     </flux:sidebar.item>
-                    {{-- <flux:sidebar.item :href="route('user_accounts')" icon="user-group" :current="request()->routeIs('user_accounts')" wire:navigate>
-                        Manage Accounts
-                    </flux:sidebar.item> --}}
+                    <flux:sidebar.item :href="route('user_management')" icon="users" :current="request()->routeIs('user_management')" wire:navigate>
+                        User Management
+                    </flux:sidebar.item>
                 </flux:sidebar.group>
             @endcan
 

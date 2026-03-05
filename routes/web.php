@@ -11,6 +11,8 @@ use App\Livewire\Management\AboutKiroku;
 use App\Livewire\Management\StudentLogs;
 use App\Livewire\Management\UserAccounts;
 
+use App\Livewire\Management\UserManagement;
+
 use App\Livewire\Logger\LoggerDashboard;
 use App\Livewire\Logger\ViewLogs;
 
@@ -31,10 +33,10 @@ Route::middleware(['auth', 'admin'])->group(function () {
     Route::get('/export-dashboard-report', [ExportDashboardReport::class, 'generatePdf'])->name('export_dashboard_report');
 });
 
-// Admin Routes
+// Super Admin Routes
 Route::middleware(['auth', 'super_admin'])->group(function () {
 
-    // Route::get('super-administrator/manage-accounts', UserAccounts::class)->name('user_accounts');
+    Route::get('/user-management', UserManagement::class)->name('user_management');
 
 });
 

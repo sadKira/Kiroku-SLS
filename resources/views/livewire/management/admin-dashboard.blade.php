@@ -16,7 +16,7 @@
     <div class="">
         {{-- Header with Set Academic Year Button --}}
         <div class="mt-6 mb-6 flex items-center justify-between">
-            <flux:heading size="lg">Dashboard</flux:heading>
+            <flux:heading size="xl">Dashboard</flux:heading>
 
             <div class="flex-items-center gap-1">
                 <flux:dropdown>

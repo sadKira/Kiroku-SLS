@@ -16,7 +16,7 @@
     {{-- Upper --}}
     <div class="flex items-center justify-between mb-5">
 
-        <flux:heading size="lg">Student List</flux:heading>
+        <flux:heading size="xl">Student List</flux:heading>
 
         <div class="flex items-center gap-1">
             <flux:button icon="plus" wire:click="addStudent" variant="ghost" size="sm">Add Student</flux:button>

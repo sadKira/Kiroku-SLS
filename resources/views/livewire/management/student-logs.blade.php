@@ -16,7 +16,7 @@
     {{-- Upper --}}
     <div class="flex items-center justify-between mb-7">
 
-        <flux:heading size="lg" class="font-bold">Student Logs</flux:heading>
+        <flux:heading size="xl" class="font-bold">Student Logs</flux:heading>
 
     </div>
 
