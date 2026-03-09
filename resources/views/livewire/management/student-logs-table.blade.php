@@ -200,7 +200,7 @@
                                                     </div>
                                                 @endif
 
-                                                <div 
+                                                {{-- <div 
                                                     x-data="{ isHovered: false }" 
                                                     @mouseenter="isHovered = true" 
                                                     @mouseleave="isHovered = false"
@@ -225,7 +225,7 @@
                                                         />
                                                     </flux:tooltip>
 
-                                                </div>
+                                                </div> --}}
                                             </div>
 
                                         </div>
@@ -276,7 +276,7 @@
             {{-- Academic Year --}}
             <div class="space-y-4">
                 <div>
-                    <flux:heading size="sm" class="mb-2">Academic Year</flux:heading>
+                    <flux:heading size="sm" class="mb-4">Academic Year</flux:heading>
                     <flux:field>
                         <div class="flex items-center gap-2">
                             {{-- Start Year --}}

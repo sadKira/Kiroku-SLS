@@ -260,7 +260,7 @@
         
         <div class="space-y-4">
             <div>
-                <flux:heading size="sm" class="mb-2">Academic Year</flux:heading>
+                <flux:heading size="sm" class="mb-4">Academic Year</flux:heading>
                 <flux:field>
                     <div class="flex items-center gap-2">
                         {{-- Start Year --}}
@@ -296,7 +296,7 @@
 
         <div class="flex gap-2 mt-6">
             <flux:spacer />
-            <flux:button variant="ghost" size="sm" wire:click="resetSetSchoolYearForm">Cancel</flux:button>
+            {{-- <flux:button variant="ghost" size="sm" wire:click="resetSetSchoolYearForm">Cancel</flux:button> --}}
             <flux:button wire:click="setSchoolYear" variant="primary" size="sm">
                 Set Academic Year
             </flux:button>
