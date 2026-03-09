@@ -10,8 +10,8 @@
 
     </div>
 
-    <div class="mt-10">
-        <flux:heading size="lg">Student Logs</flux:heading>
+    <div class="mt-10 mb-6">
+        <flux:heading size="xl">Student Logs</flux:heading>
     </div>
 
     {{-- Logs Content --}}
