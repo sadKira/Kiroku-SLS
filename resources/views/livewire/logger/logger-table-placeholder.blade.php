@@ -1,4 +1,29 @@
 <div>
+    {{-- Today's Log Placeholder --}}
+    <div class="mb-8">
+        <flux:skeleton.group animate="shimmer">
+            <flux:skeleton.line class="w-32 h-7 mb-4" />
+        </flux:skeleton.group>
+        <div class="bg-white dark:bg-zinc-900 border border-black/10 dark:border-white/10 rounded-lg p-5 max-w-sm">
+            <div class="mb-3">
+                <flux:skeleton.group animate="shimmer">
+                    <flux:skeleton.line class="w-3/4 h-6 mb-2" />
+                    <flux:skeleton.line class="w-1/2 h-5" />
+                </flux:skeleton.group>
+            </div>
+            <div class="mb-4">
+                <flux:skeleton.group animate="shimmer">
+                    <flux:skeleton.line class="w-2/3 h-4" />
+                </flux:skeleton.group>
+            </div>
+            <div class="flex items-center justify-end gap-2 pt-4 border-t border-black/10 dark:border-white/10">
+                <flux:skeleton.group animate="shimmer">
+                    <flux:skeleton.line class="w-24 h-4" />
+                </flux:skeleton.group>
+            </div>
+        </div>
+    </div>
+
     {{-- Two Column Layout Placeholder --}}
     <div class="flex flex-col lg:flex-row gap-6 mt-5">
 
