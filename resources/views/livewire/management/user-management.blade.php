@@ -59,7 +59,8 @@
                     <flux:table.cell>
                         <div class="flexitems-center gap-2">
                             <flux:button size="sm" variant="primary" icon="key"
-                                wire:click="confirmResetPassword({{ $user->id }})">
+                                wire:click="confirmResetPassword({{ $user->id }})"
+                                wire:target="confirmResetPassword({{ $user->id }})">
                                 Reset Password
                             </flux:button>
                         </div>
