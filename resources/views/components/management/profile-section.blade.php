@@ -2,7 +2,12 @@
 
     {{-- Profile Section --}}
     <div class="flex items-center gap-2">
-        <flux:profile :name="auth()->user()->name" :initials="auth()->user()->initials()" :chevron="false" />
+        <flux:profile :name="auth()->user()->name" :initials="auth()->user()->initials()" :chevron="false"
+            :avatar:color="match(auth()->user()->role) {
+                App\Enums\UserRole::Admin => 'blue',
+                App\Enums\UserRole::Logger => 'green',
+                default => null,
+            }" />
 
         <flux:separator vertical class="my-2" />
 

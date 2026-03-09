@@ -33,6 +33,11 @@
                     <flux:table.cell>
                         <div class="flex items-center gap-2 sm:gap-4">
                             <flux:avatar circle size="lg" class="max-sm:size-8"
+                                :color="match($user->role) {
+                                    App\Enums\UserRole::Admin => 'blue',
+                                    App\Enums\UserRole::Logger => 'green',
+                                    default => null,
+                                }"
                                 :initials="strtoupper(substr($user->name, 0, 2))" />
                             <div class="flex flex-col">
                                 <flux:heading>

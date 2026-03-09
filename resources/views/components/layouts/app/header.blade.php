@@ -24,7 +24,12 @@
         <flux:navbar class="mr-5 me-1.5 space-x-0.5 rtl:space-x-reverse py-0!">
 
             <flux:profile circle class="cursor-pointer" :initials="auth()->user()->initials()"
-                :name="auth()->user()->name" :chevron="false" />
+                :name="auth()->user()->name" :chevron="false"
+                :avatar:color="match(auth()->user()->role) {
+                    App\Enums\UserRole::Admin => 'blue',
+                    App\Enums\UserRole::Logger => 'green',
+                    default => null,
+                }" />
 
             {{-- Log Out Button --}}
             <form method="POST" action="{{ route('logout') }}" class="w-full">
