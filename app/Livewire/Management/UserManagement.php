@@ -59,7 +59,7 @@ class UserManagement extends Component
         }
 
         $user->update([
-            'password' => Hash::make($this->newPassword),
+            'password' => $this->newPassword,
         ]);
 
         $this->modal('reset-password')->close();
