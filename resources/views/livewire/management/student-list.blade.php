@@ -19,13 +19,11 @@
         <flux:heading size="xl">Student List</flux:heading>
 
         <div class="flex items-center gap-1">
-            <flux:button icon="plus" wire:click="addStudent" variant="ghost" size="sm">Add Student</flux:button>
-
             
             @if ($students->count() > 0)
                 
                 <flux:dropdown>
-                    <flux:button icon="arrow-down-tray" variant="primary" size="sm">
+                    <flux:button icon="arrow-down-tray" variant="ghost" size="sm">
                         Download Barcodes
                     </flux:button>
 
@@ -39,6 +37,9 @@
                 </flux:dropdown>
             
             @endif
+
+            <flux:button icon="plus" wire:click="addStudent" variant="primary" size="sm">Add Student</flux:button>
+
         </div>
 
     </div>
