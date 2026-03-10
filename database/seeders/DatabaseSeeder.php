@@ -18,12 +18,16 @@ class DatabaseSeeder extends Seeder
         $this->call([
             AdminSeeder::class,
             LoggerSeeder::class,
-            // StudentSeeder::class,
-            SchoolYearSettingSeeder::class,
-            // SettingSeeder::class,
 
-            // LogSessionSeeder::class,
-            // LogRecordSeeder::class,
+            // Swap
+            StudentSeeder::class,
+            SchoolYearSettingSeeder::class,
+
+            // Swap all
+            SettingSeeder::class,
+
+            LogSessionSeeder::class,
+            LogRecordSeeder::class,
         ]);
        
     }
