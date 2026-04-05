@@ -428,18 +428,27 @@
 
                                             {{-- User Details --}}
                                             @if ($entity)
-                                                <p class="text-xs text-gray-500 dark:text-neutral-400">
+                                                <div class="mt-1 flex items-center gap-1.5 flex-wrap">
                                                     @if ($record->loggable_type === 'faculty')
                                                         <flux:badge size="sm" color="amber" variant="pill">Faculty</flux:badge>
-                                                        {{ $entity->instructional_level }}
+                                                        @php 
+                                                            $levelCode = \App\Models\InstructionalLevel::where('name', $entity->instructional_level)->value('code') ?? $entity->instructional_level; 
+                                                        @endphp
+                                                        <flux:badge size="sm" color="amber" variant="pill">{{ $levelCode }}</flux:badge>
                                                     @elseif ($entity->user_type === 'shs')
-                                                        <flux:badge size="sm" color="sky" variant="pill">SHS</flux:badge>
-                                                        {{ $entity->year_level }} - {{ $entity->strand }}
+                                                        <flux:badge size="sm" color="red" variant="pill">SHS</flux:badge>
+                                                        @php 
+                                                            $strandCode = \App\Models\Strand::where('name', $entity->strand)->value('code') ?? $entity->strand; 
+                                                        @endphp
+                                                        <flux:badge size="sm" color="red" variant="pill">{{ $entity->year_level }} - {{ $strandCode }}</flux:badge>
                                                     @else
                                                         <flux:badge size="sm" color="indigo" variant="pill">College</flux:badge>
-                                                        {{ $entity->year_level }} - {{ $entity->course }}
+                                                        @php 
+                                                            $courseCode = \App\Models\Course::where('name', $entity->course)->value('code') ?? $entity->course; 
+                                                        @endphp
+                                                        <flux:badge size="sm" color="indigo" variant="pill">{{ $entity->year_level }} - {{ $courseCode }}</flux:badge>
                                                     @endif
-                                                </p>
+                                                </div>
                                             @endif
                                         </div>
                                         <div>

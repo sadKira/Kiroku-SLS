@@ -72,10 +72,10 @@
                         </div>
                     </x-ui.card>
 
-                    {{-- Active Students Card --}}
+                    {{-- Active Users Card --}}
                     <x-ui.card class="!max-w-none">
                         <div class="flex flex-col">
-                            <p class="text-sm text-neutral-600 dark:text-neutral-400">Active Students (Today)</p>
+                            <p class="text-sm text-neutral-600 dark:text-neutral-400">Active Users (Today)</p>
                             <div class="flex items-center gap-1">
                                 <p class="text-2xl font-semibold">{{ $attendancePercentage }}%</p>
                                 @if ($attendancePercentage > 0)
@@ -213,29 +213,34 @@
 
                                         {{-- Right Content --}}
                                         <div class="grow pt-0.5 {{ $loop->last ? 'pb-0' : 'pb-8' }}">
+                                            @php
+                                                $entity = $record->loggable_type === 'faculty' ? $record->faculty : $record->student;
+                                            @endphp
                                             <h3 class="flex gap-x-1.5 font-semibold text-gray-800 dark:text-white">
-                                                @if($record->student)
-                                                    {{ $record->student->last_name }}, {{ $record->student->first_name }}
+                                                @if($entity)
+                                                    {{ $entity->last_name }}, {{ $entity->first_name }}
                                                 @else
-                                                    Unknown Student
+                                                    Unknown User
                                                 @endif
                                             </h3>
-                                            @if($record->student)
+                                            @if($entity)
                                                 <p class="mt-1 text-sm text-gray-600 dark:text-neutral-400">
-                                                    {{ $record->student->year_level }} - 
-                                                    @php
-                                                        $course = $record->student->course;
-                                                        $courseAbbr = match (true) {
-                                                            $course == 'Bachelor of Arts in International Studies' => 'ABIS',
-                                                            $course == 'Bachelor of Science in Information Systems' => 'BSIS',
-                                                            $course == 'Bachelor of Human Services' => 'BHS',
-                                                            $course == 'Bachelor of Secondary Education' => 'BSED',
-                                                            $course == 'Bachelor of Elementary Education' => 'ECED',
-                                                            $course == 'Bachelor of Special Needs Education' => 'SNED',
-                                                            default => $course,
-                                                        };
-                                                    @endphp
-                                                    {{ $courseAbbr }}
+                                                    @if($record->loggable_type === 'faculty')
+                                                        @php 
+                                                            $levelCode = \App\Models\InstructionalLevel::where('name', $entity->instructional_level)->value('code') ?? $entity->instructional_level; 
+                                                        @endphp
+                                                        Faculty - {{ $levelCode }}
+                                                    @elseif($entity->user_type === 'shs')
+                                                        @php 
+                                                            $strandCode = \App\Models\Strand::where('name', $entity->strand)->value('code') ?? $entity->strand; 
+                                                        @endphp
+                                                        {{ $entity->year_level }} - {{ $strandCode }}
+                                                    @else
+                                                        @php
+                                                            $courseCode = \App\Models\Course::where('name', $entity->course)->value('code') ?? $entity->course;
+                                                        @endphp
+                                                        {{ $entity->year_level }} - {{ $courseCode }}
+                                                    @endif
                                                 </p>
                                             @endif
                                             @if($record->time_out)

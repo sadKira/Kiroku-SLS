@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('instructional_levels', function (Blueprint $table) {
             $table->id();
             $table->string('code')->unique();
-            $table->string('name');
+            $table->string('name')->unique();
             $table->timestamps();
         });
     }

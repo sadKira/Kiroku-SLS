@@ -13,7 +13,9 @@ return new class extends Migration
     {
         Schema::create('log_records', function (Blueprint $table) {
             $table->id();
+            $table->string('loggable_type')->default('student');
             $table->foreignId('student_id')->nullable()->constrained()->cascadeOnDelete();
+            $table->foreignId('faculty_id')->nullable()->constrained()->cascadeOnDelete();
             $table->foreignId('log_session_id')->nullable()->constrained()->cascadeOnDelete();
             $table->timestamp('time_in')->nullable();
             $table->timestamp('time_out')->nullable();
@@ -21,7 +23,9 @@ return new class extends Migration
             $table->timestamps();
 
             // Attendance-optimized indexes
+            $table->index('loggable_type');
             $table->index(['student_id', 'time_in']);
+            $table->index(['faculty_id', 'time_in']);
             $table->index(['log_session_id', 'time_in']);
         });
     }

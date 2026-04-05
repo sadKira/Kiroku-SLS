@@ -26,6 +26,7 @@ class DatabaseSeeder extends Seeder
 
             // Swap
             StudentSeeder::class,
+            FacultySeeder::class,
             SchoolYearSettingSeeder::class,
 
             // Swap all

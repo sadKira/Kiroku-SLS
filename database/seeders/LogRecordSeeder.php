@@ -18,8 +18,9 @@ class LogRecordSeeder extends Seeder
     {
         $schoolYear = '2025-2026';
         $students = Student::all();
+        $faculties = \App\Models\Faculty::all();
         
-        if ($students->isEmpty()) {
+        if ($students->isEmpty() && $faculties->isEmpty()) {
             return;
         }
         
@@ -39,15 +40,18 @@ class LogRecordSeeder extends Seeder
             // For other days, create fewer (5-15)
             $recordCount = $isToday ? rand(10, 20) : rand(5, 15);
             
-            // Select random students for this session
-            $selectedStudents = $students->random(min($recordCount, $students->count()));
+            // Merge students and faculties into a pool of potential attendees
+            $pool = $students->merge($faculties);
             
-            foreach ($selectedStudents as $student) {
+            // Select random users for this session
+            $selectedUsers = $pool->random(min($recordCount, $pool->count()));
+            
+            foreach ($selectedUsers as $user) {
                 // Generate time_in based on the session date (8 AM - 5 PM)
                 $timeIn = $sessionDate->copy()
                     ->setTime(rand(8, 17), rand(0, 59), 0);
                 
-                // 70% chance of having time_out (some students might still be logged in)
+                // 70% chance of having time_out (some students/faculty might still be logged in)
                 $timeOut = null;
                 if (rand(1, 100) <= 70) {
                     $timeOutCandidate = $timeIn->copy()
@@ -57,14 +61,20 @@ class LogRecordSeeder extends Seeder
                     $timeOut = $timeOutCandidate > $endOfDay ? $endOfDay : $timeOutCandidate;
                 }
                 
+                $isStudent = $user instanceof Student;
+                
                 LogRecord::firstOrCreate(
                     [
-                        'student_id' => $student->id,
+                        'student_id' => $isStudent ? $user->id : null,
+                        'faculty_id' => !$isStudent ? $user->id : null,
                         'log_session_id' => $session->id,
+                        'loggable_type' => $isStudent ? 'student' : 'faculty',
                     ],
                     [
-                        'student_id' => $student->id,
+                        'student_id' => $isStudent ? $user->id : null,
+                        'faculty_id' => !$isStudent ? $user->id : null,
                         'log_session_id' => $session->id,
+                        'loggable_type' => $isStudent ? 'student' : 'faculty',
                         'time_in' => $timeIn,
                         'time_out' => $timeOut,
                     ]
