@@ -97,17 +97,19 @@
         <div class="flex-1 flex flex-col items-center justify-center">
             <div class="w-full max-w-xl">
 
-                {{-- Dynamic Label for Student Display --}}
+                {{-- Dynamic Label for User Display --}}
                 <div x-data="{
                     shown: false,
-                    studentName: '',
-                    studentYearLevel: '',
-                    studentCourse: ''
+                    userName: '',
+                    userDetail: '',
+                    userSubDetail: '',
+                    userType: ''
                 }" x-init="@this.on('scan-label', () => {
                     // Get latest values from Livewire
-                    studentName = $wire.studentName;
-                    studentYearLevel = $wire.studentYearLevel;
-                    studentCourse = $wire.studentCourse;
+                    userName = $wire.userName;
+                    userDetail = $wire.userDetail;
+                    userSubDetail = $wire.userSubDetail;
+                    userType = $wire.userType;
                     shown = true;
                     setTimeout(() => { shown = false; }, 3000);
                 });" class="mt-8">
@@ -122,7 +124,7 @@
                         </div>
                     </template>
 
-                    <!-- Student Details (shown temporarily when scan succeeds) -->
+                    <!-- User Details (shown temporarily when scan succeeds) -->
                     <template x-if="shown">
                         <div class="flex flex-col items-center justify-center gap-3 w-full">
                             
@@ -130,9 +132,20 @@
 
                             <div class="flex flex-col justify-center items-center">
                                 <flux:heading size="xl" class="text-gray-800 dark:text-neutral-200"
-                                    x-text="studentName"></flux:heading>
-                                <flux:heading size="lg" class="text-gray-600 dark:text-neutral-400"
-                                    x-text="studentYearLevel + ' - ' + studentCourse"></flux:heading>
+                                    x-text="userName"></flux:heading>
+                                <div class="flex items-center gap-2 mt-1">
+                                    <template x-if="userType === 'Faculty'">
+                                        <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-amber-100 text-amber-800 dark:bg-amber-900 dark:text-amber-200">Faculty</span>
+                                    </template>
+                                    <template x-if="userType === 'SHS'">
+                                        <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-sky-100 text-sky-800 dark:bg-sky-900 dark:text-sky-200">SHS</span>
+                                    </template>
+                                    <template x-if="userType === 'College'">
+                                        <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-indigo-100 text-indigo-800 dark:bg-indigo-900 dark:text-indigo-200">College</span>
+                                    </template>
+                                </div>
+                                <flux:heading size="lg" class="text-gray-600 dark:text-neutral-400 mt-1"
+                                    x-text="userSubDetail ? userDetail + ' - ' + userSubDetail : userDetail"></flux:heading>
                             </div>
                         </div>
                     </template>

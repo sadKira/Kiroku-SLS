@@ -60,11 +60,15 @@ class AppServiceProvider extends ServiceProvider
                     // Management
                     'home' => 'Kiroku SLS',
                     'admin_dashboard' => 'Dashboard',
-                    'student_list' => 'Student List',
-                    'student_logs' => 'Student Logs',
+                    'college_list' => 'College List',
+                    'shs_list' => 'SHS List',
+                    'faculty_list' => 'Faculty List',
+                    'user_logs' => 'User Logs',
                     'about_kiroku' => 'About Kiroku SLS',
                     'user_accounts' => 'Manage Accounts',
                     'user_management' => 'User Management',
+                    'course_management' => 'Course Management',
+                    'level_management' => 'Instructional Level Management',
 
                     // Logger
                     'logger_dashboard' => 'Dashboard',

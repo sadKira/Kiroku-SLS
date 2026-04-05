@@ -34,28 +34,28 @@ it('redirects guest to login from admin dashboard', function () {
     $response->assertRedirect(route('home'));
 });
 
-it('allows admin to access student list', function () {
+it('allows admin to access college list', function () {
     $user = User::factory()->admin()->create();
 
-    $response = $this->actingAs($user)->get('/student-list');
+    $response = $this->actingAs($user)->get('/college-list');
 
     $response->assertStatus(200);
 });
 
-it('allows admin to access student logs', function () {
+it('allows admin to access user logs', function () {
     $user = User::factory()->admin()->create();
 
-    $response = $this->actingAs($user)->get('/student-logs');
+    $response = $this->actingAs($user)->get('/user-logs');
 
     $response->assertStatus(200);
 });
 
-it('denies logger access to student list', function () {
+it('denies logger access to college list', function () {
     $user = User::factory()->logger()->create();
 
     $response = $this->actingAs($user)
         ->from('/dashboard')
-        ->get('/student-list');
+        ->get('/college-list');
 
     $response->assertRedirect('/dashboard');
 });

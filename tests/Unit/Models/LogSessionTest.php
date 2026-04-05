@@ -3,6 +3,7 @@
 use App\Models\LogSession;
 use App\Models\LogRecord;
 use App\Models\Student;
+use App\Models\Faculty;
 
 it('has the correct fillable attributes', function () {
     $logSession = new LogSession();
@@ -26,6 +27,7 @@ it('has many log records', function () {
     LogRecord::factory()->create([
         'log_session_id' => $logSession->id,
         'student_id' => $student->id,
+        'loggable_type' => 'student',
     ]);
 
     expect($logSession->logRecords)->toHaveCount(1)
@@ -39,10 +41,26 @@ it('belongs to many students through log records', function () {
     LogRecord::factory()->create([
         'log_session_id' => $logSession->id,
         'student_id' => $student->id,
+        'loggable_type' => 'student',
     ]);
 
     expect($logSession->students)->toHaveCount(1)
         ->and($logSession->students->first())->toBeInstanceOf(Student::class);
+});
+
+it('belongs to many faculties through log records', function () {
+    $logSession = LogSession::factory()->create();
+    $faculty = Faculty::factory()->create();
+
+    LogRecord::factory()->create([
+        'log_session_id' => $logSession->id,
+        'faculty_id' => $faculty->id,
+        'student_id' => null,
+        'loggable_type' => 'faculty',
+    ]);
+
+    expect($logSession->faculties)->toHaveCount(1)
+        ->and($logSession->faculties->first())->toBeInstanceOf(Faculty::class);
 });
 
 it('searches by school year', function () {

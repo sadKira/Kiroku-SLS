@@ -142,7 +142,7 @@
                                     @php
                                         $count = $logSession->students_count ?? $logSession->log_records_count ?? 0;
                                     @endphp
-                                    <span>{{ $count }} {{ $count == 1 ? 'student' : 'students' }}</span>
+                                    <span>{{ $count }} {{ $count == 1 ? 'person' : 'people' }}</span>
                                 </div>
                             </div>
                         </a>

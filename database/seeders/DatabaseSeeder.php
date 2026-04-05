@@ -19,6 +19,11 @@ class DatabaseSeeder extends Seeder
             AdminSeeder::class,
             LoggerSeeder::class,
 
+            // Reference Data
+            CourseSeeder::class,
+            StrandSeeder::class,
+            InstructionalLevelSeeder::class,
+
             // Swap
             StudentSeeder::class,
             SchoolYearSettingSeeder::class,

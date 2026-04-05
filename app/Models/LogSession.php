@@ -24,10 +24,17 @@ class LogSession extends Model
         return $this->hasMany(LogRecord::class);
     }
 
-    // Many is to Many
+    // Many is to Many (students)
     public function students()
     {
         return $this->belongsToMany(Student::class, 'log_records')
+            ->withPivot('time_in', 'time_out');
+    }
+
+    // Many is to Many (faculties)
+    public function faculties()
+    {
+        return $this->belongsToMany(Faculty::class, 'log_records')
             ->withPivot('time_in', 'time_out');
     }
 
@@ -95,12 +102,10 @@ class LogSession extends Model
             // Search for partial matches in day and month names
             if ($connection === 'sqlite') {
                 // SQLite: Use strftime for day and month names
-                // %A = full weekday name, %B = full month name
                 $q->orWhereRaw("LOWER(strftime('%A', date)) LIKE ?", ["%{$searchTerm}%"])
                   ->orWhereRaw("LOWER(strftime('%B', date)) LIKE ?", ["%{$searchTerm}%"]);
             } else {
                 // MySQL: Use DATE_FORMAT
-                // %W = weekday name, %M = month name
                 $q->orWhereRaw('LOWER(DATE_FORMAT(date, "%W")) LIKE ?', ["%{$searchTerm}%"])
                   ->orWhereRaw('LOWER(DATE_FORMAT(date, "%M")) LIKE ?', ["%{$searchTerm}%"]);
             }

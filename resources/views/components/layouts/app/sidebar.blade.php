@@ -30,20 +30,40 @@
                 Dashboard
             </flux:sidebar.item>
 
-            <flux:sidebar.item icon="users" :href="route('student_list')" :current="request()->routeIs('student_list')"  wire:navigate>
-                Student List
+            <flux:sidebar.item icon="document-text" :href="route('user_logs')" :current="request()->routeIs('user_logs')" wire:navigate>
+                User Logs
             </flux:sidebar.item>
 
-            <flux:sidebar.item icon="document-text" :href="route('student_logs')" :current="request()->routeIs('student_logs')"  wire:navigate>
-                Student Logs
-            </flux:sidebar.item>
+            <flux:sidebar.group expandable icon="user-group" heading="User List">
+                <flux:sidebar.item icon="identification" :href="route('faculty_list')" :current="request()->routeIs('faculty_list')" wire:navigate>
+                    Faculty
+                </flux:sidebar.item>
+
+                <flux:sidebar.item icon="academic-cap" :href="route('college_list')" :current="request()->routeIs('college_list')" wire:navigate>
+                    College
+                </flux:sidebar.item>
+
+                <flux:sidebar.item icon="book-open" :href="route('shs_list')" :current="request()->routeIs('shs_list')" wire:navigate>
+                    Senior High School
+                </flux:sidebar.item>
+            </flux:sidebar.group>
+
+            <flux:sidebar.group expandable icon="rectangle-stack" heading="Courses & Levels">
+                <flux:sidebar.item icon="clipboard-document-list" :href="route('course_management')" :current="request()->routeIs('course_management')" wire:navigate>
+                    Courses
+                </flux:sidebar.item>
+
+                <flux:sidebar.item icon="bars-3-bottom-left" :href="route('level_management')" :current="request()->routeIs('level_management')" wire:navigate>
+                    Instructional Levels
+                </flux:sidebar.item>
+            </flux:sidebar.group>
 
             @can('SA')
                 <flux:sidebar.group expandable icon="shield-check" heading="Super Administrator">
-                    <flux:sidebar.item :href="url('/system-logs')" icon="folder-git-2" target="_blank">
+                    <flux:sidebar.item :href="url('/system-logs')" icon="server-stack" target="_blank">
                         System Logs
                     </flux:sidebar.item>
-                    <flux:sidebar.item :href="route('user_management')" icon="users" :current="request()->routeIs('user_management')" wire:navigate>
+                    <flux:sidebar.item :href="route('user_management')" icon="cog-6-tooth" :current="request()->routeIs('user_management')" wire:navigate>
                         User Management
                     </flux:sidebar.item>
                 </flux:sidebar.group>

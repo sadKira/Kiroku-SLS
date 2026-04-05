@@ -35,14 +35,14 @@
                     </p>
                 </div>
 
-                {{-- Student Count --}}
+                {{-- User Count --}}
                 <div class="flex items-center justify-end gap-2 pt-4 border-t border-black/10 dark:border-white/10">
                     <div class="flex items-center gap-1 text-sm text-gray-600 dark:text-neutral-400">
                         <flux:icon.users variant="outline" class="w-4 h-4" />
                         @php
                             $count = $todayLogSession->students_count ?? $todayLogSession->log_records_count ?? 0;
                         @endphp
-                        <span>{{ $count }} {{ $count == 1 ? 'student' : 'students' }}</span>
+                        <span>{{ $count }} {{ $count == 1 ? 'user' : 'users' }}</span>
                     </div>
                 </div>
             </a>
@@ -61,7 +61,7 @@
     </div>
 
     <div class="mb-6">
-        <flux:heading size="xl">Student Logs</flux:heading>
+        <flux:heading size="xl">Library Logs</flux:heading>
     </div>
 
     {{-- Logs Content --}}

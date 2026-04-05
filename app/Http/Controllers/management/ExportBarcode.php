@@ -5,6 +5,7 @@ namespace App\Http\Controllers\management;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Student;
+use App\Models\Faculty;
 use Spatie\Browsershot\Browsershot;
 use Exception;
 use Illuminate\Support\Facades\Log;
@@ -16,6 +17,7 @@ class ExportBarcode extends Controller
         try {
             // Get paper size from request, default to A4
             $paperSize = $request->input('paper_size', 'A4');
+            $userType = $request->input('user_type', 'college');
             
             // Validate paper size
             $validPaperSizes = ['A4', 'Letter', 'Legal'];
@@ -23,21 +25,33 @@ class ExportBarcode extends Controller
                 $paperSize = 'A4'; // Fallback to A4 if invalid
             }
 
-            // Get all students ordered by their student ID for a predictable layout
-            $students = Student::orderBy('id_student')->get();
+            // Get users based on type
+            if ($userType === 'faculty') {
+                $users = Faculty::orderBy('id_faculty')->get();
+                $idField = 'id_faculty';
+                $label = 'faculty';
+            } elseif ($userType === 'shs') {
+                $users = Student::shs()->orderBy('id_student')->get();
+                $idField = 'id_student';
+                $label = 'shs-students';
+            } else {
+                $users = Student::college()->orderBy('id_student')->get();
+                $idField = 'id_student';
+                $label = 'college-students';
+            }
 
-            // Check if there are any students to export
-            if ($students->isEmpty()) {
+            // Check if there are any users to export
+            if ($users->isEmpty()) {
                 return redirect()->back()->with('notify', [
                     'type' => 'error',
-                    'content' => 'No students found to export. Please add students first.',
+                    'content' => 'No users found to export. Please add users first.',
                     'duration' => 5000
                 ]);
             }
 
             // Render the minimal barcode export view to HTML
             $html = view('Reports/export-barcode', [
-                'students' => $students,
+                'students' => $users,
             ])->render();
 
             // Generate the PDF in memory and stream it to the browser
@@ -50,14 +64,14 @@ class ExportBarcode extends Controller
 
             return response($pdf, 200, [
                 'Content-Type' => 'application/pdf',
-                'Content-Disposition' => 'attachment; filename="student-barcodes-' . strtolower($paperSize) . '.pdf"',
+                'Content-Disposition' => 'attachment; filename="' . $label . '-barcodes-' . strtolower($paperSize) . '.pdf"',
             ]);
 
         } catch (\Spatie\Browsershot\Exceptions\CouldNotTakeBrowsershot $e) {
-            // Handle Browsershot specific errors (e.g., Node.js not installed, Chrome/Chromium issues)
             Log::error('Browsershot error generating PDF', [
                 'error' => $e->getMessage(),
                 'paper_size' => $paperSize ?? 'unknown',
+                'user_type' => $userType ?? 'unknown',
                 'trace' => $e->getTraceAsString()
             ]);
 
@@ -68,10 +82,10 @@ class ExportBarcode extends Controller
             ]);
 
         } catch (\Exception $e) {
-            // Handle any other unexpected errors
             Log::error('Error generating barcode PDF', [
                 'error' => $e->getMessage(),
                 'paper_size' => $paperSize ?? 'unknown',
+                'user_type' => $userType ?? 'unknown',
                 'trace' => $e->getTraceAsString()
             ]);
 

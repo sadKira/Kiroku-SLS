@@ -4,6 +4,7 @@ namespace Database\Factories;
 
 use App\Models\LogSession;
 use App\Models\Student;
+use App\Models\Faculty;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -29,7 +30,6 @@ class LogRecordFactory extends Factory
         // 70% chance of having time_out, within working hours window
         $timeOut = null;
         if ($this->faker->boolean(70)) {
-            // Add 1-4 hours but cap at 5:59 PM
             $timeOutCandidate = (clone $timeIn)->modify('+' . $this->faker->numberBetween(1, 4) . ' hours')
                 ->modify('+' . $this->faker->numberBetween(0, 59) . ' minutes');
             $endOfDay = (clone $timeIn)->setTime(17, 59, 59);
@@ -37,14 +37,24 @@ class LogRecordFactory extends Factory
         }
 
         return [
+            'loggable_type' => 'student',
             'student_id' => Student::factory(),
-            'log_session_id' => fake()->randomElement([
-            '1',
-            '2',
-            ]),
-
+            'faculty_id' => null,
+            'log_session_id' => LogSession::factory(),
             'time_in'  => $timeIn,
             'time_out' => $timeOut,
         ];
+    }
+
+    /**
+     * State for faculty log records.
+     */
+    public function forFaculty(): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'loggable_type' => 'faculty',
+            'student_id' => null,
+            'faculty_id' => Faculty::factory(),
+        ]);
     }
 }

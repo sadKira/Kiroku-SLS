@@ -6,6 +6,7 @@ use Livewire\Component;
 use App\Models\LogSession;
 use App\Models\LogRecord;
 use App\Models\Student;
+use App\Models\Faculty;
 use Livewire\Attributes\Layout;
 use Carbon\Carbon;
 use Illuminate\Validation\ValidationException;
@@ -18,14 +19,15 @@ class ViewLogs extends Component
     // Barcode input
     public $barcode = '';
     
-    // Student data for display
-    public $studentName = '';
-    public $studentYearLevel = '';
-    public $studentCourse = '';
+    // User data for display
+    public $userName = '';
+    public $userDetail = '';
+    public $userSubDetail = '';
+    public $userType = '';
 
     public function mount(LogSession $logSession)
     {
-        $this->logSession = $logSession->load('logRecords.student');
+        $this->logSession = $logSession->load(['logRecords.student', 'logRecords.faculty']);
     }
 
     public function updatedBarcode()
@@ -48,73 +50,22 @@ class ViewLogs extends Component
         ]);
 
         try {
-            // Find student by id_student
+            // Try to find the user - first check students, then faculty
             $student = Student::where('id_student', $this->barcode)->first();
+            $faculty = !$student ? Faculty::where('id_faculty', $this->barcode)->first() : null;
 
-            if (!$student) {
-                $this->dispatch('scan-error', message: 'Student not found. Please check the barcode and try again.');
+            if (!$student && !$faculty) {
+                $this->dispatch('scan-error', message: 'User not found. Please check the barcode and try again.');
                 $this->resetBarcode();
                 return;
             }
 
-            // Find the most recent log record for this student in this session
-            $logRecord = LogRecord::where('log_session_id', $this->logSession->id)
-                ->where('student_id', $student->id)
-                ->orderBy('created_at', 'desc')
-                ->first();
-
             $now = Carbon::now('Asia/Manila');
 
-            if (!$logRecord) {
-                // No previous record - create new log record with time_in
-                LogRecord::create([
-                    'student_id' => $student->id,
-                    'log_session_id' => $this->logSession->id,
-                    'time_in' => $now,
-                    'time_out' => null,
-                ]);
-
-                // Set student data for display
-                $this->studentName = $student->last_name . ', ' . $student->first_name;
-                $this->studentYearLevel = $student->year_level;
-                $this->studentCourse = $student->course;
-
-                // Dispatch success events
-                $this->dispatch('scan-label');
-                $this->dispatch('scan-success');
-                
-            } elseif ($logRecord->time_in && !$logRecord->time_out) {
-                // Most recent record has time_in but no time_out - set time_out
-                $logRecord->update([
-                    'time_out' => $now,
-                ]);
-
-                // Set student data for display
-                $this->studentName = $student->last_name . ', ' . $student->first_name;
-                $this->studentYearLevel = $student->year_level;
-                $this->studentCourse = $student->course;
-
-                // Dispatch success events
-                $this->dispatch('scan-label');
-                $this->dispatch('scan-success');
-                
+            if ($student) {
+                $this->processStudentScan($student, $now);
             } else {
-                // Most recent record has both time_in and time_out - create a new log record
-                LogRecord::create([
-                    'student_id' => $student->id,
-                    'log_session_id' => $this->logSession->id,
-                    'time_in' => $now,
-                    'time_out' => null,
-                ]);
-
-                // Set student data for display
-                $this->studentName = $student->last_name . ', ' . $student->first_name;
-                $this->studentYearLevel = $student->year_level;
-                $this->studentCourse = $student->course;
-
-                // Dispatch success events
-                $this->dispatch('scan-label');
-                $this->dispatch('scan-success');
+                $this->processFacultyScan($faculty, $now);
             }
 
             // Refresh the log records table
@@ -128,6 +79,87 @@ class ViewLogs extends Component
 
         // Reset barcode after processing
         $this->resetBarcode();
+    }
+
+    private function processStudentScan(Student $student, Carbon $now)
+    {
+        // Find the most recent log record for this student in this session
+        $logRecord = LogRecord::where('log_session_id', $this->logSession->id)
+            ->where('student_id', $student->id)
+            ->where('loggable_type', 'student')
+            ->orderBy('created_at', 'desc')
+            ->first();
+
+        if (!$logRecord) {
+            // No previous record - create new
+            LogRecord::create([
+                'loggable_type' => 'student',
+                'student_id' => $student->id,
+                'log_session_id' => $this->logSession->id,
+                'time_in' => $now,
+                'time_out' => null,
+            ]);
+        } elseif ($logRecord->time_in && !$logRecord->time_out) {
+            // Has time_in but no time_out - set time_out
+            $logRecord->update(['time_out' => $now]);
+        } else {
+            // Has both - create a new record
+            LogRecord::create([
+                'loggable_type' => 'student',
+                'student_id' => $student->id,
+                'log_session_id' => $this->logSession->id,
+                'time_in' => $now,
+                'time_out' => null,
+            ]);
+        }
+
+        // Set user data for display
+        $this->userName = $student->last_name . ', ' . $student->first_name;
+        $this->userDetail = $student->year_level;
+        $this->userSubDetail = $student->user_type === 'shs' ? $student->strand : $student->course;
+        $this->userType = $student->user_type === 'shs' ? 'SHS' : 'College';
+
+        $this->dispatch('scan-label');
+        $this->dispatch('scan-success');
+    }
+
+    private function processFacultyScan(Faculty $faculty, Carbon $now)
+    {
+        // Find the most recent log record for this faculty in this session
+        $logRecord = LogRecord::where('log_session_id', $this->logSession->id)
+            ->where('faculty_id', $faculty->id)
+            ->where('loggable_type', 'faculty')
+            ->orderBy('created_at', 'desc')
+            ->first();
+
+        if (!$logRecord) {
+            LogRecord::create([
+                'loggable_type' => 'faculty',
+                'faculty_id' => $faculty->id,
+                'log_session_id' => $this->logSession->id,
+                'time_in' => $now,
+                'time_out' => null,
+            ]);
+        } elseif ($logRecord->time_in && !$logRecord->time_out) {
+            $logRecord->update(['time_out' => $now]);
+        } else {
+            LogRecord::create([
+                'loggable_type' => 'faculty',
+                'faculty_id' => $faculty->id,
+                'log_session_id' => $this->logSession->id,
+                'time_in' => $now,
+                'time_out' => null,
+            ]);
+        }
+
+        // Set user data for display
+        $this->userName = $faculty->last_name . ', ' . $faculty->first_name;
+        $this->userDetail = $faculty->instructional_level;
+        $this->userSubDetail = '';
+        $this->userType = 'Faculty';
+
+        $this->dispatch('scan-label');
+        $this->dispatch('scan-success');
     }
 
     private function resetBarcode()

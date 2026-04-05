@@ -6,6 +6,7 @@ use App\Models\LogRecord;
 use App\Models\LogSession;
 use App\Models\SchoolYearSetting;
 use App\Models\Student;
+use App\Models\Faculty;
 use Carbon\Carbon;
 use Flux\Flux;
 use Livewire\Component;
@@ -222,10 +223,10 @@ class AdminDashboard extends Component
         return $this->totalLogs;
     }
 
-    // Total Students (all time)
+    // Total Users (all time - students + faculty)
     public function getTotalStudentsProperty()
     {
-        return Student::count();
+        return Student::count() + Faculty::count();
     }
 
     // Active Students Today (unique students for the active school year)
@@ -383,7 +384,7 @@ class AdminDashboard extends Component
         }
         
         $records = LogRecord::where('log_session_id', $logSession->id)
-            ->with('student')
+            ->with(['student', 'faculty'])
             ->whereNotNull('time_in')
             ->get()
             ->filter(function ($record) {
