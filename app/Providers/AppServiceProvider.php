@@ -68,6 +68,7 @@ class AppServiceProvider extends ServiceProvider
                     'user_accounts' => 'Manage Accounts',
                     'user_management' => 'User Management',
                     'course_management' => 'Course Management',
+                    'strand_management' => 'Strand Management',
                     'level_management' => 'Instructional Level Management',
 
                     // Logger

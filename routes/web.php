@@ -14,6 +14,7 @@ use App\Livewire\Management\UserLogs;
 use App\Livewire\Management\UserAccounts;
 use App\Livewire\Management\CourseManagement;
 use App\Livewire\Management\LevelManagement;
+use App\Livewire\Management\StrandManagement;
 
 use App\Livewire\Management\UserManagement;
 
@@ -34,6 +35,7 @@ Route::middleware(['auth', 'admin'])->group(function () {
     Route::get('/user-logs', UserLogs::class)->name('user_logs');
     Route::get('/about-kiroku', AboutKiroku::class)->name('about_kiroku');
     Route::get('/courses', CourseManagement::class)->name('course_management');
+    Route::get('/strands', StrandManagement::class)->name('strand_management');
     Route::get('/instructional-levels', LevelManagement::class)->name('level_management');
 
     Route::get('/export-barcode', [ExportBarcode::class, 'generatePdf'])->name('export_barcode');

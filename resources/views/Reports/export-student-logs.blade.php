@@ -80,12 +80,9 @@
     <div class="mb-4 p-3 bg-gray-50 rounded border border-gray-200">
         <p class="text-xs font-semibold text-gray-700 mb-2">Course Abbreviations:</p>
         <div class="grid grid-cols-2 gap-x-4 gap-y-1 text-xs text-gray-600">
-            <div><span class="font-medium">ABIS</span> - Bachelor of Arts in International Studies</div>
-            <div><span class="font-medium">BSIS</span> - Bachelor of Science in Information Systems</div>
-            <div><span class="font-medium">BHS</span> - Bachelor of Human Services</div>
-            <div><span class="font-medium">BSED</span> - Bachelor of Secondary Education</div>
-            <div><span class="font-medium">ECED</span> - Bachelor of Elementary Education</div>
-            <div><span class="font-medium">SNED</span> - Bachelor of Special Needs Education</div>
+            @foreach(\App\Models\Course::orderBy('code')->get() as $courseItem)
+                <div><span class="font-medium">{{ $courseItem->code }}</span> - {{ $courseItem->name }}</div>
+            @endforeach
         </div>
     </div>
 
@@ -118,17 +115,9 @@
                         @if ($record->student && $record->student->course)
                             @php
                                 $course = $record->student->course;
-                                $output = match (true) {
-                                    $course == 'Bachelor of Arts in International Studies' => 'ABIS',
-                                    $course == 'Bachelor of Science in Information Systems' => 'BSIS',
-                                    $course == 'Bachelor of Human Services' => 'BHS',
-                                    $course == 'Bachelor of Secondary Education' => 'BSED',
-                                    $course == 'Bachelor of Elementary Education' => 'ECED',
-                                    $course == 'Bachelor of Special Needs Education' => 'SNED',
-                                    default => $course,
-                                };
+                                $courseAbbr = \App\Models\Course::where('name', $course)->value('code') ?? $course;
                             @endphp
-                            {{ $output }}
+                            {{ $courseAbbr }}
                         @else
                             N/A
                         @endif

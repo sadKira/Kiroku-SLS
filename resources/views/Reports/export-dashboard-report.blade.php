@@ -158,14 +158,7 @@
                     <tbody>
                         @php
                             $totalForPercentage = array_sum($stats['courseDistribution']);
-                            $courseAbbreviations = [
-                                'Bachelor of Arts in International Studies' => 'ABIS',
-                                'Bachelor of Science in Information Systems' => 'BSIS',
-                                'Bachelor of Human Services' => 'BHS',
-                                'Bachelor of Secondary Education' => 'BSED',
-                                'Bachelor of Elementary Education' => 'ECED',
-                                'Bachelor of Special Needs Education' => 'SNED'
-                            ];
+                            $courseAbbreviations = \App\Models\Course::pluck('code', 'name')->toArray();
                         @endphp
                         @foreach ($stats['courseDistribution'] as $course => $count)
                             <tr>
@@ -273,14 +266,7 @@
                     <tbody>
                         @php
                             $totalForPercentage = array_sum($stats['courseDistribution']);
-                            $courseAbbreviations = [
-                                'Bachelor of Arts in International Studies' => 'ABIS',
-                                'Bachelor of Science in Information Systems' => 'BSIS',
-                                'Bachelor of Human Services' => 'BHS',
-                                'Bachelor of Secondary Education' => 'BSED',
-                                'Bachelor of Elementary Education' => 'ECED',
-                                'Bachelor of Special Needs Education' => 'SNED'
-                            ];
+                            $courseAbbreviations = \App\Models\Course::pluck('code', 'name')->toArray();
                         @endphp
                         @foreach ($stats['courseDistribution'] as $course => $count)
                             <tr>

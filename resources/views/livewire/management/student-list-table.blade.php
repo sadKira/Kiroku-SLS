@@ -26,23 +26,10 @@
 
                                 <flux:menu.submenu heading="Course">
                                     <flux:menu.radio.group wire:model.live="selectedCourse">
-                                        <flux:menu.radio value="Bachelor of Arts in International Studies">
-                                            Bachelor of Arts in International Studies</flux:menu.radio>
-                                            
-                                        <flux:menu.radio value="Bachelor of Science in Information Systems">
-                                            Bachelor of Science in Information Systems</flux:menu.radio>
-
-                                        <flux:menu.radio value="Bachelor of Human Services">
-                                            Bachelor of Human Services</flux:menu.radio>
-
-                                        <flux:menu.radio value="Bachelor of Secondary Education">
-                                            Bachelor of Secondary Education</flux:menu.radio>
-
-                                        <flux:menu.radio value="Bachelor of Elementary Education">
-                                            Bachelor of Elementary Education</flux:menu.radio>
-
-                                        <flux:menu.radio value="Bachelor of Special Needs Education">
-                                            Bachelor of Special Needs Education</flux:menu.radio>
+                                        @foreach($courses as $courseItem)
+                                            <flux:menu.radio value="{{ $courseItem->name }}">
+                                                {{ $courseItem->name }}</flux:menu.radio>
+                                        @endforeach
                                     </flux:menu.radio.group>
                                 </flux:menu.submenu>
 
@@ -261,12 +248,9 @@
 
             {{-- Course --}}
             <flux:select wire:model.defer="course" label="Course" placeholder="Course">
-                <flux:select.option class="text-black dark:text-white" value="Bachelor of Arts in International Studies">Bachelor of Arts in International Studies</flux:select.option>
-                <flux:select.option class="text-black dark:text-white" value="Bachelor of Science in Information Systems">Bachelor of Science in Information Systems</flux:select.option>
-                <flux:select.option class="text-black dark:text-white" value="Bachelor of Human Services">Bachelor of Human Services</flux:select.option>
-                <flux:select.option class="text-black dark:text-white" value="Bachelor of Secondary Education">Bachelor of Secondary Education</flux:select.option>
-                <flux:select.option class="text-black dark:text-white" value="Bachelor of Elementary Education">Bachelor of Elementary Education</flux:select.option>
-                <flux:select.option class="text-black dark:text-white" value="Bachelor of Special Needs Education">Bachelor of Special Needs Education</flux:select.option>
+                @foreach($courses as $courseItem)
+                    <flux:select.option class="text-black dark:text-white" value="{{ $courseItem->name }}">{{ $courseItem->name }}</flux:select.option>
+                @endforeach
             </flux:select>
 
             <div class="flex gap-2">

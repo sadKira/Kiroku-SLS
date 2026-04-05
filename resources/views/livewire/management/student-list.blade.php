@@ -70,12 +70,9 @@
 
             {{-- Course --}}
             <flux:select wire:model.defer="course" label="Course" placeholder="Course">
-                <flux:select.option class="text-black dark:text-white" value="Bachelor of Arts in International Studies">Bachelor of Arts in International Studies</flux:select.option>
-                <flux:select.option class="text-black dark:text-white" value="Bachelor of Science in Information Systems">Bachelor of Science in Information Systems</flux:select.option>
-                <flux:select.option class="text-black dark:text-white" value="Bachelor of Human Services">Bachelor of Human Services</flux:select.option>
-                <flux:select.option class="text-black dark:text-white" value="Bachelor of Secondary Education">Bachelor of Secondary Education</flux:select.option>
-                <flux:select.option class="text-black dark:text-white" value="Bachelor of Elementary Education">Bachelor of Elementary Education</flux:select.option>
-                <flux:select.option class="text-black dark:text-white" value="Bachelor of Special Needs Education">Bachelor of Special Needs Education</flux:select.option>
+                @foreach($courses as $courseItem)
+                    <flux:select.option class="text-black dark:text-white" value="{{ $courseItem->name }}">{{ $courseItem->name }}</flux:select.option>
+                @endforeach
             </flux:select>
 
             <div class="flex gap-2">
