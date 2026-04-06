@@ -442,11 +442,11 @@
                                                         @endphp
                                                         <flux:badge size="sm" color="red" variant="pill">{{ $entity->year_level }} - {{ $strandCode }}</flux:badge>
                                                     @else
-                                                        <flux:badge size="sm" color="indigo" variant="pill">College</flux:badge>
+                                                        <flux:badge size="sm" color="blue" variant="pill">College</flux:badge>
                                                         @php 
                                                             $courseCode = \App\Models\Course::where('name', $entity->course)->value('code') ?? $entity->course; 
                                                         @endphp
-                                                        <flux:badge size="sm" color="indigo" variant="pill">{{ $entity->year_level }} - {{ $courseCode }}</flux:badge>
+                                                        <flux:badge size="sm" color="blue" variant="pill">{{ $entity->year_level }} - {{ $courseCode }}</flux:badge>
                                                     @endif
                                                 </div>
                                             @endif
