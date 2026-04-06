@@ -15,7 +15,15 @@
 
     <div class="mt-10 mb-6 flex items-center justify-between">
 
-        <flux:heading size="xl">Faculty List</flux:heading>
+        <div class="flex items-center gap-2">
+            <flux:heading size="xl">Faculty List</flux:heading>
+            <span class="inline-flex items-center gap-1 rounded-full bg-neutral-100 dark:bg-neutral-800 px-2 py-0.5 text-xs font-medium text-neutral-500 dark:text-neutral-400">
+                <svg xmlns="http://www.w3.org/2000/svg" class="size-3 shrink-0" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                    <path d="M9 6a3 3 0 1 1-6 0 3 3 0 0 1 6 0ZM17 6a3 3 0 1 1-6 0 3 3 0 0 1 6 0ZM12.93 17c.046-.327.07-.66.07-1a6.97 6.97 0 0 0-1.5-4.33A5 5 0 0 1 19 16v1h-6.07ZM6 11a5 5 0 0 1 5 5v1H1v-1a5 5 0 0 1 5-5Z" />
+                </svg>
+                {{ number_format($totalCount) }} personnel
+            </span>
+        </div>
 
         {{-- Actions --}}
         <div class="flex items-center gap-1">

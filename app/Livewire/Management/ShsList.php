@@ -190,8 +190,9 @@ class ShsList extends Component
         $strands = Strand::orderBy('name')->get();
 
         return view('livewire.management.shs-list', [
-            'students' => $students,
-            'strands' => $strands,
+            'students'   => $students,
+            'strands'    => $strands,
+            'totalCount' => $students->count(),
         ]);
     }
 }

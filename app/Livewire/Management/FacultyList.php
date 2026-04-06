@@ -182,8 +182,9 @@ class FacultyList extends Component
         $instructionalLevels = InstructionalLevel::orderBy('name')->get();
 
         return view('livewire.management.faculty-list', [
-            'faculties' => $faculties,
+            'faculties'           => $faculties,
             'instructionalLevels' => $instructionalLevels,
+            'totalCount'          => $faculties->count(),
         ]);
     }
 }

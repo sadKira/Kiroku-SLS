@@ -202,8 +202,9 @@ class CollegeList extends Component
         $courses = Course::orderBy('name')->get();
 
         return view('livewire.management.college-list', [
-            'students' => $students,
-            'courses' => $courses,
+            'students'   => $students,
+            'courses'    => $courses,
+            'totalCount' => $students->count(),
         ]);
     }
 }
