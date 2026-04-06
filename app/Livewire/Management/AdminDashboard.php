@@ -7,6 +7,7 @@ use App\Models\LogSession;
 use App\Models\SchoolYearSetting;
 use App\Models\Student;
 use App\Models\Faculty;
+use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
 use Flux\Flux;
 use Livewire\Component;
@@ -223,28 +224,54 @@ class AdminDashboard extends Component
         return $this->totalLogs;
     }
 
-    // Total Users (all time - students + faculty)
+    // Total Users (all time - college students + shs students + faculty)
     public function getTotalStudentsProperty()
     {
-        return Student::count() + Faculty::count();
+        $collegeCount = Student::college()->count();
+        $shsCount = Student::shs()->count();
+        $facultyCount = Faculty::count();
+
+        return $collegeCount + $shsCount + $facultyCount;
     }
 
-    // Active Students Today (unique students for the active school year)
+    // Breakdown of total users by type (for tooltip / future use)
+    public function getTotalUserBreakdownProperty()
+    {
+        return [
+            'college' => Student::college()->count(),
+            'shs'     => Student::shs()->count(),
+            'faculty' => Faculty::count(),
+        ];
+    }
+
+    // Active Users Today (unique students + faculty for the active school year)
     public function getActiveStudentsTodayProperty()
     {
         $today = Carbon::now('Asia/Manila')->startOfDay();
         $schoolYear = $this->activeSchoolYear;
         
-        return LogRecord::whereHas('logSessions', function ($query) use ($today, $schoolYear) {
+        $activeStudents = LogRecord::whereHas('logSessions', function ($query) use ($today, $schoolYear) {
             $query->where('school_year', $schoolYear)
                 ->whereDate('date', $today->format('Y-m-d'));
         })
         ->whereNotNull('time_in')
+        ->whereNotNull('student_id')
         ->distinct('student_id')
         ->count('student_id');
+
+        $activeFaculty = LogRecord::whereHas('logSessions', function ($query) use ($today, $schoolYear) {
+            $query->where('school_year', $schoolYear)
+                ->whereDate('date', $today->format('Y-m-d'));
+        })
+        ->whereNotNull('time_in')
+        ->whereNotNull('faculty_id')
+        ->distinct('faculty_id')
+        ->count('faculty_id');
+
+        return $activeStudents + $activeFaculty;
     }
 
-    // Attendance percentage (active students / total students)
+    // Attendance percentage (active users / total users)
     public function getAttendancePercentageProperty()
     {
         $total = $this->totalStudents;
@@ -265,13 +292,13 @@ class AdminDashboard extends Component
             ->count();
     }
 
-    // Monthly activity data for chart (12 months) - counts UNIQUE students per month
+    // Monthly activity data for chart (12 months) - counts UNIQUE users (students + faculty) per month
     public function getActivityChartDataProperty()
     {
         $range = $this->getDateRange();
         $schoolYear = $this->activeSchoolYear;
         
-        // Monthly data for this year - count unique students
+        // Monthly data for this year - count unique students + faculty
         $data = [];
         $current = $range['start']->copy();
         while ($current <= $range['end']) {
@@ -279,16 +306,26 @@ class AdminDashboard extends Component
             $monthEnd = $current->copy()->endOfMonth();
             
             // Count unique students for this month
-            $count = LogRecord::whereHas('logSessions', function ($query) use ($monthStart, $monthEnd, $schoolYear) {
+            $studentCount = LogRecord::whereHas('logSessions', function ($query) use ($monthStart, $monthEnd, $schoolYear) {
                 $query->where('school_year', $schoolYear)
                     ->whereBetween('date', [$monthStart->format('Y-m-d'), $monthEnd->format('Y-m-d')]);
             })
+            ->whereNotNull('student_id')
             ->distinct('student_id')
             ->count('student_id');
+
+            // Count unique faculty for this month
+            $facultyCount = LogRecord::whereHas('logSessions', function ($query) use ($monthStart, $monthEnd, $schoolYear) {
+                $query->where('school_year', $schoolYear)
+                    ->whereBetween('date', [$monthStart->format('Y-m-d'), $monthEnd->format('Y-m-d')]);
+            })
+            ->whereNotNull('faculty_id')
+            ->distinct('faculty_id')
+            ->count('faculty_id');
             
             $data[] = [
                 'label' => $current->format('M'),
-                'value' => $count,
+                'value' => $studentCount + $facultyCount,
             ];
             $current->addMonth();
         }
@@ -301,7 +338,7 @@ class AdminDashboard extends Component
         return number_format($this->totalLogs);
     }
 
-    // Monthly daily activity data for time-series chart (current month) - counts UNIQUE students per day
+    // Monthly daily activity data for time-series chart (current month) - counts UNIQUE users (students + faculty) per day
     public function getMonthlyDailyActivityProperty()
     {
         $now = Carbon::now('Asia/Manila');
@@ -314,16 +351,26 @@ class AdminDashboard extends Component
         
         while ($current <= $monthEnd) {
             // Count unique students for this day
-            $count = LogRecord::whereHas('logSessions', function ($query) use ($current, $schoolYear) {
+            $studentCount = LogRecord::whereHas('logSessions', function ($query) use ($current, $schoolYear) {
                 $query->where('school_year', $schoolYear)
                     ->whereDate('date', $current->format('Y-m-d'));
             })
+            ->whereNotNull('student_id')
             ->distinct('student_id')
             ->count('student_id');
+
+            // Count unique faculty for this day
+            $facultyCount = LogRecord::whereHas('logSessions', function ($query) use ($current, $schoolYear) {
+                $query->where('school_year', $schoolYear)
+                    ->whereDate('date', $current->format('Y-m-d'));
+            })
+            ->whereNotNull('faculty_id')
+            ->distinct('faculty_id')
+            ->count('faculty_id');
             
             $data[] = [
                 'x' => $current->copy()->startOfDay()->timestamp * 1000, // JavaScript timestamp in milliseconds
-                'y' => $count,
+                'y' => $studentCount + $facultyCount,
             ];
             $current->addDay();
         }
@@ -331,7 +378,7 @@ class AdminDashboard extends Component
         return $data;
     }
 
-    // Today's hourly activity data (8am-5pm) for sparkline chart - counts UNIQUE students per hour
+    // Today's hourly activity data (8am-5pm) for sparkline chart - counts UNIQUE users (students + faculty) per hour
     public function getTodayHourlyActivityProperty()
     {
         $today = Carbon::now('Asia/Manila')->startOfDay();
@@ -347,21 +394,30 @@ class AdminDashboard extends Component
         
         $data = [];
         
-        // Generate data for each hour from 8am to 5pm - count unique students
+        // Generate data for each hour from 8am to 5pm - count unique students + faculty
         for ($hour = 8; $hour <= 17; $hour++) {
             $hourStart = $today->copy()->setHour($hour)->setMinute(0)->setSecond(0);
             $hourEnd = $today->copy()->setHour($hour)->setMinute(59)->setSecond(59);
             
             // Count unique students who logged in during this hour
-            $count = LogRecord::where('log_session_id', $logSession->id)
+            $studentCount = LogRecord::where('log_session_id', $logSession->id)
                 ->whereNotNull('time_in')
+                ->whereNotNull('student_id')
                 ->whereBetween('time_in', [$hourStart->format('Y-m-d H:i:s'), $hourEnd->format('Y-m-d H:i:s')])
                 ->distinct('student_id')
                 ->count('student_id');
+
+            // Count unique faculty who logged in during this hour
+            $facultyCount = LogRecord::where('log_session_id', $logSession->id)
+                ->whereNotNull('time_in')
+                ->whereNotNull('faculty_id')
+                ->whereBetween('time_in', [$hourStart->format('Y-m-d H:i:s'), $hourEnd->format('Y-m-d H:i:s')])
+                ->distinct('faculty_id')
+                ->count('faculty_id');
             
             $data[] = [
                 'x' => $hourStart->timestamp * 1000,
-                'y' => $count,
+                'y' => $studentCount + $facultyCount,
             ];
         }
         
@@ -369,7 +425,7 @@ class AdminDashboard extends Component
     }
 
     // Today's log records filtered by hour (8am-5pm) for timeline
-    // This shows ALL records (including duplicates) for the timeline display
+    // This shows ALL records (students + faculty) for the timeline display
     public function getTodayLogRecordsProperty()
     {
         $today = Carbon::now('Asia/Manila')->startOfDay();

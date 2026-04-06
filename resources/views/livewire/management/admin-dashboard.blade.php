@@ -64,10 +64,10 @@
                         </div>
                     </x-ui.card>
 
-                    {{-- Total Students Card --}}
+                    {{-- Total Users Card --}}
                     <x-ui.card class="!max-w-none">
                         <div class="flex flex-col">
-                            <p class="text-sm text-neutral-600 dark:text-neutral-400">Total Students</p>
+                            <p class="text-sm text-neutral-600 dark:text-neutral-400">Total Users</p>
                             <p class="text-2xl font-semibold">{{ number_format($totalStudents) }}</p>
                         </div>
                     </x-ui.card>
@@ -405,7 +405,7 @@
             
             activityChart = new ApexCharts(activityChartElement, {
                 series: [{
-                    name: 'Logged Students',
+                    name: 'Logged Users',
                     data: activityData.map(item => item.value)
                 }],
                 chart: {
@@ -504,7 +504,7 @@
             
             monthlyActivityChart = new ApexCharts(monthlyActivityChartElement, {
                 series: [{
-                    name: 'Logged Students',
+                    name: 'Logged Users',
                     data: monthlyData
                 }],
                 chart: {
@@ -606,7 +606,7 @@
             
             todayActivityChart = new ApexCharts(todayActivityChartElement, {
                 series: [{
-                    name: 'Logged Students',
+                    name: 'Logged Users',
                     data: todayData
                 }],
                 chart: {
