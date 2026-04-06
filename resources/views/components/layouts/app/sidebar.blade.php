@@ -48,12 +48,12 @@
                 </flux:sidebar.item>
             </flux:sidebar.group>
 
-            <flux:sidebar.group expandable icon="rectangle-stack" heading="Courses, Strands & Levels">
+            <flux:sidebar.group expandable icon="rectangle-stack" heading="Programs & Levels">
                 <flux:sidebar.item icon="clipboard-document-list" :href="route('course_management')" :current="request()->routeIs('course_management')" wire:navigate>
                     Courses
                 </flux:sidebar.item>
 
-                <flux:sidebar.item icon="bars-3-center-left" :href="route('strand_management')" :current="request()->routeIs('strand_management')" wire:navigate>
+                <flux:sidebar.item icon="pencil-square" :href="route('strand_management')" :current="request()->routeIs('strand_management')" wire:navigate>
                     Strands
                 </flux:sidebar.item>
 
