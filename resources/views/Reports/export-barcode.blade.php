@@ -10,7 +10,8 @@
 
     <link rel="icon" href="/mkdlib-logo.ico" sizes="any">
     <link rel="icon" href="/mkdlib-logo.svg" type="image/svg+xml">
-    {{-- <link rel="apple-touch-icon" href="/apple-touch-icon.png"> --}}
+    {{--
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png"> --}}
 
     <link rel="preconnect" href="https://fonts.bunny.net">
     <link href="https://fonts.bunny.net/css?family=instrument-sans:400,500,600" rel="stylesheet" />
@@ -31,12 +32,16 @@
 <body class="bg-white text-slate-900 antialiased p-4">
 
     <div class="mb-10">
-        <flux:heading size="xl"><span class="font-bold">MKD Learning Resource Center</span></flux:heading>
-        <div class="mt-3 flex items-center gap-2">
+        <img src="{{ asset('images/shusseki-export-seal.png') }}" alt="MKD Learning Resource Center"
+            class="h-10 w-auto mx-auto block mb-6" />
+        <div class="mt-15 flex items-center gap-2">
             <flux:heading size="xl"><span class="font-bold">{{ $heading ?? 'Student Barcodes' }}</span></flux:heading>
-            <span class="inline-flex items-center gap-1 rounded-full bg-neutral-100 px-2 py-0.5 text-xs font-medium text-neutral-500">
-                <svg xmlns="http://www.w3.org/2000/svg" class="size-3 shrink-0" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-                    <path d="M9 6a3 3 0 1 1-6 0 3 3 0 0 1 6 0ZM17 6a3 3 0 1 1-6 0 3 3 0 0 1 6 0ZM12.93 17c.046-.327.07-.66.07-1a6.97 6.97 0 0 0-1.5-4.33A5 5 0 0 1 19 16v1h-6.07ZM6 11a5 5 0 0 1 5 5v1H1v-1a5 5 0 0 1 5-5Z" />
+            <span
+                class="inline-flex items-center gap-1 rounded-full bg-neutral-100 px-2 py-0.5 text-xs font-medium text-neutral-500">
+                <svg xmlns="http://www.w3.org/2000/svg" class="size-3 shrink-0" viewBox="0 0 20 20" fill="currentColor"
+                    aria-hidden="true">
+                    <path
+                        d="M9 6a3 3 0 1 1-6 0 3 3 0 0 1 6 0ZM17 6a3 3 0 1 1-6 0 3 3 0 0 1 6 0ZM12.93 17c.046-.327.07-.66.07-1a6.97 6.97 0 0 0-1.5-4.33A5 5 0 0 1 19 16v1h-6.07ZM6 11a5 5 0 0 1 5 5v1H1v-1a5 5 0 0 1 5-5Z" />
                 </svg>
                 {{ number_format($students->count()) }} {{ $students->count() === 1 ? 'barcode' : 'barcodes' }}
             </span>

@@ -6,7 +6,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
-    <title>{{ $reportType === 'monthly' ? 'Monthly' : 'Semestral' }} Report - {{ $reportType === 'monthly' ? $month : $schoolYear }}</title>
+    <title>{{ $reportType === 'monthly' ? 'Monthly' : 'Semestral' }} Report -
+        {{ $reportType === 'monthly' ? $month : $schoolYear }}</title>
 
     <link rel="icon" href="/mkdlib-logo.ico" sizes="any">
     <link rel="icon" href="/mkdlib-logo.svg" type="image/svg+xml">
@@ -139,11 +140,13 @@
 
     @if ($reportType === 'monthly')
         {{-- ═══════════════════════════════════════════════════════════════ --}}
-        {{-- MONTHLY REPORT                                                  --}}
+        {{-- MONTHLY REPORT --}}
         {{-- ═══════════════════════════════════════════════════════════════ --}}
         <div class="mb-6">
-            <flux:heading size="xl"><span class="font-bold">MKD Learning Resource Center</span></flux:heading>
-            <flux:heading size="xl" class="mt-3"><span class="font-bold">Monthly Activity Report</span>: {{ $month }} {{ Carbon\Carbon::parse($dateRange['start'])->format('Y') }}</flux:heading>
+            <img src="{{ asset('images/shusseki-export-seal.png') }}" alt="MKD Learning Resource Center"
+                class="h-10 w-auto mx-auto block mb-6" />
+            <flux:heading size="xl" class="mt-15"><span class="font-bold">Monthly Activity Report</span>: {{ $month }}
+                {{ Carbon\Carbon::parse($dateRange['start'])->format('Y') }}</flux:heading>
             <p class="text-gray-600 mt-1">
                 Academic Year: {{ $schoolYear }} |
                 Period: {{ \Carbon\Carbon::parse($dateRange['start'])->format('F j') }} –
@@ -214,7 +217,8 @@
                 <tbody>
                     <tr>
                         <td class="text-sm">Log Sessions</td>
-                        <td class="text-sm font-medium" style="text-align: right;">{{ number_format($stats['logSessionsCount']) }}</td>
+                        <td class="text-sm font-medium" style="text-align: right;">
+                            {{ number_format($stats['logSessionsCount']) }}</td>
                     </tr>
                     <tr>
                         <td class="text-sm">Avg Logs per Session</td>
@@ -223,20 +227,20 @@
                         </td>
                     </tr>
                     @if($stats['mostActiveDay'])
-                    <tr>
-                        <td class="text-sm">Most Active Day</td>
-                        <td class="text-sm font-medium" style="text-align: right;">
-                            {{ $stats['mostActiveDay']['label'] }} ({{ $stats['mostActiveDayPercent'] }}%)
-                        </td>
-                    </tr>
+                        <tr>
+                            <td class="text-sm">Most Active Day</td>
+                            <td class="text-sm font-medium" style="text-align: right;">
+                                {{ $stats['mostActiveDay']['label'] }} ({{ $stats['mostActiveDayPercent'] }}%)
+                            </td>
+                        </tr>
                     @endif
                     @if($stats['leastActiveDay'])
-                    <tr>
-                        <td class="text-sm">Least Active Day</td>
-                        <td class="text-sm text-gray-500" style="text-align: right;">
-                            {{ $stats['leastActiveDay']['label'] }} ({{ $stats['leastActiveDayPercent'] }}%)
-                        </td>
-                    </tr>
+                        <tr>
+                            <td class="text-sm">Least Active Day</td>
+                            <td class="text-sm text-gray-500" style="text-align: right;">
+                                {{ $stats['leastActiveDay']['label'] }} ({{ $stats['leastActiveDayPercent'] }}%)
+                            </td>
+                        </tr>
                     @endif
                     <tr>
                         <td class="text-sm">Most Active Course</td>
@@ -244,7 +248,8 @@
                     </tr>
                     <tr>
                         <td class="text-sm">Least Active Course</td>
-                        <td class="text-sm text-gray-500" style="text-align: right;">{{ $stats['courseMinMax']['min'] }}</td>
+                        <td class="text-sm text-gray-500" style="text-align: right;">{{ $stats['courseMinMax']['min'] }}
+                        </td>
                     </tr>
                     <tr>
                         <td class="text-sm">Most Active Strand</td>
@@ -252,7 +257,8 @@
                     </tr>
                     <tr>
                         <td class="text-sm">Least Active Strand</td>
-                        <td class="text-sm text-gray-500" style="text-align: right;">{{ $stats['strandMinMax']['min'] }}</td>
+                        <td class="text-sm text-gray-500" style="text-align: right;">{{ $stats['strandMinMax']['min'] }}
+                        </td>
                     </tr>
                     <tr>
                         <td class="text-sm">Most Active Faculty Level</td>
@@ -279,7 +285,8 @@
                     @endphp
                     @if ($dailyData->isEmpty())
                         <tr>
-                            <td colspan="3" class="text-sm text-gray-400 text-center py-4">No activity recorded for this month</td>
+                            <td colspan="3" class="text-sm text-gray-400 text-center py-4">No activity recorded for this month
+                            </td>
                         </tr>
                     @else
                         @foreach ($dailyData as $day)
@@ -291,7 +298,8 @@
                         @endforeach
                         <tr style="border-top: 2px solid #374151;">
                             <td class="text-sm font-bold" colspan="2">Total</td>
-                            <td class="text-sm font-bold" style="text-align: right;">{{ number_format($dailyData->sum('value')) }}</td>
+                            <td class="text-sm font-bold" style="text-align: right;">
+                                {{ number_format($dailyData->sum('value')) }}</td>
                         </tr>
                     @endif
                 </tbody>
@@ -408,11 +416,13 @@
 
     @else
         {{-- ═══════════════════════════════════════════════════════════════ --}}
-        {{-- SEMESTRAL REPORT                                                --}}
+        {{-- SEMESTRAL REPORT --}}
         {{-- ═══════════════════════════════════════════════════════════════ --}}
         <div class="mb-6">
-            <flux:heading size="xl"><span class="font-bold">MKD Learning Resource Center</span></flux:heading>
-            <flux:heading size="xl" class="mt-3"><span class="font-bold">Semestral Activity Report</span>: A.Y. {{ $schoolYear }}</flux:heading>
+            <img src="{{ asset('images/shusseki-export-seal.png') }}" alt="MKD Learning Resource Center"
+                class="h-10 w-auto mx-auto block mb-6" />
+            <flux:heading size="xl" class="mt-15"><span class="font-bold">Semestral Activity Report</span>: A.Y.
+                {{ $schoolYear }}</flux:heading>
             <p class="text-gray-600 mt-1">
                 Period: {{ \Carbon\Carbon::parse($dateRange['start'])->format('F j, Y') }} –
                 {{ \Carbon\Carbon::parse($dateRange['end'])->format('F j, Y') }}
@@ -487,11 +497,13 @@
                 <tbody>
                     <tr>
                         <td class="text-sm">Total Logs</td>
-                        <td class="text-sm font-medium" style="text-align: right;">{{ number_format($stats['totalUserLogs']) }}</td>
+                        <td class="text-sm font-medium" style="text-align: right;">
+                            {{ number_format($stats['totalUserLogs']) }}</td>
                     </tr>
                     <tr>
                         <td class="text-sm">Log Sessions</td>
-                        <td class="text-sm font-medium" style="text-align: right;">{{ number_format($stats['logSessionsCount']) }}</td>
+                        <td class="text-sm font-medium" style="text-align: right;">
+                            {{ number_format($stats['logSessionsCount']) }}</td>
                     </tr>
                     <tr>
                         <td class="text-sm">Avg Logs per Session</td>
@@ -500,20 +512,20 @@
                         </td>
                     </tr>
                     @if($stats['mostActiveMonth'])
-                    <tr>
-                        <td class="text-sm">Most Active Month</td>
-                        <td class="text-sm font-medium" style="text-align: right;">
-                            {{ $stats['mostActiveMonth']['label'] }} ({{ $stats['mostActiveMonthPercent'] }}%)
-                        </td>
-                    </tr>
+                        <tr>
+                            <td class="text-sm">Most Active Month</td>
+                            <td class="text-sm font-medium" style="text-align: right;">
+                                {{ $stats['mostActiveMonth']['label'] }} ({{ $stats['mostActiveMonthPercent'] }}%)
+                            </td>
+                        </tr>
                     @endif
                     @if($stats['leastActiveMonth'])
-                    <tr>
-                        <td class="text-sm">Least Active Month</td>
-                        <td class="text-sm text-gray-500" style="text-align: right;">
-                            {{ $stats['leastActiveMonth']['label'] }} ({{ $stats['leastActiveMonthPercent'] }}%)
-                        </td>
-                    </tr>
+                        <tr>
+                            <td class="text-sm">Least Active Month</td>
+                            <td class="text-sm text-gray-500" style="text-align: right;">
+                                {{ $stats['leastActiveMonth']['label'] }} ({{ $stats['leastActiveMonthPercent'] }}%)
+                            </td>
+                        </tr>
                     @endif
                     <tr>
                         <td class="text-sm">Most Active Course</td>
@@ -521,7 +533,8 @@
                     </tr>
                     <tr>
                         <td class="text-sm">Least Active Course</td>
-                        <td class="text-sm text-gray-500" style="text-align: right;">{{ $stats['courseMinMax']['min'] }}</td>
+                        <td class="text-sm text-gray-500" style="text-align: right;">{{ $stats['courseMinMax']['min'] }}
+                        </td>
                     </tr>
                     <tr>
                         <td class="text-sm">Most Active Strand</td>
@@ -529,7 +542,8 @@
                     </tr>
                     <tr>
                         <td class="text-sm">Least Active Strand</td>
-                        <td class="text-sm text-gray-500" style="text-align: right;">{{ $stats['strandMinMax']['min'] }}</td>
+                        <td class="text-sm text-gray-500" style="text-align: right;">{{ $stats['strandMinMax']['min'] }}
+                        </td>
                     </tr>
                     <tr>
                         <td class="text-sm">Most Active Faculty Level</td>

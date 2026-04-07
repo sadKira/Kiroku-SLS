@@ -83,8 +83,8 @@
 
 <body class="bg-white text-slate-900 antialiased p-4">
     <div class="mb-6">
-        <flux:heading size="xl"><span class="font-bold">MKD Learning Resource Center</span></flux:heading>
-        <flux:heading size="xl" class="mt-3"><span class="font-bold">User Logs</span>: {{ \Carbon\Carbon::parse($logSession->date)->format('F j, Y') }}</flux:heading>
+        <img src="{{ asset('images/shusseki-export-seal.png') }}" alt="MKD Learning Resource Center" class="h-10 w-auto mx-auto block mb-6" />
+        <flux:heading size="xl" class="mt-15"><span class="font-bold">User Logs</span>: {{ \Carbon\Carbon::parse($logSession->date)->format('F j, Y') }}</flux:heading>
         <p class=" text-gray-600">
             Academic Year: {{ $logSession->school_year }}
         </p>
