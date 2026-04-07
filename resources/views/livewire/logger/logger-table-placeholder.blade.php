@@ -24,6 +24,13 @@
         </div>
     </div>
 
+    {{-- Library Logs Heading Placeholder --}}
+    <div class="mb-6">
+        <flux:skeleton.group animate="shimmer">
+            <flux:skeleton.line class="w-32 h-7" />
+        </flux:skeleton.group>
+    </div>
+
     {{-- Two Column Layout Placeholder --}}
     <div class="flex flex-col lg:flex-row gap-6 mt-5">
 
