@@ -11,7 +11,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Spatie\Browsershot\Browsershot;
 
-class ExportStudentLogs extends Controller
+class ExportUserLogs extends Controller
 {
     public function generatePdf(Request $request)
     {
@@ -56,7 +56,7 @@ class ExportStudentLogs extends Controller
             }
 
             // Render the export view to HTML
-            $html = view('Reports/export-student-logs', [
+            $html = view('Reports/export-user-logs', [
                 'logSession' => $logSession,
                 'logRecords' => $logRecords,
             ])->render();
@@ -71,7 +71,7 @@ class ExportStudentLogs extends Controller
 
             // Generate filename with date and academic year
             $dateFormatted = \Carbon\Carbon::parse($logSession->date)->format('Y-m-d');
-            $filename = "student-logs-{$dateFormatted}-{$logSession->school_year}.pdf";
+            $filename = "user-logs-{$dateFormatted}-{$logSession->school_year}.pdf";
 
             return response($pdf, 200, [
                 'Content-Type' => 'application/pdf',

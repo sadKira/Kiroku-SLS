@@ -22,7 +22,7 @@ use App\Livewire\Logger\LoggerDashboard;
 use App\Livewire\Logger\ViewLogs;
 
 use App\Http\Controllers\management\ExportBarcode;
-use App\Http\Controllers\management\ExportStudentLogs;
+use App\Http\Controllers\management\ExportUserLogs;
 use App\Http\Controllers\management\ExportDashboardReport;
 
 // Admin Routes
@@ -39,7 +39,7 @@ Route::middleware(['auth', 'admin'])->group(function () {
     Route::get('/instructional-levels', LevelManagement::class)->name('level_management');
 
     Route::get('/export-barcode', [ExportBarcode::class, 'generatePdf'])->name('export_barcode');
-    Route::get('/export-student-logs', [ExportStudentLogs::class, 'generatePdf'])->name('export_student_logs');
+    Route::get('/export-user-logs', [ExportUserLogs::class, 'generatePdf'])->name('export_user_logs');
     Route::get('/export-dashboard-report', [ExportDashboardReport::class, 'generatePdf'])->name('export_dashboard_report');
 });
 

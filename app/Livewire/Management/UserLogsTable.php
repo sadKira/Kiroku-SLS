@@ -107,7 +107,7 @@ class UserLogsTable extends Component
 
             $this->exportingSessionId = null;
 
-            return redirect()->route('export_student_logs', [
+            return redirect()->route('export_user_logs', [
                 'log_session_id' => $logSessionId,
                 'paper_size' => $paperSize,
             ]);

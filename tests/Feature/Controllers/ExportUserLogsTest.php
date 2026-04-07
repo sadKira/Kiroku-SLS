@@ -7,7 +7,7 @@ use App\Models\Student;
 use App\Models\User;
 
 it('redirects unauthenticated users away from the export student logs route', function () {
-    $response = $this->get(route('export_student_logs', [
+    $response = $this->get(route('export_user_logs', [
         'log_session_id' => 1,
         'paper_size' => 'A4',
     ]));
@@ -18,7 +18,7 @@ it('redirects unauthenticated users away from the export student logs route', fu
 it('redirects non-admin users away from the export student logs route', function () {
     $logger = User::factory()->create(['role' => 'logger']);
 
-    $response = $this->actingAs($logger)->get(route('export_student_logs', [
+    $response = $this->actingAs($logger)->get(route('export_user_logs', [
         'log_session_id' => 1,
         'paper_size' => 'A4',
     ]));
@@ -29,7 +29,7 @@ it('redirects non-admin users away from the export student logs route', function
 it('redirects back with error when log_session_id is missing', function () {
     $admin = User::factory()->admin()->create();
 
-    $response = $this->actingAs($admin)->get(route('export_student_logs'));
+    $response = $this->actingAs($admin)->get(route('export_user_logs'));
 
     $response->assertRedirect();
     $response->assertSessionHas('notify');
@@ -41,7 +41,7 @@ it('redirects back with error when log_session_id is missing', function () {
 it('redirects back with error when log session does not exist', function () {
     $admin = User::factory()->admin()->create();
 
-    $response = $this->actingAs($admin)->get(route('export_student_logs', [
+    $response = $this->actingAs($admin)->get(route('export_user_logs', [
         'log_session_id' => 9999, // assumes it doesn't exist
     ]));
 
@@ -55,7 +55,7 @@ it('redirects back with error when log session has no records', function () {
     $admin = User::factory()->admin()->create();
     $session = LogSession::factory()->create();
 
-    $response = $this->actingAs($admin)->get(route('export_student_logs', [
+    $response = $this->actingAs($admin)->get(route('export_user_logs', [
         'log_session_id' => $session->id,
     ]));
 
@@ -97,7 +97,7 @@ it('handles student and faculty export without eager load exceptions', function 
         'log_session_id' => $session->id,
     ]);
 
-    $response = $this->actingAs($admin)->get(route('export_student_logs', [
+    $response = $this->actingAs($admin)->get(route('export_user_logs', [
         'log_session_id' => $session->id,
     ]));
 
