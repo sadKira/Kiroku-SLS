@@ -4,6 +4,7 @@ namespace App\Livewire\Management;
 
 use App\Models\LogRecord;
 use App\Models\LogSession;
+use App\Models\SchoolYearSetting;
 use Carbon\Carbon;
 use Exception;
 use Flux\Flux;
@@ -160,11 +161,21 @@ class UserLogsTable extends Component
     // Add Log Session
     public function addLogSession()
     {
-        $this->date = Carbon::now()->format('Y-m-d');
+        $this->date = '';
 
-        $this->start_year = '';
-        $this->end_year = '';
-        $this->school_year = '';
+        $activeSetting = SchoolYearSetting::getActive();
+        if ($activeSetting && !empty($activeSetting->school_year)) {
+            $this->school_year = $activeSetting->school_year;
+            $parts = explode('-', $this->school_year);
+            if (count($parts) === 2) {
+                $this->start_year = $parts[0];
+                $this->end_year = $parts[1];
+            }
+        } else {
+            $this->start_year = '';
+            $this->end_year = '';
+            $this->school_year = '';
+        }
 
         $this->resetErrorBag();
 
@@ -488,8 +499,7 @@ class UserLogsTable extends Component
                     ));
                 }
             ])
-            ->orderBy('date', 'desc')
-            ->orderBy('school_year', 'desc')
+            ->orderBy('created_at', 'desc')
             ->paginate(10);
 
         return view('livewire.management.user-logs-table', [

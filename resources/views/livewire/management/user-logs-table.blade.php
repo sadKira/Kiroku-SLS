@@ -234,17 +234,11 @@
 
             {{-- Log Session (Date) --}}
             <div>
-                <input type="hidden" wire:model="date"/>
                 <flux:input 
-                    readonly 
-                    type="text" 
-                    label="Log Session" 
-                    placeholder="Log Session"
-                    value="{{ $this->formatted_date }}" 
-                    variant="filled"
-                    icon:trailing="lock-closed"
+                    wire:model="date" 
+                    type="date" 
+                    label="Log Session Date" 
                 />
-                
             </div>
 
             {{-- Academic Year --}}
@@ -253,15 +247,18 @@
                     <flux:heading size="sm" class="mb-4">Academic Year</flux:heading>
                     <flux:field>
                         <div class="flex items-center gap-2">
-                            {{-- Start Year --}}
+                            {{-- Start Year (Readonly) --}}
                             <flux:input 
-                                wire:model.live="start_year" 
+                                wire:model="start_year" 
+                                readonly
                                 mask="9999" 
                                 type="text" 
                                 label="Start Year" 
                                 placeholder="YYYY"
                                 class="flex-1" 
                                 name="startYear"
+                                variant="filled"
+                                icon:trailing="lock-closed"
                             />
                             
                             <span class="mt-6 text-gray-500 dark:text-neutral-400">-</span>

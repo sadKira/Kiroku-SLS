@@ -156,10 +156,8 @@ class LoggerTable extends Component
         }
 
         // Eager load log records and students count
-        // Sort by most recent: date DESC, then school_year DESC
         $logSessions = $query->withCount(['logRecords', 'students'])
-            ->orderBy('date', 'desc')
-            ->orderBy('school_year', 'desc')
+            ->orderBy('created_at', 'desc')
             ->paginate(12);
 
         return view('livewire.logger.logger-table', [
