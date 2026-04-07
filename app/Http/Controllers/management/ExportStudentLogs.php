@@ -36,12 +36,12 @@ class ExportStudentLogs extends Controller
                 $paperSize = 'A4'; // Fallback to A4 if invalid
             }
 
-            // Fetch log session with eager loaded log records and students
-            $logSession = LogSession::with(['logRecords.student'])
+            // Fetch log session with eager loaded log records, students, and faculty
+            $logSession = LogSession::with(['logRecords.student', 'logRecords.faculty'])
                 ->findOrFail($logSessionId);
 
             // Get log records ordered by time_in
-            $logRecords = LogRecord::with('student')
+            $logRecords = LogRecord::with(['student', 'faculty'])
                 ->where('log_session_id', $logSessionId)
                 ->orderBy('time_in')
                 ->get();

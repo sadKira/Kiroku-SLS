@@ -144,7 +144,6 @@
         <div class="mb-6">
             <flux:heading size="xl"><span class="font-bold">MKD Learning Resource Center</span></flux:heading>
             <flux:heading size="xl" class="mt-3"><span class="font-bold">Monthly Activity Report</span>: {{ $month }} {{ Carbon\Carbon::parse($dateRange['start'])->format('Y') }}</flux:heading>
-            {{-- <flux:heading size="lg" class="mt-2">{{ $month }} {{ Carbon\Carbon::parse($dateRange['start'])->format('Y') }}</flux:heading> --}}
             <p class="text-gray-600 mt-1">
                 Academic Year: {{ $schoolYear }} |
                 Period: {{ \Carbon\Carbon::parse($dateRange['start'])->format('F j') }} –
@@ -414,7 +413,6 @@
         <div class="mb-6">
             <flux:heading size="xl"><span class="font-bold">MKD Learning Resource Center</span></flux:heading>
             <flux:heading size="xl" class="mt-3"><span class="font-bold">Semestral Activity Report</span>: A.Y. {{ $schoolYear }}</flux:heading>
-            {{-- <flux:heading size="lg" class="mt-2">Academic Year {{ $schoolYear }}</flux:heading> --}}
             <p class="text-gray-600 mt-1">
                 Period: {{ \Carbon\Carbon::parse($dateRange['start'])->format('F j, Y') }} –
                 {{ \Carbon\Carbon::parse($dateRange['end'])->format('F j, Y') }}

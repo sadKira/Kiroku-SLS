@@ -55,34 +55,63 @@
         .time-out {
             color: #ef4444;
         }
+
+        .badge {
+            display: inline-block;
+            padding: 2px 6px;
+            font-size: 10px;
+            border-radius: 9999px;
+            font-weight: 500;
+            margin-bottom: 2px;
+            margin-right: 4px;
+            white-space: nowrap;
+        }
+        .badge-college {
+            background-color: #dbeafe;
+            color: #1e3a8a;
+        }
+        .badge-shs {
+            background-color: #fee2e2;
+            color: #7f1d1d;
+        }
+        .badge-faculty {
+            background-color: #fef3c7;
+            color: #78350f;
+        }
     </style>
 </head>
 
 <body class="bg-white text-slate-900 antialiased p-4">
     <div class="mb-6">
         <flux:heading size="xl"><span class="font-bold">MKD Learning Resource Center</span></flux:heading>
-        <flux:heading size="xl" class="mt-3"><span class="font-bold">Student Logs</span></flux:heading>
-        <flux:heading size="lg">
-            {{ \Carbon\Carbon::parse($logSession->date)->format('F j, Y') }}
-        </flux:heading>
+        <flux:heading size="xl" class="mt-3"><span class="font-bold">User Logs</span>: {{ \Carbon\Carbon::parse($logSession->date)->format('F j, Y') }}</flux:heading>
         <p class=" text-gray-600">
             Academic Year: {{ $logSession->school_year }}
         </p>
     </div>
 
-    <div class="mb-4">
-        <p class="text-sm text-gray-600">
-            Total Records: {{ $logRecords->count() }}
-        </p>
-    </div>
-
-    {{-- Course Legend --}}
+    {{-- Legend --}}
     <div class="mb-4 p-3 bg-gray-50 rounded border border-gray-200">
-        <p class="text-xs font-semibold text-gray-700 mb-2">Course Abbreviations:</p>
-        <div class="grid grid-cols-2 gap-x-4 gap-y-1 text-xs text-gray-600">
-            @foreach(\App\Models\Course::orderBy('code')->get() as $courseItem)
-                <div><span class="font-medium">{{ $courseItem->code }}</span> - {{ $courseItem->name }}</div>
-            @endforeach
+        <p class="text-xs font-semibold text-gray-700 mb-3">Abbreviations:</p>
+        <div class="grid grid-cols-3 gap-4 text-xs text-gray-600 items-start">
+            <div>
+                <p class="font-semibold mb-1 text-gray-800">College Courses</p>
+                @foreach(\App\Models\Course::orderBy('code')->get() as $courseItem)
+                    <div><span class="font-medium">{{ $courseItem->code }}</span> - {{ $courseItem->name }}</div>
+                @endforeach
+            </div>
+            <div>
+                <p class="font-semibold mb-1 text-gray-800">SHS Strands</p>
+                @foreach(\App\Models\Strand::orderBy('code')->get() as $strandItem)
+                    <div><span class="font-medium">{{ $strandItem->code }}</span> - {{ $strandItem->name }}</div>
+                @endforeach
+            </div>
+            <div>
+                <p class="font-semibold mb-1 text-gray-800">Faculty Levels</p>
+                @foreach(\App\Models\InstructionalLevel::orderBy('code')->get() as $levelItem)
+                    <div><span class="font-medium">{{ $levelItem->code }}</span> - {{ $levelItem->name }}</div>
+                @endforeach
+            </div>
         </div>
     </div>
 
@@ -92,32 +121,55 @@
                 <th>#</th>
                 <th>ID</th>
                 <th>Name</th>
-                <th>Year Level</th>
-                <th>Course</th>
+                <th>Classification</th>
                 <th>In</th>
                 <th>Out</th>
             </tr>
         </thead>
         <tbody>
             @foreach ($logRecords as $index => $record)
+                @php
+                    $entity = $record->loggable_type === 'faculty' ? $record->faculty : $record->student;
+                @endphp
                 <tr class="log-record">
                     <td class="text-sm">{{ $index + 1 }}</td>
-                    <td class="text-sm font-mono">{{ $record->student->id_student ?? 'N/A' }}</td>
-                    <td class="text-sm font-medium">
-                        @if ($record->student)
-                            {{ $record->student->last_name }}, {{ $record->student->first_name }}
+                    <td class="text-sm font-mono">
+                        @if ($record->loggable_type === 'faculty' && $entity)
+                            {{ $entity->id_faculty }}
+                        @elseif ($entity)
+                            {{ $entity->id_student }}
                         @else
-                            <span class="text-gray-400">Unknown student</span>
+                            N/A
                         @endif
                     </td>
-                    <td class="text-sm">{{ $record->student->year_level ?? 'N/A' }}</td>
                     <td class="text-sm font-medium">
-                        @if ($record->student && $record->student->course)
-                            @php
-                                $course = $record->student->course;
-                                $courseAbbr = \App\Models\Course::where('name', $course)->value('code') ?? $course;
-                            @endphp
-                            {{ $courseAbbr }}
+                        @if ($entity)
+                            {{ $entity->last_name }}, {{ $entity->first_name }}
+                        @else
+                            <span class="text-gray-400">Unknown user</span>
+                        @endif
+                    </td>
+                    <td class="text-sm">
+                        @if ($entity)
+                            @if ($record->loggable_type === 'faculty')
+                                @php 
+                                    $levelCode = \App\Models\InstructionalLevel::where('name', $entity->instructional_level)->value('code') ?? $entity->instructional_level; 
+                                @endphp
+                                <span class="badge badge-faculty">Faculty</span>
+                                <span class="badge badge-faculty">{{ $levelCode }}</span>
+                            @elseif ($entity->user_type === 'shs')
+                                @php 
+                                    $strandCode = \App\Models\Strand::where('name', $entity->strand)->value('code') ?? $entity->strand; 
+                                @endphp
+                                <span class="badge badge-shs">SHS</span>
+                                <span class="badge badge-shs">{{ $entity->year_level }} - {{ $strandCode }}</span>
+                            @else
+                                @php 
+                                    $courseCode = \App\Models\Course::where('name', $entity->course)->value('code') ?? $entity->course; 
+                                @endphp
+                                <span class="badge badge-college">College</span>
+                                <span class="badge badge-college">{{ $entity->year_level }} - {{ $courseCode }}</span>
+                            @endif
                         @else
                             N/A
                         @endif
