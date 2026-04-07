@@ -30,14 +30,17 @@ class ExportBarcode extends Controller
                 $users = Faculty::orderBy('id_faculty')->get();
                 $idField = 'id_faculty';
                 $label = 'faculty';
+                $heading = 'Faculty Barcodes';
             } elseif ($userType === 'shs') {
                 $users = Student::shs()->orderBy('id_student')->get();
                 $idField = 'id_student';
                 $label = 'shs-students';
+                $heading = 'SHS Student Barcodes';
             } else {
                 $users = Student::college()->orderBy('id_student')->get();
                 $idField = 'id_student';
                 $label = 'college-students';
+                $heading = 'College Student Barcodes';
             }
 
             // Check if there are any users to export
@@ -52,6 +55,8 @@ class ExportBarcode extends Controller
             // Render the minimal barcode export view to HTML
             $html = view('Reports/export-barcode', [
                 'students' => $users,
+                'idField' => $idField,
+                'heading' => $heading,
             ])->render();
 
             // Generate the PDF in memory and stream it to the browser

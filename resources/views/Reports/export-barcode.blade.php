@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
-    <title>Student Barcodes</title>
+    <title>{{ $heading ?? 'Student Barcodes' }}</title>
 
     <link rel="icon" href="/mkdlib-logo.ico" sizes="any">
     <link rel="icon" href="/mkdlib-logo.svg" type="image/svg+xml">
@@ -32,10 +32,15 @@
 
     <div class="mb-10">
         <flux:heading size="xl"><span class="font-bold">MKD Learning Resource Center</span></flux:heading>
-        <flux:heading size="xl" class="mt-3"><span class="font-bold">Student Barcodes</span></flux:heading>
-        <p class=" text-gray-600">
-            Student Barcodes: {{ $students->count() }}
-        </p>
+        <div class="mt-3 flex items-center gap-2">
+            <flux:heading size="xl"><span class="font-bold">{{ $heading ?? 'Student Barcodes' }}</span></flux:heading>
+            <span class="inline-flex items-center gap-1 rounded-full bg-neutral-100 px-2 py-0.5 text-xs font-medium text-neutral-500">
+                <svg xmlns="http://www.w3.org/2000/svg" class="size-3 shrink-0" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                    <path d="M9 6a3 3 0 1 1-6 0 3 3 0 0 1 6 0ZM17 6a3 3 0 1 1-6 0 3 3 0 0 1 6 0ZM12.93 17c.046-.327.07-.66.07-1a6.97 6.97 0 0 0-1.5-4.33A5 5 0 0 1 19 16v1h-6.07ZM6 11a5 5 0 0 1 5 5v1H1v-1a5 5 0 0 1 5-5Z" />
+                </svg>
+                {{ number_format($students->count()) }} {{ $students->count() === 1 ? 'barcode' : 'barcodes' }}
+            </span>
+        </div>
     </div>
 
     <div class="flex flex-wrap gap-3 justify-center">
@@ -53,7 +58,7 @@
                             ->height(60)
                             ->widthFactor(2)
                             ->type(\AgeekDev\Barcode\Enums\BarcodeType::CODE_128)
-                            ->generate((string) $student->id_student);
+                            ->generate((string) $student->{$idField});
                     @endphp
 
                     <div class="flex justify-center">
@@ -63,7 +68,7 @@
                 </div>
 
                 <flux:heading class="truncate mt-1">{{ $student->last_name }}, {{ $student->first_name }}</flux:heading>
-                <span class="block text-[9px] tracking-[0.06em]">{{ $student->id_student }}</span>
+                <span class="block text-[9px] tracking-[0.06em]">{{ $student->{$idField} }}</span>
 
             </x-ui.card>
 
