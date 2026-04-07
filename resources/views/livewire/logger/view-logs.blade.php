@@ -1,6 +1,6 @@
 <div class="h-screen flex items-center bg-gray-50 dark:bg-zinc-900">
     {{-- Left Column: Barcode Scanner --}}
-    <div class="flex-2 flex flex-col p-8 h-screen relative">
+    <div class="w-3/5 flex flex-col p-8 h-screen relative">
 
         {{-- Back Button --}}
         <a href="{{ route('logger_dashboard') }}" wire:navigate 
@@ -138,10 +138,10 @@
                                         <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-amber-100 text-amber-800 dark:bg-amber-900 dark:text-amber-200">Faculty</span>
                                     </template>
                                     <template x-if="userType === 'SHS'">
-                                        <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-sky-100 text-sky-800 dark:bg-sky-900 dark:text-sky-200">SHS</span>
+                                        <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200">SHS</span>
                                     </template>
                                     <template x-if="userType === 'College'">
-                                        <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-indigo-100 text-indigo-800 dark:bg-indigo-900 dark:text-indigo-200">College</span>
+                                        <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200">College</span>
                                     </template>
                                 </div>
                                 <flux:heading size="lg" class="text-gray-600 dark:text-neutral-400 mt-1"
@@ -183,7 +183,7 @@
     <flux:separator vertical class="my-20" />
 
     {{-- Right Column: Log Records Table --}}
-    <div class="flex-1 p-8 flex flex-col h-screen relative">
+    <div class="w-2/5 p-8 flex flex-col h-screen relative">
 
         {{-- Scrollable container with blur effects --}}
         <div class="flex-1 relative overflow-hidden" 

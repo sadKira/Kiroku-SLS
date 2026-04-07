@@ -107,6 +107,22 @@ class LoggerTable extends Component
             ->toArray();
     }
 
+    public function getTodayLogSessionProperty()
+    {
+        $today = Carbon::now('Asia/Manila')->format('Y-m-d');
+        $activeSetting = \App\Models\SchoolYearSetting::getActive();
+        $schoolYear = $activeSetting ? $activeSetting->school_year : null;
+
+        if (!$schoolYear) {
+            return null;
+        }
+
+        return LogSession::where('date', $today)
+            ->where('school_year', $schoolYear)
+            ->withCount(['logRecords', 'students'])
+            ->first();
+    }
+
     public function placeholder()
     {
         return view('livewire.logger.logger-table-placeholder');
@@ -150,6 +166,7 @@ class LoggerTable extends Component
             'logSessions' => $logSessions,
             'availableYears' => $this->availableYears,
             'availableAcademicYears' => $this->availableAcademicYears,
+            'todayLogSession' => $this->todayLogSession,
         ]);
     }
 

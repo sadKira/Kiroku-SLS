@@ -28,27 +28,23 @@
                                         </flux:heading>
                                         <p class="text-sm text-gray-600 dark:text-neutral-400">
                                             @if ($record->loggable_type === 'faculty')
-                                                <span class="inline-flex items-center px-1.5 py-0.5 rounded-full text-xs font-medium bg-amber-100 text-amber-800 dark:bg-amber-900 dark:text-amber-200 mr-1">Faculty</span>
-                                                {{ $entity->instructional_level }}
-                                            @elseif ($entity->user_type === 'shs')
-                                                <span class="inline-flex items-center px-1.5 py-0.5 rounded-full text-xs font-medium bg-sky-100 text-sky-800 dark:bg-sky-900 dark:text-sky-200 mr-1">SHS</span>
-                                                {{ $entity->year_level }} - {{ $entity->strand }}
-                                            @else
-                                                <span class="inline-flex items-center px-1.5 py-0.5 rounded-full text-xs font-medium bg-indigo-100 text-indigo-800 dark:bg-indigo-900 dark:text-indigo-200 mr-1">College</span>
-                                                {{ $entity->year_level }} - 
-                                                @php
-                                                    $course = $entity->course;
-                                                    $courseAbbr = match (true) {
-                                                        $course == 'Bachelor of Arts in International Studies' => 'ABIS',
-                                                        $course == 'Bachelor of Science in Information Systems' => 'BSIS',
-                                                        $course == 'Bachelor of Human Services' => 'BHS',
-                                                        $course == 'Bachelor of Secondary Education' => 'BSED',
-                                                        $course == 'Bachelor of Elementary Education' => 'ECED',
-                                                        $course == 'Bachelor of Special Needs Education' => 'SNED',
-                                                        default => $course,
-                                                    };
+                                                <flux:badge size="sm" color="amber" variant="pill">Faculty</flux:badge>
+                                                @php 
+                                                    $levelCode = \App\Models\InstructionalLevel::where('name', $entity->instructional_level)->value('code') ?? $entity->instructional_level; 
                                                 @endphp
-                                                {{ $courseAbbr }}
+                                                <flux:badge size="sm" color="amber" variant="pill">{{ $levelCode }}</flux:badge>
+                                            @elseif ($entity->user_type === 'shs')
+                                                <flux:badge size="sm" color="red" variant="pill">SHS</flux:badge>
+                                                @php 
+                                                    $strandCode = \App\Models\Strand::where('name', $entity->strand)->value('code') ?? $entity->strand; 
+                                                @endphp
+                                                <flux:badge size="sm" color="red" variant="pill">{{ $entity->year_level }} - {{ $strandCode }}</flux:badge>
+                                            @else
+                                                <flux:badge size="sm" color="blue" variant="pill">College</flux:badge>
+                                                @php 
+                                                    $courseCode = \App\Models\Course::where('name', $entity->course)->value('code') ?? $entity->course; 
+                                                @endphp
+                                                <flux:badge size="sm" color="blue" variant="pill">{{ $entity->year_level }} - {{ $courseCode }}</flux:badge>
                                             @endif
                                         </p>
                                     @else
