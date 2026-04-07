@@ -39,7 +39,6 @@
             {{-- Empty State --}}
             <div class="bg-white dark:bg-zinc-900 border border-black/10 dark:border-white/10 rounded-lg p-12 max-w-sm">
                 <div class="flex flex-col justify-center items-center gap-3">
-                    <flux:icon.calendar-days variant="outline" class="w-12 h-12 text-gray-400 dark:text-neutral-500" />
                     <flux:heading size="lg">No Log Session Today</flux:heading>
                     <p class="text-sm text-gray-500 dark:text-neutral-400 text-center">
                         Contact your administrator to create one.
