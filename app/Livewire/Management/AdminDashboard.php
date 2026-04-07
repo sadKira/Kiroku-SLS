@@ -209,13 +209,15 @@ class AdminDashboard extends Component
         $range = $this->getDateRange();
         $schoolYear = $this->activeSchoolYear;
         
-        // Count unique students across all sessions
-        return LogRecord::whereHas('logSessions', function ($query) use ($range, $schoolYear) {
-            $query->where('school_year', $schoolYear)
-                ->whereBetween('date', [$range['start']->format('Y-m-d'), $range['end']->format('Y-m-d')]);
-        })
-        ->distinct('student_id')
-        ->count('student_id');
+        // Count unique students and faculty across all sessions
+        $stats = DB::table('log_records')
+            ->join('log_sessions', 'log_records.log_session_id', '=', 'log_sessions.id')
+            ->selectRaw('COUNT(DISTINCT log_records.student_id) as student_count, COUNT(DISTINCT log_records.faculty_id) as faculty_count')
+            ->where('log_sessions.school_year', $schoolYear)
+            ->whereBetween('log_sessions.date', [$range['start']->format('Y-m-d'), $range['end']->format('Y-m-d')])
+            ->first();
+
+        return ($stats->student_count ?? 0) + ($stats->faculty_count ?? 0);
     }
 
     // Unique Students (filtered) - Same as totalLogs since we're counting unique students
@@ -250,25 +252,15 @@ class AdminDashboard extends Component
         $today = Carbon::now('Asia/Manila')->startOfDay();
         $schoolYear = $this->activeSchoolYear;
         
-        $activeStudents = LogRecord::whereHas('logSessions', function ($query) use ($today, $schoolYear) {
-            $query->where('school_year', $schoolYear)
-                ->whereDate('date', $today->format('Y-m-d'));
-        })
-        ->whereNotNull('time_in')
-        ->whereNotNull('student_id')
-        ->distinct('student_id')
-        ->count('student_id');
+        $stats = DB::table('log_records')
+            ->join('log_sessions', 'log_records.log_session_id', '=', 'log_sessions.id')
+            ->selectRaw('COUNT(DISTINCT log_records.student_id) as student_count, COUNT(DISTINCT log_records.faculty_id) as faculty_count')
+            ->where('log_sessions.school_year', $schoolYear)
+            ->whereDate('log_sessions.date', $today->format('Y-m-d'))
+            ->whereNotNull('log_records.time_in')
+            ->first();
 
-        $activeFaculty = LogRecord::whereHas('logSessions', function ($query) use ($today, $schoolYear) {
-            $query->where('school_year', $schoolYear)
-                ->whereDate('date', $today->format('Y-m-d'));
-        })
-        ->whereNotNull('time_in')
-        ->whereNotNull('faculty_id')
-        ->distinct('faculty_id')
-        ->count('faculty_id');
-
-        return $activeStudents + $activeFaculty;
+        return ($stats->student_count ?? 0) + ($stats->faculty_count ?? 0);
     }
 
     // Attendance percentage (active users / total users)
@@ -298,34 +290,29 @@ class AdminDashboard extends Component
         $range = $this->getDateRange();
         $schoolYear = $this->activeSchoolYear;
         
-        // Monthly data for this year - count unique students + faculty
+        // Single optimized query to get monthly unique counts
+        $monthlyStats = DB::table('log_records')
+            ->join('log_sessions', 'log_records.log_session_id', '=', 'log_sessions.id')
+            ->selectRaw('
+                MONTH(log_sessions.date) as int_month,
+                COUNT(DISTINCT log_records.student_id) as student_count,
+                COUNT(DISTINCT log_records.faculty_id) as faculty_count
+            ')
+            ->where('log_sessions.school_year', $schoolYear)
+            ->whereBetween('log_sessions.date', [$range['start']->format('Y-m-d'), $range['end']->format('Y-m-d')])
+            ->groupBy('int_month')
+            ->get()
+            ->keyBy('int_month');
+            
         $data = [];
         $current = $range['start']->copy();
         while ($current <= $range['end']) {
-            $monthStart = $current->copy()->startOfMonth();
-            $monthEnd = $current->copy()->endOfMonth();
-            
-            // Count unique students for this month
-            $studentCount = LogRecord::whereHas('logSessions', function ($query) use ($monthStart, $monthEnd, $schoolYear) {
-                $query->where('school_year', $schoolYear)
-                    ->whereBetween('date', [$monthStart->format('Y-m-d'), $monthEnd->format('Y-m-d')]);
-            })
-            ->whereNotNull('student_id')
-            ->distinct('student_id')
-            ->count('student_id');
-
-            // Count unique faculty for this month
-            $facultyCount = LogRecord::whereHas('logSessions', function ($query) use ($monthStart, $monthEnd, $schoolYear) {
-                $query->where('school_year', $schoolYear)
-                    ->whereBetween('date', [$monthStart->format('Y-m-d'), $monthEnd->format('Y-m-d')]);
-            })
-            ->whereNotNull('faculty_id')
-            ->distinct('faculty_id')
-            ->count('faculty_id');
+            $month = $current->month;
+            $stat = $monthlyStats->get($month);
             
             $data[] = [
                 'label' => $current->format('M'),
-                'value' => $studentCount + $facultyCount,
+                'value' => $stat ? ($stat->student_count + $stat->faculty_count) : 0,
             ];
             $current->addMonth();
         }
@@ -346,31 +333,30 @@ class AdminDashboard extends Component
         $monthEnd = $now->copy()->endOfMonth();
         $schoolYear = $this->activeSchoolYear;
         
+        // Single optimized query to get daily unique counts
+        $dailyStats = DB::table('log_records')
+            ->join('log_sessions', 'log_records.log_session_id', '=', 'log_sessions.id')
+            ->selectRaw('
+                DATE(log_sessions.date) as full_date,
+                COUNT(DISTINCT log_records.student_id) as student_count,
+                COUNT(DISTINCT log_records.faculty_id) as faculty_count
+            ')
+            ->where('log_sessions.school_year', $schoolYear)
+            ->whereBetween('log_sessions.date', [$monthStart->format('Y-m-d'), $monthEnd->format('Y-m-d')])
+            ->groupBy('full_date')
+            ->get()
+            ->keyBy('full_date');
+
         $data = [];
         $current = $monthStart->copy();
         
         while ($current <= $monthEnd) {
-            // Count unique students for this day
-            $studentCount = LogRecord::whereHas('logSessions', function ($query) use ($current, $schoolYear) {
-                $query->where('school_year', $schoolYear)
-                    ->whereDate('date', $current->format('Y-m-d'));
-            })
-            ->whereNotNull('student_id')
-            ->distinct('student_id')
-            ->count('student_id');
-
-            // Count unique faculty for this day
-            $facultyCount = LogRecord::whereHas('logSessions', function ($query) use ($current, $schoolYear) {
-                $query->where('school_year', $schoolYear)
-                    ->whereDate('date', $current->format('Y-m-d'));
-            })
-            ->whereNotNull('faculty_id')
-            ->distinct('faculty_id')
-            ->count('faculty_id');
+            $dateStr = $current->format('Y-m-d');
+            $stat = $dailyStats->get($dateStr);
             
             $data[] = [
-                'x' => $current->copy()->startOfDay()->timestamp * 1000, // JavaScript timestamp in milliseconds
-                'y' => $studentCount + $facultyCount,
+                'x' => $current->copy()->startOfDay()->timestamp * 1000,
+                'y' => $stat ? ($stat->student_count + $stat->faculty_count) : 0,
             ];
             $current->addDay();
         }
@@ -392,32 +378,31 @@ class AdminDashboard extends Component
             return [];
         }
         
+        // Single optimized query for hourly data
+        $hourlyStats = DB::table('log_records')
+            ->selectRaw('
+                HOUR(time_in) as log_hour,
+                COUNT(DISTINCT student_id) as student_count,
+                COUNT(DISTINCT faculty_id) as faculty_count
+            ')
+            ->where('log_session_id', $logSession->id)
+            ->whereNotNull('time_in')
+            ->whereRaw('HOUR(time_in) BETWEEN 8 AND 17')
+            ->groupBy('log_hour')
+            ->get()
+            ->keyBy('log_hour');
+        
         $data = [];
         
-        // Generate data for each hour from 8am to 5pm - count unique students + faculty
+        // Generate data for each hour from 8am to 5pm
         for ($hour = 8; $hour <= 17; $hour++) {
             $hourStart = $today->copy()->setHour($hour)->setMinute(0)->setSecond(0);
-            $hourEnd = $today->copy()->setHour($hour)->setMinute(59)->setSecond(59);
             
-            // Count unique students who logged in during this hour
-            $studentCount = LogRecord::where('log_session_id', $logSession->id)
-                ->whereNotNull('time_in')
-                ->whereNotNull('student_id')
-                ->whereBetween('time_in', [$hourStart->format('Y-m-d H:i:s'), $hourEnd->format('Y-m-d H:i:s')])
-                ->distinct('student_id')
-                ->count('student_id');
-
-            // Count unique faculty who logged in during this hour
-            $facultyCount = LogRecord::where('log_session_id', $logSession->id)
-                ->whereNotNull('time_in')
-                ->whereNotNull('faculty_id')
-                ->whereBetween('time_in', [$hourStart->format('Y-m-d H:i:s'), $hourEnd->format('Y-m-d H:i:s')])
-                ->distinct('faculty_id')
-                ->count('faculty_id');
+            $stat = $hourlyStats->get($hour);
             
             $data[] = [
                 'x' => $hourStart->timestamp * 1000,
-                'y' => $studentCount + $facultyCount,
+                'y' => $stat ? ($stat->student_count + $stat->faculty_count) : 0,
             ];
         }
         
