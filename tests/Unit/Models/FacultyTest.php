@@ -15,10 +15,10 @@ it('has the correct fillable attributes', function () {
     ]);
 });
 
-it('auto-generates faculty id starting with 9', function () {
+it('auto-generates faculty id starting with 0', function () {
     $faculty = Faculty::factory()->create(['id_faculty' => null]);
 
-    expect($faculty->id_faculty)->toStartWith('9')
+    expect($faculty->id_faculty)->toStartWith('0')
         ->and(strlen($faculty->id_faculty))->toBe(7);
 });
 
