@@ -26,14 +26,15 @@ class DatabaseSeeder extends Seeder
 
             // Swap
             StudentSeeder::class,
-            FacultySeeder::class,
+            // FacultySeeder::class,
+
             SchoolYearSettingSeeder::class,
 
             // Swap all
-            SettingSeeder::class,
+            // SettingSeeder::class,
 
-            LogSessionSeeder::class,
-            LogRecordSeeder::class,
+            // LogSessionSeeder::class,
+            // LogRecordSeeder::class,
         ]);
        
     }

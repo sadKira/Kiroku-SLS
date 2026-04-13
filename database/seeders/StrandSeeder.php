@@ -18,8 +18,6 @@ class StrandSeeder extends Seeder
             ['code' => 'HUMSS', 'name' => 'Humanities and Social Sciences'],
             ['code' => 'GAS', 'name' => 'General Academic Strand'],
             ['code' => 'TVL', 'name' => 'Technical-Vocational-Livelihood'],
-            ['code' => 'SPORTS', 'name' => 'Sports Track'],
-            ['code' => 'ADT', 'name' => 'Arts and Design Track'],
         ];
 
         foreach ($strands as $strand) {
