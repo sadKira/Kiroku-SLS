@@ -37,7 +37,7 @@ class Faculty extends Model
      */
     public static function generateFacultyId(): string
     {
-        $lastFaculty = static::where('id_faculty', 'like', '9%')
+        $lastFaculty = static::where('id_faculty', 'like', '0%')
             ->orderByRaw('CAST(id_faculty AS UNSIGNED) DESC')
             ->first();
 
@@ -45,7 +45,7 @@ class Faculty extends Model
             $lastNumber = (int) $lastFaculty->id_faculty;
             $nextNumber = $lastNumber + 1;
         } else {
-            $nextNumber = 9000001;
+            $nextNumber = 0000001;
         }
 
         return str_pad($nextNumber, 7, '0', STR_PAD_LEFT);
