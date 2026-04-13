@@ -100,22 +100,30 @@
                 {{-- Dynamic Label for User Display --}}
                 <div x-data="{
                     shown: false,
+                    errorShown: false,
                     userName: '',
                     userDetail: '',
                     userSubDetail: '',
                     userType: ''
-                }" x-init="@this.on('scan-label', () => {
-                    // Get latest values from Livewire
-                    userName = $wire.userName;
-                    userDetail = $wire.userDetail;
-                    userSubDetail = $wire.userSubDetail;
-                    userType = $wire.userType;
-                    shown = true;
-                    setTimeout(() => { shown = false; }, 3000);
-                });" class="mt-8">
+                }" x-init="
+                    @this.on('scan-label', () => {
+                        userName = $wire.userName;
+                        userDetail = $wire.userDetail;
+                        userSubDetail = $wire.userSubDetail;
+                        userType = $wire.userType;
+                        shown = true;
+                        errorShown = false;
+                        setTimeout(() => { shown = false; }, 4000);
+                    });
+                    @this.on('scan-error', () => {
+                        shown = false;
+                        errorShown = true;
+                        setTimeout(() => { errorShown = false; }, 5000);
+                    });
+                " class="mt-8">
 
                     <!-- Default State (shown when no scan) -->
-                    <template x-if="!shown">
+                    <template x-if="!shown && !errorShown">
                         <div class="flex flex-col items-center justify-center gap-2 mt-8 w-full">
                             <flux:icon.barcode class="w-32 h-32" />
                             <div class="flex items-center gap-2">
@@ -127,13 +135,14 @@
                     <!-- User Details (shown temporarily when scan succeeds) -->
                     <template x-if="shown">
                         <div class="flex flex-col items-center justify-center gap-3 w-full">
-                            
+
                             <flux:icon.user variant="solid" class="w-32 h-32" />
 
                             <div class="flex flex-col justify-center items-center">
-                                <flux:heading size="xl" class="text-gray-800 dark:text-neutral-200"
-                                    x-text="userName"></flux:heading>
-                                <div class="flex items-center gap-2 mt-1">
+                                {{-- Name + badge inline --}}
+                                <div class="flex items-center gap-2">
+                                    <flux:heading size="xl" class="text-gray-800 dark:text-neutral-200"
+                                        x-text="userName"></flux:heading>
                                     <template x-if="userType === 'Faculty'">
                                         <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-amber-100 text-amber-800 dark:bg-amber-900 dark:text-amber-200">Faculty</span>
                                     </template>
@@ -149,16 +158,26 @@
                             </div>
                         </div>
                     </template>
+
+                    <!-- Error State (shown temporarily when scan fails) -->
+                    <template x-if="errorShown">
+                        <div class="flex flex-col items-center justify-center gap-2 mt-8 w-full">
+                            <flux:icon.x-circle class="w-32 h-32 text-red-500 dark:text-red-400" />
+                            <flux:heading size="xl" class="text-red-600 dark:text-red-400">Scan Failed</flux:heading>
+                        </div>
+                    </template>
                 </div>
 
                 {{-- Success Callout --}}
                 <div x-data="{ shown: false }" x-init="@this.on('scan-success', () => {
                     shown = true;
-                    setTimeout(() => { shown = false; }, 3000);
+                    setTimeout(() => { shown = false; }, 4000);
                 });" class="mt-6">
 
                     <template x-if="shown">
-                        <flux:callout variant="success" icon="check-circle" heading="Scan Successful" />
+                        <flux:callout variant="success" icon="check-circle">
+                            <flux:callout.heading>Scan Successful</flux:callout.heading>
+                        </flux:callout>
                     </template>
                 </div>
 
@@ -171,8 +190,8 @@
                 });" class="mt-6">
 
                     <template x-if="shown">
-                        <flux:callout variant="danger" icon="exclamation-circle" heading="Error">
-                            <span x-text="message"></span>
+                        <flux:callout variant="danger" icon="exclamation-circle">
+                            <flux:callout.heading><span x-text="message"></span></flux:callout.heading>
                         </flux:callout>
                     </template>
                 </div>
