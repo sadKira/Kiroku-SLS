@@ -48,20 +48,21 @@ class StudentSeeder extends Seeder
             ->mapWithKeys(static fn (string $name): array => [$name => $name])
             ->all();
 
-        foreach ($students as $index => $student) {
+        foreach ($students as $student) {
             if (! isset($courseMap[$student['course']])) {
                 throw new RuntimeException("Course [{$student['course']}] is not seeded in CourseSeeder.");
             }
 
             Student::updateOrCreate(
-                ['id_student' => (string) (9000001 + $index)],
                 [
-                    'user_type' => 'college',
-                    'last_name' => $student['last_name'],
+                    'user_type'  => 'college',
+                    'last_name'  => $student['last_name'],
                     'first_name' => $student['first_name'],
+                    'course'     => $courseMap[$student['course']],
+                ],
+                [
                     'year_level' => $student['year_level'],
-                    'course' => $courseMap[$student['course']],
-                    'strand' => null,
+                    'strand'     => null,
                 ]
             );
         }

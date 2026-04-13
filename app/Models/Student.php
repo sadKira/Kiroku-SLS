@@ -22,7 +22,7 @@ class Student extends Model
 
     /**
      * Boot the model.
-     * Auto-generate id_student starting with 9 (7 digits).
+     * Auto-generate id_student as a unique random 7-digit ID starting with 9.
      */
     protected static function boot()
     {
@@ -36,22 +36,17 @@ class Student extends Model
     }
 
     /**
-     * Generate a unique 7-digit student ID starting with 9.
+     * Generate a unique random 7-digit student ID starting with 9.
+     * Retries until a non-colliding ID is found.
      */
     public static function generateStudentId(): string
     {
-        $lastStudent = static::where('id_student', 'like', '9%')
-            ->orderByRaw('CAST(id_student AS UNSIGNED) DESC')
-            ->first();
+        do {
+            // Start with 9, followed by 6 random digits (9000000–9999999)
+            $id = (string) random_int(9000000, 9999999);
+        } while (static::where('id_student', $id)->exists());
 
-        if ($lastStudent) {
-            $lastNumber = (int) $lastStudent->id_student;
-            $nextNumber = $lastNumber + 1;
-        } else {
-            $nextNumber = 9000001;
-        }
-
-        return str_pad($nextNumber, 7, '0', STR_PAD_LEFT);
+        return $id;
     }
 
     // Table Relationships

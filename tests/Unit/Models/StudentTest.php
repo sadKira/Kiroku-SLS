@@ -18,18 +18,19 @@ it('has the correct fillable attributes', function () {
     ]);
 });
 
-it('auto-generates student id starting with 9', function () {
+it('auto-generates a random student id starting with 9 (7 digits)', function () {
     $student = Student::factory()->create(['id_student' => null]);
 
-    expect($student->id_student)->toStartWith('9')
-        ->and(strlen($student->id_student))->toBe(7);
+    expect($student->id_student)
+        ->toStartWith('9')
+        ->toMatch('/^[0-9]{7}$/');
 });
 
-it('auto-generates sequential student ids', function () {
-    $student1 = Student::factory()->create(['id_student' => null]);
-    $student2 = Student::factory()->create(['id_student' => null]);
+it('does not generate duplicate student ids', function () {
+    $students = Student::factory()->count(10)->create(['id_student' => null]);
+    $ids = $students->pluck('id_student');
 
-    expect((int) $student2->id_student)->toBe((int) $student1->id_student + 1);
+    expect($ids->unique()->count())->toBe(10);
 });
 
 it('does not overwrite manually set student id', function () {

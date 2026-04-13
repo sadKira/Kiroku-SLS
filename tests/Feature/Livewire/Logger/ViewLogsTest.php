@@ -80,25 +80,25 @@ it('handles duplicate logs correctly for user logging in and out multiple times'
 
 it('handles duplicate logs correctly for faculty logging in and out multiple times', function () {
     $session = LogSession::factory()->create();
-    $faculty = Faculty::factory()->create(['id_faculty' => '9999999']);
+    $faculty = Faculty::factory()->create(['id_faculty' => '1999999']);
 
     $component = Livewire::test(ViewLogs::class, ['logSession' => $session]);
 
     // 1st scan - IN
     $this->travelTo(now());
-    $component->set('barcode', '9999999');
+    $component->set('barcode', '1999999');
     $log1 = LogRecord::where('faculty_id', $faculty->id)->first();
     expect($log1->time_out)->toBeNull();
 
     // 2nd scan - OUT
     $this->travel(1)->second();
-    $component->set('barcode', '9999999');
+    $component->set('barcode', '1999999');
     $log1->refresh();
     expect($log1->time_out)->not->toBeNull();
 
     // 3rd scan - NEW IN
     $this->travel(1)->second();
-    $component->set('barcode', '9999999');
+    $component->set('barcode', '1999999');
     expect(LogRecord::where('faculty_id', $faculty->id)->count())->toBe(2);
 });
 

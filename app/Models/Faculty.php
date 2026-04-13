@@ -19,7 +19,7 @@ class Faculty extends Model
 
     /**
      * Boot the model.
-     * Auto-generate id_faculty starting with 9 (7 digits).
+     * Auto-generate id_faculty as a unique random 7-digit ID starting with 1.
      */
     protected static function boot()
     {
@@ -33,22 +33,17 @@ class Faculty extends Model
     }
 
     /**
-     * Generate a unique 7-digit faculty ID starting with 9.
+     * Generate a unique random 7-digit faculty ID starting with 1.
+     * Retries until a non-colliding ID is found.
      */
     public static function generateFacultyId(): string
     {
-        $lastFaculty = static::where('id_faculty', 'like', '0%')
-            ->orderByRaw('CAST(id_faculty AS UNSIGNED) DESC')
-            ->first();
+        do {
+            // Start with 1, followed by 6 random digits (1000000–1999999)
+            $id = (string) random_int(1000000, 1999999);
+        } while (static::where('id_faculty', $id)->exists());
 
-        if ($lastFaculty) {
-            $lastNumber = (int) $lastFaculty->id_faculty;
-            $nextNumber = $lastNumber + 1;
-        } else {
-            $nextNumber = 0000001;
-        }
-
-        return str_pad($nextNumber, 7, '0', STR_PAD_LEFT);
+        return $id;
     }
 
     // Table Relationships
