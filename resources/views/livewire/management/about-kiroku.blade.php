@@ -23,7 +23,7 @@
                     </flux:avatar.group>
 
                     {{-- TALL Stack icons: faded, aligned to the bottom-right --}}
-                    <div class="flex items-end gap-3 opacity-60 shrink-0 pb-1">
+                    <div class="flex items-end gap-3 opacity-50 shrink-0 pb-1">
                         {{-- Tailwind CSS --}}
                         <div class="flex flex-col items-center gap-1">
                             <svg class="w-7 h-7 fill-current text-slate-800 dark:text-white" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-label="Tailwind CSS">
