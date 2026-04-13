@@ -18,13 +18,31 @@
 
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 
-    {{-- Avoid splitting barcode cards across PDF pages and ensure fixed width --}}
+    {{-- Barcode export layout: 3 columns × 2 rows = 6 cards per page block, no card splitting --}}
     <style>
-        @media print {
-            .barcode-card {
-                break-inside: avoid;
-                page-break-inside: avoid;
-            }
+        /* Thicker border on barcode cards for this export only */
+        .barcode-card {
+            border: 2px solid #1e293b !important;
+            border-radius: 0.5rem;
+        }
+
+        /* Fixed 3-column grid so 6 cards fill the page width evenly */
+        .barcode-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 0.75rem;
+        }
+
+        /* Prevent any single card from being cut across a page break */
+        .barcode-card {
+            break-inside: avoid;
+            page-break-inside: avoid;
+        }
+
+        /* After every 6 cards (2 rows of 3), allow a page break */
+        .barcode-card:nth-child(6n) {
+            break-after: auto;
+            page-break-after: auto;
         }
     </style>
 </head>
@@ -48,7 +66,7 @@
         </div>
     </div>
 
-    <div class="flex flex-wrap gap-3 justify-center">
+    <div class="barcode-grid">
         @foreach ($students as $student)
 
             <x-ui.card size="sm" class="barcode-card p-3 text-center justify-center">
